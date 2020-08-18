@@ -124,7 +124,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 "title": content.title,
                 "description": paragraphString,
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
-                "color": 4095,
+                "hexColor": "#000fff",
                 "footer": {
                     "text": `Alle Angaben ohne Gewähr!  •  ${content.date}`
                 },
@@ -137,7 +137,6 @@ class ScraperBlackBoard extends WebsiteScraper{
             }
         );
     }
-
 }
 
 export default new ScraperBlackBoard();
