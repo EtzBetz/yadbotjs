@@ -1,7 +1,7 @@
 import fs from 'fs';
 import Discord from "discord.js"
 import config from '../config.json'
-import scraperBlackBoard from './ScraperBlackBoard.js'
+import scraperBlackBoard from './ScraperBlackBoard.mjs'
 
 class YadBot {
 

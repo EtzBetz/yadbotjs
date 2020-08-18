@@ -3,10 +3,11 @@
   "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
+    "start": "node --experimental-specifier-resolution=node --experimental-json-modules index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run-watch-server": "nodemon --ignore './scraperFiles/' --experimental-specifier-resolution=node index.js",
+    "run-watch-server": "nodemon --experimental-specifier-resolution=node --experimental-json-modules --ignore './scraperFiles/'index.mjs",
     "dev": "npm run run-watch-server"
   },
   "author": "",
