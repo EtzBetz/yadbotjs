@@ -148,7 +148,7 @@ export class WebsiteScraper {
     sendEmbedMessages(websiteContent) {
         let embeds = []
         websiteContent.forEach(content => {
-            embeds.push(this.getEmbed(content))
+            embeds.push(this.filterEmbedLength(this.getEmbed(content)))
         })
         console.log("Sending embeds...")
         this.guilds.forEach(guild => {
@@ -191,4 +191,123 @@ export class WebsiteScraper {
         });
     }
 
+    filterEmbedLength(embed) {
+        const TITLE_LIMIT = 256;
+        const DESCRIPTION_LIMIT = 2048;
+        const FIELDS_COUNT_LIMIT = 25;
+        const FIELDS_NAME_LIMIT = 256;
+        const FIELDS_VALUE_LIMIT = 1024;
+        const FOOTER_TEXT_LIMIT = 2048;
+        const AUTHOR_NAME_LIMIT = 256;
+        const TOTAL_CHARACTERS_LIMIT = 6000;
+
+        if (embed.title?.length > TITLE_LIMIT) {
+            console.log(`Title limit has been exceeded in current embed "${embed.title.substring(0,50)}"!`)
+            embed.title = this.cutStringAddDots(embed.title, TITLE_LIMIT)
+        }
+        if (embed.description?.length > DESCRIPTION_LIMIT) {
+            console.log(`Description limit has been exceeded in current embed "${embed.description.substring(0,50)}"!`)
+            embed.description = this.cutStringAddDots(embed.description, DESCRIPTION_LIMIT)
+        }
+        if (embed.fields?.length > FIELDS_COUNT_LIMIT) {
+            console.log(`Fields count limit has been exceeded in current embed "${embed.title.substring(0,50)}": ${embed.fields.length}!`)
+            let numOfCutFields = embed.fields.length - FIELDS_COUNT_LIMIT
+            embed.fields.splice(-1, numOfCutFields)
+
+            embed.footer.text += `\nSYSTEM MESSAGE: ${numOfCutFields} fields have been cut to be able to send this message.`
+        }
+        embed.fields?.forEach((field, index) => {
+            if (field.name?.length > FIELDS_NAME_LIMIT) {
+                console.log(`Field name limit has been exceeded in current embed "${index}(${field.name.substring(0,50)})"!`)
+                field.name = this.cutStringAddDots(field.name, FIELDS_NAME_LIMIT)
+            }
+            if (field.value?.length > FIELDS_VALUE_LIMIT) {
+                console.log(`Field value limit has been exceeded in current embed "${index}(${field.value.substring(0,50)})"!`)
+                field.value = this.cutStringAddDots(field.value, FIELDS_VALUE_LIMIT)
+            }
+        })
+        if (embed.footer?.text?.length > FOOTER_TEXT_LIMIT) {
+            console.log(`Footer text limit has been exceeded in current embed "${embed.footer.text.substring(0,50)}"!`)
+            embed.footer.text = this.cutStringAddDots(embed.footer.text, FOOTER_TEXT_LIMIT)
+        }
+        if (embed.author?.name?.length > AUTHOR_NAME_LIMIT) {
+            console.log(`Author name limit has been exceeded in current embed "${embed.author.name.substring(0,50)}"!`)
+            embed.author.name = this.cutStringAddDots(embed.author.name, AUTHOR_NAME_LIMIT)
+        }
+
+
+        if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+            console.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0,50)}:${embed.description?.substring(0,50)}"!`)
+            if (embed.footer.text.length >= 1) {
+                console.log(`Cutting footer!`)
+                let newFooterLength =
+                    (embed.footer.text.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                embed.footer.text = this.cutStringAddDots(embed.footer.text, newFooterLength)
+            }
+
+            if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+                if (embed.author.name.length >= 1) {
+                    console.log(`Cutting author!`)
+                    let newAuthorLength =
+                        (embed.author.name.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                    embed.author.name = this.cutStringAddDots(embed.author.name, newAuthorLength)
+                }
+
+                if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+                    if (embed.title.length >= 1) {
+                        console.log(`Cutting title!`)
+                        let newTitleLength =
+                            (embed.title.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                        embed.title = this.cutStringAddDots(embed.title, newTitleLength)
+                    }
+                }
+
+                if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+                    if (embed.description.length >= 1) {
+                        console.log(`Cutting description!`)
+                        let newDescriptionLength =
+                            (embed.description.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                        embed.description = this.cutStringAddDots(embed.description, newDescriptionLength)
+                    }
+
+                    while (
+                        this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT ||
+                        embed.fields.length === 1
+                    ) {
+                        console.log(`Cutting last field!`)
+                        embed.fields.pop()
+                    }
+                }
+            }
+        }
+
+        return embed
+    }
+
+    getTotalCharactersLength(embed) {
+        let totalCharactersLength = 0
+        if (embed.title?.length !== undefined) totalCharactersLength += embed.title?.length
+        if (embed.description?.length !== undefined) totalCharactersLength += embed.description?.length
+        if (embed.footer?.text?.length !== undefined) totalCharactersLength += embed.footer?.text?.length
+        if (embed.author?.name?.length !== undefined) totalCharactersLength += embed.author?.name?.length
+
+        let totalFieldsCharactersLength = 0
+        embed.fields.forEach((field, index) => {
+            totalFieldsCharactersLength += (field.name?.length + field.value?.length)
+        })
+
+        return totalCharactersLength + totalFieldsCharactersLength
+    }
+
+    cutStringAddDots(string, maxLength, extraStringEnd = null) {
+        let stringEnd = "..."
+        if (extraStringEnd !== null) stringEnd = extraStringEnd
+
+        if (typeof string === "string") {
+            return string.substring(0, (maxLength) - stringEnd.length ) + stringEnd
+        } else {
+            console.log("string to cut is not a string:", typeof string)
+            return string
+        }
+    }
 }
