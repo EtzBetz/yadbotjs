@@ -44,13 +44,14 @@ export class WebsiteScraper {
             .then((response) => {
                 const content = this.parseWebsiteContentToJSON(response)
                 this.setUpScraperModuleFolder((err) => {
-                    const filteredContent = this.filterNewContent(content)
-                    console.log(filteredContent.length, "entries are new.")
-                    if (yadBot.getClient().user === null) {
-                        console.log("Bot is not yet online, not sending messages.")
-                        return
-                    }
-                    this.sendEmbedMessages(filteredContent)
+                    this.filterNewContent(content, (filteredContent) => {
+                        console.log(filteredContent.length, "entries are new.")
+                        if (yadBot.getClient().user === null) {
+                            console.log("Bot is not yet online, not sending messages.")
+                            return
+                        }
+                        this.sendEmbedMessages(filteredContent)
+                    })
                 })
             })
             .catch((error) => console.dir(error))
@@ -77,42 +78,57 @@ export class WebsiteScraper {
         ]
     }
 
-    filterNewContent(newJson) {
+    filterNewContent(newJson, callback) {
 
         let filteredJsonArray = []
-        newJson.forEach(jsonElement => {
-            const filePath = `${this.getScraperFilesDirectory()}/${this.getScraperFileName(jsonElement)}`
+        let j = 0;
+        for (let i = 0; i < newJson.length; i++) {
+            const filePath = `${this.getScraperFilesDirectory()}/${this.getScraperFileName(newJson[i])}`
 
             fs.readFile(
                 filePath,
                 { flag: 'r' },
                 (err, readData) => {
                     if (err) {
-                        console.log(this.getScraperFileName(jsonElement), "does not exist, so it is new content.")
+                        console.log(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
                     }
-                    let jsonString = JSON.stringify(jsonElement);
+                    let jsonString = JSON.stringify(newJson[i]);
 
-                    if (readData?.toString() === jsonString) return
+                    if (readData?.toString() === jsonString) {
+                        j++
 
-                    filteredJsonArray.push(jsonElement)
-                    // write JSON string to file
-                    fs.writeFile(
-                        filePath,
-                        jsonString,
-                        { flag: 'w' },
-                        (err) => {
-                            if (err) {
-                                console.dir(err);
-                            }
-                            console.log(`JSON data is saved in ${this.getScraperFileName(jsonElement)}!`);
+                        // console.log("debug3:", j)
+                        // console.log("debug4:", filteredJsonArray.length)
+                        if (j === (newJson.length)) {
+                            callback(filteredJsonArray)
                         }
-                    );
+                    }
+                    else {
+                        filteredJsonArray.push(newJson[i])
+                        // console.log("debug2:", filteredJsonArray.length)
+                        // write JSON string to file
+                        fs.writeFile(
+                            filePath,
+                            jsonString,
+                            { flag: 'w' },
+                            (err) => {
+                                if (err) {
+                                    console.dir(err);
+                                }
+                                console.log(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
+                                j++
+
+                                // console.log("debug5:", j)
+                                // console.log("debug6:", filteredJsonArray.length)
+                                if (j === (newJson.length)) {
+                                    callback(filteredJsonArray)
+                                }
+                            }
+                        );
+                    }
                 }
             )
-        })
-
-        return filteredJsonArray
-
+        }
     }
 
     setUpScraperModuleFolder(callback) {
