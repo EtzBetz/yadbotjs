@@ -13,10 +13,10 @@ export class WebsiteScraper {
         this.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36"
         this.expectedResponse = 'text/html'
         this.scrapingInterval = 1000 * 60 * 5
-        this.guilds = [
+        this.guildChannelIds = [
             config.test_channel
         ]
-        this.users = [
+        this.userIds = [
             config.admin
         ]
         this.scrapingFolder = "googleExample"
@@ -150,35 +150,40 @@ export class WebsiteScraper {
         websiteContent.forEach(content => {
             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
         })
-        console.log("Sending embeds...")
-        this.guilds.forEach(guild => {
-            yadBot.getClient().channels.fetch(guild)
-                .then(channel => {
-                    if (yadBot.getClient().user === null) return
-                    embeds.forEach(embed => {
-                        channel.send(embed)
-                            .catch(e => console.dir(e))
+        if (embeds.length >= 1) {
+            console.log("Sending embed(s)...")
+            this.guildChannelIds.forEach(channelId => {
+                yadBot.getClient().channels.fetch(channelId)
+                    .then(channel => {
+                        if (yadBot.getClient().user === null) return
+                        console.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
+                        embeds.forEach(embed => {
+                            channel.send(embed)
+                                .catch(e => console.dir(e))
+                        })
                     })
-                })
-                .catch((e) => {
-                    console.log(new Date(), `Guild Channel '${guild}' could not be found.`)
-                    console.dir(e)
-                })
-        })
-        this.users.forEach(user => {
-            yadBot.getClient().users.fetch(user)
-                .then(discordUser => {
-                    if (yadBot.getClient().user === null) return
-                    embeds.forEach(embed => {
-                        discordUser?.send(embed)
-                            .catch(e => console.dir(e))
+                    .catch((e) => {
+                        console.log(new Date(), `Guild Channel '${channelId}' could not be found.`)
+                        console.dir(e)
                     })
-                })
-                .catch((e) => {
-                    console.log(new Date(), `User '${user}' could not be found.`)
-                    console.dir(e)
-                })
-        })
+            })
+            this.userIds.forEach(userId => {
+                yadBot.getClient().users.fetch(userId)
+                    .then(user => {
+                        if (yadBot.getClient().user === null) return
+                        console.log(`Sending embed(s) to ${user.username}`)
+                        embeds.forEach(embed => {
+                            user?.send(embed)
+                                .catch(e => console.dir(e))
+                        })
+                    })
+                    .catch((e) => {
+                        console.log(new Date(), `User '${userId}' could not be found.`)
+                        console.dir(e)
+                    })
+            })
+        }
+
     }
 
     getEmbed(content) {
