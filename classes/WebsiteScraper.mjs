@@ -14,14 +14,10 @@ export class WebsiteScraper {
         this.expectedResponse = 'text/html'
         this.scrapingInterval = 1000 * 60 * 5
         this.guilds = [
-            {
-                id: config.test_channel
-            }
+            config.test_channel
         ]
         this.users = [
-            {
-                id: config.admin
-            }
+            config.admin
         ]
         this.scrapingFolder = "googleExample"
         this.websiteData = {}
@@ -156,7 +152,7 @@ export class WebsiteScraper {
         })
         console.log("Sending embeds...")
         this.guilds.forEach(guild => {
-            yadBot.getClient().channels.fetch(guild.id)
+            yadBot.getClient().channels.fetch(guild)
                 .then(channel => {
                     if (yadBot.getClient().user === null) return
                     embeds.forEach(embed => {
@@ -165,12 +161,12 @@ export class WebsiteScraper {
                     })
                 })
                 .catch((e) => {
-                    console.log(new Date(), `Guild Channel '${guild.id}' could not be found.`)
+                    console.log(new Date(), `Guild Channel '${guild}' could not be found.`)
                     console.dir(e)
                 })
         })
         this.users.forEach(user => {
-            yadBot.getClient().users.fetch(user['id'])
+            yadBot.getClient().users.fetch(user)
                 .then(discordUser => {
                     if (yadBot.getClient().user === null) return
                     embeds.forEach(embed => {
@@ -179,7 +175,7 @@ export class WebsiteScraper {
                     })
                 })
                 .catch((e) => {
-                    console.log(new Date(), `User '${user.id}' could not be found.`)
+                    console.log(new Date(), `User '${user}' could not be found.`)
                     console.dir(e)
                 })
         })

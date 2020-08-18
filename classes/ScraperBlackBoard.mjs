@@ -12,14 +12,10 @@ class ScraperBlackBoard extends WebsiteScraper{
         this.url = "https://www.fh-muenster.de/eti/aktuell/aushang/index.php"
         this.scrapingInterval = 1000 * 60 * 30
         this.guilds = [
-            {
-                id: config.test_channel
-            }
+            config.scraper_black_board_servers
         ]
         this.users = [
-            {
-                id: config.admin
-            }
+            config.scraper_black_board_dm_users
         ]
         this.scrapingFolder = "blackBoard"
         this.websiteData = {}
