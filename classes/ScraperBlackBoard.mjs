@@ -124,7 +124,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 "title": content.title,
                 "description": paragraphString,
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
-                "hexColor": "#000fff",
+                "hexColor": "0x000fff",
                 "footer": {
                     "text": `Alle Angaben ohne Gewähr!  •  ${content.date}`
                 },
