@@ -96,6 +96,8 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     getEmbed(content) {
+        console.log("Generating embed...")
+
         let paragraphString = ""
 
         content.paragraphs.forEach((paragraph, index) => {
@@ -118,7 +120,19 @@ class ScraperBlackBoard extends WebsiteScraper{
             })
         })
 
-        console.log("Generating embed...")
+        let footerString = `Alle Angaben ohne Gewähr!  •  `
+
+        if (content.date !== undefined && content.date !== "") {
+            footerString += `${content.date}`
+        } else {
+            let today = new Date();
+            let dd = String(today.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0'); // january is 0, so + 1!
+            let yyyy = today.getFullYear();
+
+            footerString += dd + '.' + mm + '.' + yyyy;
+        }
+
         return new Discord.MessageEmbed(
             {
                 "title": content.title,
@@ -126,7 +140,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
                 "hexColor": "0x000fff",
                 "footer": {
-                    "text": `Alle Angaben ohne Gewähr!  •  ${content.date}`
+                    "text": footerString
                 },
                 "author": {
                     "name": "Fachhochschule Münster",
