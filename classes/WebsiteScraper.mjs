@@ -191,7 +191,7 @@ export class WebsiteScraper {
         return new Discord.MessageEmbed({
             title: "Preview Embed",
             description: `Website title: "${content.title}"`,
-            hexColor: "#eb6734",
+            color: 0xeb6734,
             url: this.url
         });
     }
