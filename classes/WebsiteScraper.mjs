@@ -46,7 +46,13 @@ export class WebsiteScraper {
                             console.log("Bot is not yet online, not sending messages.")
                             return
                         }
-                        this.sendEmbedMessages(filteredContent)
+                        let embeds = []
+                        filteredContent.forEach(content => {
+                            embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                        })
+                        if (embeds.length >= 1) {
+                            this.sendEmbedMessages(embeds)
+                        }
                     })
                 })
             })
@@ -145,11 +151,7 @@ export class WebsiteScraper {
         return fileName + ".json"
     }
 
-    sendEmbedMessages(websiteContent) {
-        let embeds = []
-        websiteContent.forEach(content => {
-            embeds.push(this.filterEmbedLength(this.getEmbed(content)))
-        })
+    sendEmbedMessages(embeds) {
         if (embeds.length >= 1) {
             console.log("Sending embed(s)...")
             this.guildChannelIds.forEach(channelId => {
@@ -193,6 +195,15 @@ export class WebsiteScraper {
             description: `Website title: "${content.title}"`,
             color: 0xeb6734,
             url: this.url
+        });
+    }
+
+    getUpdateEmbed() {
+        console.log("Generating Update-embed...")
+        return new Discord.MessageEmbed({
+            title: `Update`,
+            description: `Yad has been updated, some embeds will eventually be resent!`,
+            color: 0xff6f00
         });
     }
 

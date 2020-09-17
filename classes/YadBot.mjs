@@ -29,6 +29,8 @@ class YadBot {
 				message.channel.send('Pong.');
 			} else if (commandName === 'beep') {
 				message.channel.send('Boop.');
+			} else if (commandName === 'update') {
+				scraperBlackBoard.sendEmbedMessages([scraperBlackBoard.getUpdateEmbed()])
 			}
 			// other commands...
 		});
