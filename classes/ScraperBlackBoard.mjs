@@ -46,7 +46,6 @@ class ScraperBlackBoard extends WebsiteScraper{
             let entryLinks = []
             let entryDownloads = []
 
-
             $(this).children('div:nth-child(3)').children('ul.verteiler').children('li').each(function(index, link) {
                 let linkText = $(this).children('a').children('strong').text().trim()
                 let linkAddress = $(this).children('a').attr('href').trim()
@@ -73,9 +72,22 @@ class ScraperBlackBoard extends WebsiteScraper{
                 }
             })
 
+            let entryDate;
+            let entryDateElement = $(this).children('div').children('div').children('p').children('strong')
+
+            // check if the <strong> element exists
+            if (entryDateElement.length === 1) {
+                entryDate = entryDateElement.text().trim()
+            } else { // otherwise go back to it's parent
+                entryDateElement = entryDateElement.prevObject
+                let firstParagraph = entryDateElement.first().text().trim()
+                entryDate = firstParagraph.substring(0, firstParagraph.indexOf('|')-1)
+            }
+
+
             let entry = {
                 title: $(this).children('h2').text().trim(),
-                date: $(this).children('div').children('div').children('p').children('strong').text().trim(),
+                date: entryDate,
                 paragraphs: entryParagraphs,
                 links: entryLinks,
                 downloads: entryDownloads
