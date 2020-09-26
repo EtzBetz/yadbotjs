@@ -43,8 +43,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 entryParagraphs.push(paragraph)
             })
 
-            let entryLinks = []
-            let entryDownloads = []
+            let entryLinks = [], entryDownloads = []
 
             $(this).children('div:nth-child(3)').children('ul.verteiler').children('li').each(function(index, link) {
                 let linkText = $(this).children('a').children('strong').text().trim()
@@ -56,7 +55,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
                 let downloadText = $(this).children('a[onclick]').text().trim()
                 let downloadInfo = $(this).children('a[onclick]').children('small').text().trim()
-                downloadText = downloadText.substring(0,downloadText.length-downloadInfo.length).trim();
+                downloadText = downloadText.substring(0, downloadText.length-downloadInfo.length).trim();
 
                 // console.log(`linktext:    "${linkText}"`)
                 // console.log(`linkaddress: "${linkAddress}"`)
@@ -84,10 +83,23 @@ class ScraperBlackBoard extends WebsiteScraper{
                 entryDate = firstParagraph.substring(0, firstParagraph.indexOf('|')-1)
             }
 
+            let entryDateDayOfMonth, entryDateMonth, entryDateYear
+            if (entryDate !== undefined && entryDate !== "") {
+                let firstSeparatorIndex = entryDate.indexOf('.')
+                let secondSeparatorIndex = entryDate.indexOf('.', firstSeparatorIndex + 1)
+                entryDateDayOfMonth = entryDate.substring(0, firstSeparatorIndex).padStart(2, '0')
+                entryDateMonth = entryDate.substring(firstSeparatorIndex + 1, secondSeparatorIndex).padStart(2, '0')
+                entryDateYear = entryDate.substring(secondSeparatorIndex + 1)
+            }
+
 
             let entry = {
                 title: $(this).children('h2').text().trim(),
-                date: entryDate,
+                date: {
+                    day: entryDateDayOfMonth,
+                    month: entryDateMonth,
+                    year: entryDateYear
+                },
                 paragraphs: entryParagraphs,
                 links: entryLinks,
                 downloads: entryDownloads
@@ -103,7 +115,7 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     getScraperFileName(json) {
-        let fileName = `${json.date}-${json.title}`
+        let fileName = `${json.date.year}.${json.date.month}.${json.date.day}-${json.title}`
         return this.filterStringForFileName(fileName + ".json")
     }
 
@@ -134,8 +146,8 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         let footerString = `Alle Angaben ohne Gewähr!  •  `
 
-        if (content.date !== undefined && content.date !== "") {
-            footerString += `${content.date}`
+        if (content.date !== undefined) {
+            footerString += `${content.date.day}.${content.date.month}.${content.date.year}`
         } else {
             let today = new Date();
             let dd = String(today.getDate()).padStart(2, '0');
