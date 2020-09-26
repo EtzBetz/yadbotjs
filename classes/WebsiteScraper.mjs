@@ -195,7 +195,12 @@ export class WebsiteScraper {
     getScraperFileName(json, duplicateNumber = null) {
         let fileName = `test`
         if (duplicateNumber !== null) fileName+=`(${duplicateNumber})`
-        return fileName + ".json"
+        return this.filterStringForFileName(fileName + ".json")
+    }
+
+    filterStringForFileName(fileName) {
+        const regex = /[/\\?%*:|"<> ]/g
+        return fileName.replace(regex, '_').toLowerCase();
     }
 
     getScraperFullFilePath(json, duplicateNumber = null) {
