@@ -153,8 +153,6 @@ export class WebsiteScraper {
 
     filterStringForFileName(fileName) {
         const regex = /[/\\?%*:|"<> ]/g
-
-        console.log("debug:", fileName.replace(regex, '_').toLowerCase());
         return fileName.replace(regex, '_').toLowerCase();
     }
 
