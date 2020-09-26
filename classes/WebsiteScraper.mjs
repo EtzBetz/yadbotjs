@@ -148,7 +148,14 @@ export class WebsiteScraper {
 
     getScraperFileName(json) {
         let fileName = `test`
-        return fileName + ".json"
+        return this.filterStringForFileName(fileName + ".json")
+    }
+
+    filterStringForFileName(fileName) {
+        const regex = /[/\\?%*:|"<> ]/g
+
+        console.log("debug:", fileName.replace(regex, '_').toLowerCase());
+        return fileName.replace(regex, '_').toLowerCase();
     }
 
     sendEmbedMessages(embeds) {
