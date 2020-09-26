@@ -1,4 +1,5 @@
 import axios from 'axios'
+import async from 'async'
 import cheerio from 'cheerio'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
@@ -80,34 +81,79 @@ export class WebsiteScraper {
         ]
     }
 
-    filterNewContent(newJson, callback) {
+    filterNewContent(newJsonElements, callback) {
 
         let filteredJsonArray = []
         let j = 0;
-        for (let i = 0; i < newJson.length; i++) {
-            const filePath = `${this.getScraperFilesDirectory()}/${this.getScraperFileName(newJson[i])}`
+        for (let i = 0; i < newJsonElements.length; i++) {
+            const filePath = this.getScraperFullFilePath(newJsonElements[i])
 
             fs.readFile(
                 filePath,
                 { flag: 'r' },
                 (err, readData) => {
+                    let isNewFile = false
+
                     if (err) {
-                        console.log(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
+                        isNewFile = true
+                        console.log(this.getScraperFileName(newJsonElements[i]), "does not exist, so it is new content.")
                     }
-                    let jsonString = JSON.stringify(newJson[i]);
+                    let jsonString = JSON.stringify(newJsonElements[i]);
 
                     if (readData?.toString() === jsonString) {
+                        // file exists and content is the same
                         j++
-
-                        // console.log("debug3:", j)
-                        // console.log("debug4:", filteredJsonArray.length)
-                        if (j === (newJson.length)) {
+                        if (j === (newJsonElements.length)) {
                             callback(filteredJsonArray)
                         }
                     }
                     else {
-                        filteredJsonArray.push(newJson[i])
-                        // console.log("debug2:", filteredJsonArray.length)
+                        if(!isNewFile) {
+                            console.log("File does exist, but content differs...")
+                            let fileExists = true;
+                            let number = 1;
+                            console.log("Renaming old file...")
+
+                            async.whilst(
+                                function () {return fileExists === true},
+                                (next) => {
+                                    console.log(`Renaming try ${number}...`)
+                                    fs.readFile(
+                                        this.getScraperFullFilePath(newJsonElements[i], number),
+                                        { flag: 'r' },
+                                        (err, readData) => {
+                                            if (err) {
+                                                console.log("Target name does not exist, so old file can be renamed...")
+                                                fileExists = false;
+                                            } else {
+                                                console.log("Target name does exist, iterating...")
+                                                number++
+                                            }
+                                            next()
+                                        }
+                                    )
+                                },
+                                function(err) {
+                                    if (err) {
+                                        console.error(err)
+                                    }
+                                    console.log("debug: done")
+                                }
+                            )
+
+                            fs.rename(
+                                filePath,
+                                this.getScraperFullFilePath(newJsonElements[i], number),
+                                (err) => {
+                                    if (err) {
+                                        console.log("Renaming failed, cancelled. old file will be overridden.")
+                                        console.error(err)
+                                    }
+                                }
+                            )
+                        }
+
+                        filteredJsonArray.push(newJsonElements[i])
                         // write JSON string to file
                         fs.writeFile(
                             filePath,
@@ -117,12 +163,12 @@ export class WebsiteScraper {
                                 if (err) {
                                     console.dir(err);
                                 }
-                                console.log(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
+                                console.log(`JSON data is saved in ${this.getScraperFileName(newJsonElements[i])}.`);
                                 j++
 
                                 // console.log("debug5:", j)
                                 // console.log("debug6:", filteredJsonArray.length)
-                                if (j === (newJson.length)) {
+                                if (j === (newJsonElements.length)) {
                                     callback(filteredJsonArray)
                                 }
                             }
@@ -146,9 +192,14 @@ export class WebsiteScraper {
         return `./scraperFiles/${this.scrapingFolder}`
     }
 
-    getScraperFileName(json) {
+    getScraperFileName(json, duplicateNumber = null) {
         let fileName = `test`
+        if (duplicateNumber !== null) fileName+=`(${duplicateNumber})`
         return fileName + ".json"
+    }
+
+    getScraperFullFilePath(json, duplicateNumber = null) {
+        return `${this.getScraperFilesDirectory()}/${this.getScraperFileName(json, duplicateNumber)}`
     }
 
     sendEmbedMessages(embeds) {

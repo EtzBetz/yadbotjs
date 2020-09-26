@@ -102,8 +102,9 @@ class ScraperBlackBoard extends WebsiteScraper{
         return jsonEntries
     }
 
-    getScraperFileName(json) {
+    getScraperFileName(json, duplicateNumber = null) {
         let fileName = `${json.date}-${json.title}`
+        if (duplicateNumber !== null) fileName+=`(${duplicateNumber})`
         return fileName + ".json"
     }
 
