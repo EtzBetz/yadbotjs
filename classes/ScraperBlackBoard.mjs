@@ -104,7 +104,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
     getScraperFileName(json) {
         let fileName = `${json.date}-${json.title}`
-        return fileName + ".json"
+        return this.filterStringForFileName(fileName + ".json")
     }
 
     getEmbed(content) {
