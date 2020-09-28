@@ -2,6 +2,7 @@ import fs from 'fs';
 import Discord from "discord.js"
 import config from '../config.json'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
+import scraperFreeEpicGames from './ScraperFreeEpicGames'
 
 class YadBot {
 
