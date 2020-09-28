@@ -51,11 +51,11 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         if (content.promotions?.promotionalOffers.length > 0) {
             startTime = this.parseDateStringToObject(content.promotions.promotionalOffers[0].promotionalOffers[0].startDate)
             endTime = this.parseDateStringToObject(content.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
-            descriptionString = `Bis zum ${endTime.dayOfMonth}.${endTime.month}. kostenlos im Epic Games Store!`
+            descriptionString = `Bis zum ${endTime.dayOfMonth}.${endTime.month}. kostenlos im Epic Games Store.`
         } else if ((content.promotions?.upcomingPromotionalOffers.length > 0)) {
             startTime = this.parseDateStringToObject(content.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate)
             endTime = this.parseDateStringToObject(content.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].endDate)
-            descriptionString = `Ab dem ${startTime.dayOfMonth}.${startTime.month}. kostenlos im Epic Games Store!`
+            descriptionString = `Ab dem ${startTime.dayOfMonth}.${startTime.month}. kostenlos im Epic Games Store.`
         }
 
         developer = content.customAttributes?.find(attribute => attribute.key === "developerName").value;
