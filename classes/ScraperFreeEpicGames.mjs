@@ -64,8 +64,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         let originalPriceEuro = content.price.totalPrice.originalPrice.toString().substring(0, content.price.totalPrice.originalPrice.toString().length - content.price.totalPrice.currencyInfo.decimals)
         let originalPriceDecimal = content.price.totalPrice.originalPrice.toString().substring(content.price.totalPrice.originalPrice.toString().length - content.price.totalPrice.currencyInfo.decimals)
 
-
-        // TODO: change image.url, search for type="OfferImageWide" instead of using index 0
+        const gameImage = content.keyImages?.find(image => image.type === "OfferImageWide").url;
 
         let embed = new Discord.MessageEmbed(
             {
@@ -73,7 +72,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 "description": descriptionString,
                 "url": `https://www.epicgames.com/store/de/product/${content.productSlug}`,
                 "image": {
-                    "url": `${content.keyImages[0].url}`
+                    "url": gameImage
                 },
                 "author": {
                     "name": "Epic Games Store",
