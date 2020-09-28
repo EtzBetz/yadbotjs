@@ -25,7 +25,7 @@ export class WebsiteScraper {
     }
 
     createTimerInterval() {
-        console.log("Creating Interval...")
+        console.log(`${this.constructor.name}: Creating Interval...`)
         setTimeout(() => {
             this.timeIntervalBody()
             this.timer = setInterval(() => {
@@ -35,13 +35,13 @@ export class WebsiteScraper {
     }
 
     timeIntervalBody() {
-        console.log("Fetching website...")
+        console.log(`${this.constructor.name}: Fetching website...`)
         const request = this.requestWebsite()
             .then((response) => {
                 const content = this.parseWebsiteContentToJSON(response)
                 this.setUpScraperModuleFolder((err) => {
                     this.filterNewContent(content, (filteredContent) => {
-                        console.log(filteredContent.length, "entries are new.")
+                        console.log(`${this.constructor.name}: ${filteredContent.length} entries are new.`)
                         if (yadBot.getClient().user === null) {
                             console.log("Bot is not yet online, not sending messages.")
                             return
@@ -60,7 +60,7 @@ export class WebsiteScraper {
     }
 
     requestWebsite() {
-        console.log("Requesting website...")
+        console.log(`${this.constructor.name}: Requesting website...`)
         return axios({
             method: 'get',
             url: this.url,
@@ -158,7 +158,7 @@ export class WebsiteScraper {
 
     sendEmbedMessages(embeds) {
         if (embeds.length >= 1) {
-            console.log("Sending embed(s)...")
+            console.log(`${this.constructor.name}: Sending embed(s)...`)
             this.guildChannelIds.forEach(channelId => {
                 yadBot.getClient().channels.fetch(channelId)
                     .then(channel => {
@@ -194,7 +194,7 @@ export class WebsiteScraper {
     }
 
     getEmbed(content) {
-        console.log("Generating embed...")
+        console.log(`${this.constructor.name}: Generating embed...`)
         return new Discord.MessageEmbed({
             title: "Preview Embed",
             description: `Website title: "${content.title}"`,
@@ -204,7 +204,7 @@ export class WebsiteScraper {
     }
 
     getUpdateEmbed() {
-        console.log("Generating Update-embed...")
+        console.log(`${this.constructor.name}: Generating Update-embed...`)
         return new Discord.MessageEmbed({
             title: `Update`,
             description: `Yad has been updated, some embeds will eventually be resent!`,

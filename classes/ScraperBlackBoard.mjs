@@ -18,11 +18,11 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        console.log("Parsing website...")
+        console.log(`${this.constructor.name}: Parsing website...`)
         const $ = cheerio.load(response.data)
 
         let blackBoardList = $('#content').children('div.clearfix').children('div');
-        console.log(blackBoardList.children().length, "entries found...")
+        console.log(`${this.constructor.name}: ${blackBoardList.children().length} entries found...`)
         // console.log(blackBoardList.text().trim())
 
         let jsonEntries = []
@@ -120,7 +120,7 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        console.log("Generating embed...")
+        console.log(`${this.constructor.name}: Generating embed...`)
 
         let paragraphString = ""
 
