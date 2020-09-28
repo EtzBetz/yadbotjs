@@ -24,8 +24,12 @@ export class WebsiteScraper {
         this.createTimerInterval()
     }
 
+    log(message) {
+        console.log(`${this.constructor.name}: ${message}`)
+    }
+
     createTimerInterval() {
-        console.log(`${this.constructor.name}: Creating Interval...`)
+        this.log(`Creating Interval...`)
         setTimeout(() => {
             this.timeIntervalBody()
             this.timer = setInterval(() => {
@@ -35,15 +39,15 @@ export class WebsiteScraper {
     }
 
     timeIntervalBody() {
-        console.log(`${this.constructor.name}: Fetching website...`)
+        this.log(`Fetching website...`)
         const request = this.requestWebsite()
             .then((response) => {
                 const content = this.parseWebsiteContentToJSON(response)
                 this.setUpScraperModuleFolder((err) => {
                     this.filterNewContent(content, (filteredContent) => {
-                        console.log(`${this.constructor.name}: ${filteredContent.length} entries are new.`)
+                        this.log(`${filteredContent.length} entries are new.`)
                         if (yadBot.getClient().user === null) {
-                            console.log("Bot is not yet online, not sending messages.")
+                            this.log("Bot is not yet online, not sending messages.")
                             return
                         }
                         let embeds = []
@@ -60,7 +64,7 @@ export class WebsiteScraper {
     }
 
     requestWebsite() {
-        console.log(`${this.constructor.name}: Requesting website...`)
+        this.log(`Requesting website...`)
         return axios({
             method: 'get',
             url: this.url,
@@ -70,7 +74,7 @@ export class WebsiteScraper {
     }
 
     parseWebsiteContentToJSON(response) {
-        console.log("Parsing website...")
+        this.log("Parsing website...")
         const $ = cheerio.load(response.data)
         let title = $('title');
         return [
@@ -92,22 +96,22 @@ export class WebsiteScraper {
                 { flag: 'r' },
                 (err, readData) => {
                     if (err) {
-                        console.log(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
+                        this.log(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
                     }
                     let jsonString = JSON.stringify(newJson[i]);
 
                     if (readData?.toString() === jsonString) {
                         j++
 
-                        // console.log("debug3:", j)
-                        // console.log("debug4:", filteredJsonArray.length)
+                        // this.log("debug3:", j)
+                        // this.log("debug4:", filteredJsonArray.length)
                         if (j === (newJson.length)) {
                             callback(filteredJsonArray)
                         }
                     }
                     else {
                         filteredJsonArray.push(newJson[i])
-                        // console.log("debug2:", filteredJsonArray.length)
+                        // this.log("debug2:", filteredJsonArray.length)
                         // write JSON string to file
                         fs.writeFile(
                             filePath,
@@ -117,11 +121,11 @@ export class WebsiteScraper {
                                 if (err) {
                                     console.dir(err);
                                 }
-                                console.log(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
+                                this.log(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
                                 j++
 
-                                // console.log("debug5:", j)
-                                // console.log("debug6:", filteredJsonArray.length)
+                                // this.log("debug5:", j)
+                                // this.log("debug6:", filteredJsonArray.length)
                                 if (j === (newJson.length)) {
                                     callback(filteredJsonArray)
                                 }
@@ -158,19 +162,19 @@ export class WebsiteScraper {
 
     sendEmbedMessages(embeds) {
         if (embeds.length >= 1) {
-            console.log(`${this.constructor.name}: Sending embed(s)...`)
+            this.log(`Sending embed(s)...`)
             this.guildChannelIds.forEach(channelId => {
                 yadBot.getClient().channels.fetch(channelId)
                     .then(channel => {
                         if (yadBot.getClient().user === null) return
-                        console.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
+                        this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
                         embeds.forEach(embed => {
                             channel.send(embed)
                                 .catch(e => console.dir(e))
                         })
                     })
                     .catch((e) => {
-                        console.log(new Date(), `Guild Channel '${channelId}' could not be found.`)
+                        this.log(new Date(), `Guild Channel '${channelId}' could not be found.`)
                         console.dir(e)
                     })
             })
@@ -178,14 +182,14 @@ export class WebsiteScraper {
                 yadBot.getClient().users.fetch(userId)
                     .then(user => {
                         if (yadBot.getClient().user === null) return
-                        console.log(`Sending embed(s) to ${user.username}`)
+                        this.log(`Sending embed(s) to ${user.username}`)
                         embeds.forEach(embed => {
                             user?.send(embed)
                                 .catch(e => console.dir(e))
                         })
                     })
                     .catch((e) => {
-                        console.log(new Date(), `User '${userId}' could not be found.`)
+                        this.log(new Date(), `User '${userId}' could not be found.`)
                         console.dir(e)
                     })
             })
@@ -194,7 +198,7 @@ export class WebsiteScraper {
     }
 
     getEmbed(content) {
-        console.log(`${this.constructor.name}: Generating embed...`)
+        this.log(`Generating embed...`)
         return new Discord.MessageEmbed({
             title: "Preview Embed",
             description: `Website title: "${content.title}"`,
@@ -204,7 +208,7 @@ export class WebsiteScraper {
     }
 
     getUpdateEmbed() {
-        console.log(`${this.constructor.name}: Generating Update-embed...`)
+        this.log(`Generating Update-embed...`)
         return new Discord.MessageEmbed({
             title: `Update`,
             description: `Yad has been updated, some embeds will eventually be resent!`,
@@ -223,15 +227,15 @@ export class WebsiteScraper {
         const TOTAL_CHARACTERS_LIMIT = 6000;
 
         if (embed?.title?.length > TITLE_LIMIT) {
-            console.log(`Title limit has been exceeded in current embed "${embed.title.substring(0,50)}"!`)
+            this.log(`Title limit has been exceeded in current embed "${embed.title.substring(0,50)}"!`)
             embed.title = this.cutStringAddDots(embed.title, TITLE_LIMIT)
         }
         if (embed?.description?.length > DESCRIPTION_LIMIT) {
-            console.log(`Description limit has been exceeded in current embed "${embed.description.substring(0,50)}"!`)
+            this.log(`Description limit has been exceeded in current embed "${embed.description.substring(0,50)}"!`)
             embed.description = this.cutStringAddDots(embed.description, DESCRIPTION_LIMIT)
         }
         if (embed?.fields?.length > FIELDS_COUNT_LIMIT) {
-            console.log(`Fields count limit has been exceeded in current embed "${embed.title.substring(0,50)}": ${embed.fields.length}!`)
+            this.log(`Fields count limit has been exceeded in current embed "${embed.title.substring(0,50)}": ${embed.fields.length}!`)
             let numOfCutFields = embed.fields.length - FIELDS_COUNT_LIMIT
             embed.fields.splice(-1, numOfCutFields)
 
@@ -239,28 +243,28 @@ export class WebsiteScraper {
         }
         embed?.fields?.forEach((field, index) => {
             if (field.name?.length > FIELDS_NAME_LIMIT) {
-                console.log(`Field name limit has been exceeded in current embed "${index}(${field.name.substring(0,50)})"!`)
+                this.log(`Field name limit has been exceeded in current embed "${index}(${field.name.substring(0,50)})"!`)
                 field.name = this.cutStringAddDots(field.name, FIELDS_NAME_LIMIT)
             }
             if (field.value?.length > FIELDS_VALUE_LIMIT) {
-                console.log(`Field value limit has been exceeded in current embed "${index}(${field.value.substring(0,50)})"!`)
+                this.log(`Field value limit has been exceeded in current embed "${index}(${field.value.substring(0,50)})"!`)
                 field.value = this.cutStringAddDots(field.value, FIELDS_VALUE_LIMIT)
             }
         })
         if (embed?.footer?.text?.length > FOOTER_TEXT_LIMIT) {
-            console.log(`Footer text limit has been exceeded in current embed "${embed.footer.text.substring(0,50)}"!`)
+            this.log(`Footer text limit has been exceeded in current embed "${embed.footer.text.substring(0,50)}"!`)
             embed.footer.text = this.cutStringAddDots(embed.footer.text, FOOTER_TEXT_LIMIT)
         }
         if (embed?.author?.name?.length > AUTHOR_NAME_LIMIT) {
-            console.log(`Author name limit has been exceeded in current embed "${embed.author.name.substring(0,50)}"!`)
+            this.log(`Author name limit has been exceeded in current embed "${embed.author.name.substring(0,50)}"!`)
             embed.author.name = this.cutStringAddDots(embed.author.name, AUTHOR_NAME_LIMIT)
         }
 
 
         if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
-            console.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0,50)}:${embed.description?.substring(0,50)}"!`)
+            this.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0,50)}:${embed.description?.substring(0,50)}"!`)
             if (embed.footer.text.length >= 1) {
-                console.log(`Cutting footer!`)
+                this.log(`Cutting footer!`)
                 let newFooterLength =
                     (embed.footer.text.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
                 embed.footer.text = this.cutStringAddDots(embed.footer.text, newFooterLength)
@@ -268,7 +272,7 @@ export class WebsiteScraper {
 
             if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
                 if (embed.author.name.length >= 1) {
-                    console.log(`Cutting author!`)
+                    this.log(`Cutting author!`)
                     let newAuthorLength =
                         (embed.author.name.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
                     embed.author.name = this.cutStringAddDots(embed.author.name, newAuthorLength)
@@ -276,7 +280,7 @@ export class WebsiteScraper {
 
                 if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
                     if (embed.title.length >= 1) {
-                        console.log(`Cutting title!`)
+                        this.log(`Cutting title!`)
                         let newTitleLength =
                             (embed.title.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
                         embed.title = this.cutStringAddDots(embed.title, newTitleLength)
@@ -285,7 +289,7 @@ export class WebsiteScraper {
 
                 if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
                     if (embed.description.length >= 1) {
-                        console.log(`Cutting description!`)
+                        this.log(`Cutting description!`)
                         let newDescriptionLength =
                             (embed.description.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
                         embed.description = this.cutStringAddDots(embed.description, newDescriptionLength)
@@ -295,7 +299,7 @@ export class WebsiteScraper {
                         this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT ||
                         embed.fields.length === 1
                     ) {
-                        console.log(`Cutting last field!`)
+                        this.log(`Cutting last field!`)
                         embed.fields.pop()
                     }
                 }
@@ -327,7 +331,7 @@ export class WebsiteScraper {
         if (typeof string === "string") {
             return string.substring(0, (maxLength) - stringEnd.length ) + stringEnd
         } else {
-            console.log("string to cut is not a string:", typeof string)
+            this.log("string to cut is not a string:", typeof string)
             return string
         }
     }

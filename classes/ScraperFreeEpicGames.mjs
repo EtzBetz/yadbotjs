@@ -18,9 +18,9 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        console.log(`${this.constructor.name}: Parsing website...`)
+        this.log(`Parsing website...`)
         const elements = response.data.data.Catalog.searchStore.elements
-        console.log(`${this.constructor.name}: ${elements.length} entries found...`)
+        this.log(`${elements.length} entries found...`)
         return elements
     }
 
@@ -45,7 +45,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        console.log(`${this.constructor.name}: Generating embed...`)
+        this.log(`Generating embed...`)
 
         let descriptionString, startTime, endTime, developer, publisher
         if (content.promotions?.promotionalOffers.length > 0) {

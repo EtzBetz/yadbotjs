@@ -18,19 +18,20 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        console.log(`${this.constructor.name}: Parsing website...`)
+        this.log(`Parsing website...`)
         const $ = cheerio.load(response.data)
 
         let blackBoardList = $('#content').children('div.clearfix').children('div');
-        console.log(`${this.constructor.name}: ${blackBoardList.children().length} entries found...`)
-        // console.log(blackBoardList.text().trim())
+
+        this.log(`${blackBoardList.children().length} entries found...`)
+        // this.log(blackBoardList.text().trim())
 
         let jsonEntries = []
         blackBoardList.children('div').each(function(index, blackBoardEntry) {
-            // console.log("-------")
-            // console.log(index)
-            // console.log($(this).children('h2').text().trim())
-            // console.log($(this).children('div').children('div').children('p').children('strong').text().trim())
+            // this.log("-------")
+            // this.log(index)
+            // this.log($(this).children('h2').text().trim())
+            // this.log($(this).children('div').children('div').children('p').children('strong').text().trim())
 
             let entryParagraphs = []
 
@@ -39,7 +40,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 if (index === 0) {
                     paragraph = paragraph.substring(paragraph.indexOf('|')+2)
                 }
-                // console.log(paragraph)
+                // this.log(paragraph)
                 entryParagraphs.push(paragraph)
             })
 
@@ -57,10 +58,10 @@ class ScraperBlackBoard extends WebsiteScraper{
                 let downloadInfo = $(this).children('a[onclick]').children('small').text().trim()
                 downloadText = downloadText.substring(0, downloadText.length-downloadInfo.length).trim();
 
-                // console.log(`linktext:    "${linkText}"`)
-                // console.log(`linkaddress: "${linkAddress}"`)
-                // console.log(`downloadtext:"${downloadText}"`)
-                // console.log(`downloadinfo:"${downloadInfo}"`)
+                // this.log(`linktext:    "${linkText}"`)
+                // this.log(`linkaddress: "${linkAddress}"`)
+                // this.log(`downloadtext:"${downloadText}"`)
+                // this.log(`downloadinfo:"${downloadInfo}"`)
 
                 if (downloadInfo.length === 0) {
                     // button is link
@@ -105,7 +106,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 downloads: entryDownloads
 
             }
-            // console.log(entry)
+            // this.log(entry)
             jsonEntries.push(entry)
         })
 
@@ -120,7 +121,7 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        console.log(`${this.constructor.name}: Generating embed...`)
+        this.log(`Generating embed...`)
 
         let paragraphString = ""
 
