@@ -39,7 +39,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             'dayOfMonth': string.substring(8, 10),
             'month': string.substring(5, 7),
             'year': string.substring(0, 4),
-            'timeHours': string.substring(11, 13),
+            'timeHours': (parseInt(string.substring(11, 13)) + 2).toString().padStart(2, '0'),
             'timeMinutes': string.substring(14, 16)
         }
     }
@@ -61,8 +61,8 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         developer = content.customAttributes?.find(attribute => attribute.key === "developerName").value;
         publisher = content.customAttributes?.find(attribute => attribute.key === "publisherName").value;
 
-        let originalPriceEuro = content.price.totalPrice.originalPrice.toString().substring(0, content.price.totalPrice.originalPrice.toString().length - content.price.totalPrice.currencyInfo.decimals)
-        let originalPriceDecimal = content.price.totalPrice.originalPrice.toString().substring(content.price.totalPrice.originalPrice.toString().length - content.price.totalPrice.currencyInfo.decimals)
+        let originalPriceEuro = content.price.totalPrice.originalPrice.toString().substring(0, content.price.totalPrice.originalPrice.toString().length - (content.price.totalPrice.currencyInfo.decimals || 2))
+        let originalPriceDecimal = content.price.totalPrice.originalPrice.toString().substring(content.price.totalPrice.originalPrice.toString().length - (content.price.totalPrice.currencyInfo.decimals || 2))
 
         const gameImage = content.keyImages?.find(image => image.type === "OfferImageWide").url;
 
