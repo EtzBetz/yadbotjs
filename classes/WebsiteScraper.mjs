@@ -56,6 +56,7 @@ export class WebsiteScraper {
                         let embeds = []
                         filteredContent.forEach(content => {
                             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                            embeds = embeds.sort(this.sortEmbeds)
                         })
                         if (embeds.length >= 1) {
                             this.sendEmbedMessages(embeds)
@@ -208,6 +209,10 @@ export class WebsiteScraper {
             color: 0xeb6734,
             url: this.url
         });
+    }
+
+    sortEmbeds(embedA, embedB) {
+        return 0
     }
 
     getUpdateEmbed() {
