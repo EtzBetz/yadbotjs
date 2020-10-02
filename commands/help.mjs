@@ -17,8 +17,17 @@ export default {
 
             commandList.push({
                 name: `${commandTitle}`,
-                value: `${commandHelpText}`
+                value: `${commandHelpText}`,
+                commandInternal: command.name
             })
+        })
+
+        commandList.sort((commandA, commandB) => {
+            if (commandA.commandInternal < commandB.commandInternal) {
+                return -1
+            } else {
+                return 1
+            }
         })
 
         message.channel.send(
