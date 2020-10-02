@@ -176,6 +176,11 @@ class ScraperBlackBoard extends WebsiteScraper{
             }
         );
     }
+
+    sortEmbeds(embedA, embedB) {
+        // TODO: finish sorting
+        return 0
+    }
 }
 
 export default new ScraperBlackBoard();

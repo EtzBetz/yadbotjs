@@ -25,7 +25,10 @@ export class WebsiteScraper {
     }
 
     log(message) {
-        console.log(`${this.constructor.name}: ${message}`)
+        let currentTime = new Date()
+        currentTime.setHours(currentTime.getHours() + 2)
+
+        console.log(`\x1b[32m${currentTime.toISOString()}\x1b[0m \x1b[34m${this.constructor.name}:\x1b[0m ${message}`, )
     }
 
     createTimerInterval() {
@@ -53,6 +56,7 @@ export class WebsiteScraper {
                         let embeds = []
                         filteredContent.forEach(content => {
                             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                            embeds = embeds.sort(this.sortEmbeds)
                         })
                         if (embeds.length >= 1) {
                             this.sendEmbedMessages(embeds)
@@ -174,7 +178,7 @@ export class WebsiteScraper {
                         })
                     })
                     .catch((e) => {
-                        this.log(new Date(), `Guild Channel '${channelId}' could not be found.`)
+                        this.log(`Guild Channel '${channelId}' could not be found.`)
                         console.dir(e)
                     })
             })
@@ -189,7 +193,7 @@ export class WebsiteScraper {
                         })
                     })
                     .catch((e) => {
-                        this.log(new Date(), `User '${userId}' could not be found.`)
+                        this.log(`User '${userId}' could not be found.`)
                         console.dir(e)
                     })
             })
@@ -205,6 +209,10 @@ export class WebsiteScraper {
             color: 0xeb6734,
             url: this.url
         });
+    }
+
+    sortEmbeds(embedA, embedB) {
+        return 0
     }
 
     getUpdateEmbed() {
