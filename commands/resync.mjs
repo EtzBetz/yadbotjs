@@ -3,6 +3,7 @@ import Discord from "discord.js"
 
 export default {
     name: 'resync',
+    enabled: true,
     description: "Refreshes available commands.",
     onlyOwner: true,
     execute(message, args) {

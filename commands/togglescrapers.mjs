@@ -3,6 +3,7 @@ import Discord from "discord.js"
 
 export default {
     name: 'togglescrapers',
+    enabled: true,
     description: "Toggles on or off all scrapers.",
     onlyAdmin: true,
     execute(message, args) {

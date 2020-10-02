@@ -3,6 +3,7 @@ import Discord from "discord.js"
 
 export default {
     name: 'help',
+    enabled: true,
     description: "Lists all available commands.",
     execute(message, args) {
         let commandList = []
@@ -16,6 +17,9 @@ export default {
             }
             if (command.onlyOwner) {
                 commandTitle = `${commandTitle} (Requires owner permissions)`
+            }
+            if (!command.enabled) {
+                commandTitle = `${commandTitle} (DISABLED)`
             }
 
             commandList.push({

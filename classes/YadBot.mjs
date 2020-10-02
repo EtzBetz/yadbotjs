@@ -37,10 +37,17 @@ class YadBot {
 			const args = message.content.slice(prefix.length).trim().split(/ +/);
 			const commandName = args.shift().toLowerCase();
 
+			console.log(`Requested command "${config.prefix}${commandName}" (${message.content}) from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+
 			const command = this.bot.commands.get(commandName)
 			if (command === undefined) {
 				console.log(`Unknown command "${config.prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
 				this.sendCommandErrorEmbed(message, `Command not found!\nUse \`${config.prefix}help\` to get a list of available commands`)
+				return
+			}
+
+			if (!command.enabled) {
+				this.sendCommandErrorEmbed(message, `Command is currently disabled. Try again later`)
 				return
 			}
 
@@ -73,8 +80,6 @@ class YadBot {
 				this.sendCommandErrorEmbed(message, "You need to be the owner of this bot to execute this command")
 				return
 			}
-
-			console.log(`Executing command "${config.prefix}${command.name}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
 			command?.execute(message, args)
 		});
 
@@ -125,7 +130,7 @@ class YadBot {
 			errorMessage += "."
 		}
 		originMessage.channel.send(new Discord.MessageEmbed({
-			title: `Error while executing command!`,
+			title: `Error while executing command`,
 			description: `${errorMessage}`,
 			color: 0xff6f00
 		}))
