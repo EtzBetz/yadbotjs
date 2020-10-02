@@ -47,6 +47,24 @@ class YadBot {
 			if (command.onlyAdmin && !this.isMessageAuthorAdmin(message)) {
 				this.sendCommandErrorEmbed(message, "You need admin permissions to execute this command")
 				return
+			} else if (command.onlyAdmin) {
+				this.bot.users.fetch(config.owner)
+					.then(owner => {
+						if (this.bot.user !== null) {
+							owner?.send(new Discord.MessageEmbed({
+								title: `Admin action executed`,
+								description: `"${message.author.username}" executed command \`!${commandName}\`.`,
+								footer: {
+									text: `${message.author.username}.${message.author.discriminator} (ID: ${message.author.id})`,
+									icon_url: message.author.avatarURL({ dynamic: true }),
+								},
+								timestamp: message.createdTimestamp,
+								color: 0xFFEB3B,
+							}))
+								.catch(e => console.dir(e))
+						}
+					})
+					.catch(e => console.dir(e))
 			}
 
 			if (command.onlyOwner && !this.isMessageAuthorOwner(message)) {
@@ -113,9 +131,9 @@ class YadBot {
 
 	mirrorDirectMessageToAdmin(message) {
 		this.bot.users.fetch(config.owner)
-			.then(admin => {
+			.then(owner => {
 				if (this.bot.user === null) return
-				admin?.send(new Discord.MessageEmbed({
+				owner?.send(new Discord.MessageEmbed({
 					title: `DM von User`,
 					description: `${message}`,
 					footer: {
