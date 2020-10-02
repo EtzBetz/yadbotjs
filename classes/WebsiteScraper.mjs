@@ -17,7 +17,7 @@ export class WebsiteScraper {
             config.test_channel
         ]
         this.userIds = [
-            config.admin
+            config.owner
         ]
         this.scrapingFolder = "googleExample"
         this.websiteData = {}
@@ -41,6 +41,11 @@ export class WebsiteScraper {
         }, 5000)
     }
 
+    destroyTimerInterval() {
+        this.log(`Destroying Interval...`)
+        clearInterval(this.timer)
+    }
+
     timeIntervalBody() {
         this.log(`Fetching website...`)
         const request = this.requestWebsite()
@@ -49,7 +54,7 @@ export class WebsiteScraper {
                 this.setUpScraperModuleFolder((err) => {
                     this.filterNewContent(content, (filteredContent) => {
                         this.log(`${filteredContent.length} entries are new.`)
-                        if (yadBot.getClient().user === null) {
+                        if (yadBot.getBot().user === null) {
                             this.log("Bot is not yet online, not sending messages.")
                             return
                         }
@@ -168,9 +173,9 @@ export class WebsiteScraper {
         if (embeds.length >= 1) {
             this.log(`Sending embed(s)...`)
             this.guildChannelIds.forEach(channelId => {
-                yadBot.getClient().channels.fetch(channelId)
+                yadBot.getBot().channels.fetch(channelId)
                     .then(channel => {
-                        if (yadBot.getClient().user === null) return
+                        if (yadBot.getBot().user === null) return
                         this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
                         embeds.forEach(embed => {
                             channel.send(embed)
@@ -183,9 +188,9 @@ export class WebsiteScraper {
                     })
             })
             this.userIds.forEach(userId => {
-                yadBot.getClient().users.fetch(userId)
+                yadBot.getBot().users.fetch(userId)
                     .then(user => {
-                        if (yadBot.getClient().user === null) return
+                        if (yadBot.getBot().user === null) return
                         this.log(`Sending embed(s) to ${user.username}`)
                         embeds.forEach(embed => {
                             user?.send(embed)

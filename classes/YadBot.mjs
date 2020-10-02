@@ -9,6 +9,11 @@ class YadBot {
 	constructor() {
 		this.bot = new Discord.Client();
 
+		this.scrapers = [
+			scraperBlackBoard,
+			scraperFreeEpicGames
+		]
+
 		this.bot.commands = new Discord.Collection()
 		this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
 
@@ -26,7 +31,7 @@ class YadBot {
 			const prefix = config.prefix;
 
 			if (message.author.bot) return
-			if (message.channel.type === "dm" && message.author.id !== config.admin) this.mirrorDirectMessageToAdmin(message)
+			if (message.channel.type === "dm" && message.author.id !== config.owner) this.mirrorDirectMessageToAdmin(message)
 			if (!message.content.startsWith(prefix)) return
 
 			const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -39,8 +44,13 @@ class YadBot {
 				return
 			}
 
-			if (command.adminOnly && !this.isMessageAuthorAdmin(message)) {
+			if (command.onlyAdmin && !this.isMessageAuthorAdmin(message)) {
 				this.sendCommandErrorEmbed(message, "You need admin permissions to execute this command")
+				return
+			}
+
+			if (command.onlyOwner && !this.isMessageAuthorOwner(message)) {
+				this.sendCommandErrorEmbed(message, "You need to be the owner of this bot to execute this command")
 				return
 			}
 
@@ -63,7 +73,7 @@ class YadBot {
 	}
 
 	isUserIdAdmin(userId) {
-		return (userId === config.admin)
+		return (config.admins.includes(userId))
 	}
 
 	isUserAdmin(user) {
@@ -74,7 +84,19 @@ class YadBot {
 		return this.isUserIdAdmin(message.author.id)
 	}
 
-	getClient() {
+	isUserIdOwner(userId) {
+		return (userId === config.owner)
+	}
+
+	isUserOwner(user) {
+		return this.isUserIdOwner(user.id)
+	}
+
+	isMessageAuthorOwner(message) {
+		return this.isUserIdOwner(message.author.id)
+	}
+
+	getBot() {
 		return this.bot;
 	}
 
@@ -90,7 +112,7 @@ class YadBot {
 	}
 
 	mirrorDirectMessageToAdmin(message) {
-		this.bot.users.fetch(config.admin)
+		this.bot.users.fetch(config.owner)
 			.then(admin => {
 				if (this.bot.user === null) return
 				admin?.send(new Discord.MessageEmbed({

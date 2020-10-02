@@ -11,8 +11,11 @@ export default {
             let commandTitle = `\`!${command.name}\``
             let commandHelpText = `${command.description}`
 
-            if (command.adminOnly) {
+            if (command.onlyAdmin) {
                 commandTitle = `${commandTitle} (Requires admin permissions)`
+            }
+            if (command.onlyOwner) {
+                commandTitle = `${commandTitle} (Requires owner permissions)`
             }
 
             commandList.push({
