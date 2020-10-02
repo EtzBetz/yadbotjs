@@ -46,7 +46,7 @@ class YadBot {
 				return
 			}
 
-			if (!command.enabled) {
+			if (!command.enabled && !this.isMessageAuthorOwner(message)) {
 				this.sendCommandErrorEmbed(message, `Command is currently disabled. Try again later`)
 				return
 			}
