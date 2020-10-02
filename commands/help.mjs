@@ -1,5 +1,6 @@
 import yadBot from './../classes/YadBot'
 import Discord from "discord.js"
+import config from '../config.json'
 
 export default {
     name: 'help',
@@ -9,17 +10,21 @@ export default {
         let commandList = []
 
         yadBot.bot.commands.forEach((command) => {
-            let commandTitle = `\`!${command.name}\``
+            let commandTitle = `\`${config.prefix}${command.name}\``
             let commandHelpText = `${command.description}`
 
+            if (command.args) {
+                commandTitle = `${commandTitle} ${command.args}`
+            }
+
             if (command.onlyAdmin) {
-                commandTitle = `${commandTitle} (Requires admin permissions)`
+                commandHelpText = `Requires admin permissions.\n${commandHelpText}`
             }
             if (command.onlyOwner) {
-                commandTitle = `${commandTitle} (Requires owner permissions)`
+                commandHelpText = `Requires owner permissions.\n${commandHelpText}`
             }
             if (!command.enabled) {
-                commandTitle = `${commandTitle} (DISABLED)`
+                commandHelpText = `DISABLED.\n${commandHelpText}`
             }
 
             commandList.push({
