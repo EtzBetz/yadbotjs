@@ -10,18 +10,7 @@ class YadBot {
 		this.bot = new Discord.Client();
 
 		this.bot.commands = new Discord.Collection()
-
 		this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
-		for (const file of this.commandFiles) {
-			import(`./../commands/${file}`)
-				.then((command) => {
-					this.bot.commands.set(command.name, command)
-
-					console.log("debug3", file)
-					console.log("debug4", command)
-					command.execute("", "")
-				})
-		}
 
 		this.bot.once('ready', () => {
 			console.log('I\'m online! Setting presence...')
@@ -43,24 +32,61 @@ class YadBot {
 			const args = message.content.slice(prefix.length).trim().split(/ +/);
 			const commandName = args.shift().toLowerCase();
 
-			if (commandName === 'ping') {
-				console.log("debug1:", this.bot.commands.size)
-				console.log("debug2:", this.bot.commands.toJSON())
-				this.bot.commands.get('ping').execute(message, args)
-				// message.channel.send('Pong.');
-			} else if (commandName === 'beep') {
-				message.channel.send('Boop.');
-			} else if (commandName === 'update') {
-				scraperBlackBoard.sendEmbedMessages([scraperBlackBoard.getUpdateEmbed()])
+			const command = this.bot.commands.get(commandName)
+			if (command === undefined) {
+				console.log(`Unknown command "${config.prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+				this.sendCommandErrorEmbed(message, `Command not found!\nUse \`${config.prefix}help\` to get a list of available commands`)
+				return
 			}
-			// other commands...
+
+			if (command.adminOnly && !this.isMessageAuthorAdmin(message)) {
+				this.sendCommandErrorEmbed(message, "You need admin permissions to execute this command")
+				return
+			}
+
+			console.log(`Executing command "${config.prefix}${command.name}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+			command?.execute(message, args)
 		});
 
 		this.bot.login(config.token);
 	}
 
+	syncCommands() {
+		this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
+		for (const file of this.commandFiles) {
+			import(`./../commands/${file}`)
+				.then((command) => {
+					this.bot.commands.set(command.default.name, command.default)
+				})
+				.catch(e => console.dir(e))
+		}
+	}
+
+	isUserIdAdmin(userId) {
+		return (userId === config.admin)
+	}
+
+	isUserAdmin(user) {
+		return this.isUserIdAdmin(user.id)
+	}
+
+	isMessageAuthorAdmin(message) {
+		return this.isUserIdAdmin(message.author.id)
+	}
+
 	getClient() {
 		return this.bot;
+	}
+
+	sendCommandErrorEmbed(originMessage, errorMessage) {
+		if (!errorMessage.endsWith(".") || !errorMessage.endsWith("!")) {
+			errorMessage += "."
+		}
+		originMessage.channel.send(new Discord.MessageEmbed({
+			title: `Error while executing command!`,
+			description: `${errorMessage}`,
+			color: 0xff6f00
+		}))
 	}
 
 	mirrorDirectMessageToAdmin(message) {

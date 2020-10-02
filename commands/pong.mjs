@@ -1,8 +1,7 @@
 export default {
-    name: 'pongi',
-    description: "says pingi!",
+    name: 'pong',
+    description: "I will respond with \"ping!\".",
     execute(message, args) {
-        console.log("debug2")
-        message.channel.send("pingi!")
+        message.channel.send("ping!")
     }
 }
