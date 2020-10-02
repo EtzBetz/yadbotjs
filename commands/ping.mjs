@@ -1,7 +1,11 @@
+import Discord from "discord.js"
+
 export default {
     name: 'ping',
-    description: "I will respond with \"pong!\".",
+    description: "I will respond with \"Pong!\".",
     execute(message, args) {
-        message.channel.send("pong!")
+        message.channel.send(new Discord.MessageEmbed({
+            title: "Pong!"
+        }))
     }
 }
