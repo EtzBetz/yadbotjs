@@ -1,3 +1,4 @@
 import yadBot from './classes/YadBot.mjs'
 
-yadBot.syncCommands()
+yadBot.bindCommands()
+yadBot.bindEvents()

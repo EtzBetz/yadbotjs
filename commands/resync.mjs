@@ -7,11 +7,12 @@ export default {
     description: "Refreshes available commands.",
     onlyOwner: true,
     execute(message, args) {
-        yadBot.syncCommands()
+        yadBot.bindCommands()
+        yadBot.bindEvents()
         message.channel.send(
             new Discord.MessageEmbed({
-                title: `Re-synced`,
-                description: `Yad's commands have been re-synced.`,
+                title: `Re-bound`,
+                description: `Yad's commands and events have been re-bound.`,
                 color: 0x4CAF50
             })
         )

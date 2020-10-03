@@ -16,84 +16,52 @@ class YadBot {
 
 		this.bot.commands = new Discord.Collection()
 		this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
+		this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
 
 		this.bot.once('ready', () => {
 			console.log('I\'m online! Setting presence...')
 			this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' });
-			console.log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} members:`)
+			console.log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
 			this.bot.guilds.cache.forEach(guild => {
 				console.log(`  - ${guild.name} ( ${guild.id} )`)
 			})
 			console.log(`---------------------------------------------------------`)
 		});
 
-		this.bot.on('message', message => {
-			const prefix = config.prefix;
-
-			if (message.author.bot) return
-			if (message.channel.type === "dm" && message.author.id !== config.owner) this.mirrorDirectMessageToAdmin(message)
-			if (!message.content.startsWith(prefix)) return
-
-			const args = message.content.slice(prefix.length).trim().split(/ +/);
-			const commandName = args.shift().toLowerCase();
-
-			console.log(`Requested command "${config.prefix}${commandName}" (${message.content}) from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
-
-			const command = this.bot.commands.get(commandName)
-			if (command === undefined) {
-				console.log(`Unknown command "${config.prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
-				this.sendCommandErrorEmbed(message, `Command not found!\nUse \`${config.prefix}help\` to get a list of available commands`)
-				return
-			}
-
-			if (!command.enabled && !this.isMessageAuthorOwner(message)) {
-				this.sendCommandErrorEmbed(message, `Command is currently disabled. Try again later`)
-				return
-			}
-
-			if (command.onlyAdmin && !this.isMessageAuthorAdmin(message)) {
-				this.sendCommandErrorEmbed(message, "You need admin permissions to execute this command")
-				return
-			} else if (command.onlyAdmin) {
-				if (!this.isMessageAuthorOwner(message)) {
-					this.bot.users.fetch(config.owner)
-						.then(owner => {
-							if (this.bot.user !== null) {
-								owner?.send(new Discord.MessageEmbed({
-									title: `Admin action executed`,
-									description: `"${message.author.username}" executed command \`!${commandName}\`.`,
-									footer: {
-										text: `${message.author.username}.${message.author.discriminator} (ID: ${message.author.id})`,
-										icon_url: message.author.avatarURL({ dynamic: true }),
-									},
-									timestamp: message.createdTimestamp,
-									color: 0xFFEB3B,
-								}))
-									.catch(e => console.dir(e))
-							}
-						})
-						.catch(e => console.dir(e))
-				}
-			}
-
-			if (command.onlyOwner && !this.isMessageAuthorOwner(message)) {
-				this.sendCommandErrorEmbed(message, "You need to be the owner of this bot to execute this command")
-				return
-			}
-			command?.execute(message, args)
-		});
 
 		this.bot.login(config.token);
 	}
 
-	syncCommands() {
+	bindCommands() {
 		this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
+		this.bot.commands.clear()
 		for (const file of this.commandFiles) {
 			import(`./../commands/${file}`)
 				.then((command) => {
 					this.bot.commands.set(command.default.name, command.default)
 				})
 				.catch(e => console.dir(e))
+		}
+	}
+
+	bindEvents() {
+		this.unbindEvents()
+		this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
+		for (const file of this.eventFiles) {
+			import(`./../events/${file}`)
+				.then((event) => {
+					let eventName = file.split(".")[0];
+					this.bot.on(eventName, event.default.bind(this.bot));
+				})
+		}
+	}
+
+	unbindEvents() {
+		for (const file of this.eventFiles) {
+			let eventName = file.split(".")[0];
+			this.bot.listeners(eventName).forEach((oldEvent) => {
+				this.bot.off(eventName, oldEvent)
+			})
 		}
 	}
 
