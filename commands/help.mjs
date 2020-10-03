@@ -10,7 +10,7 @@ export default {
         let commandList = []
 
         yadBot.bot.commands.forEach((command) => {
-            let commandTitle = `\`${config.prefix}${command.name}\``
+            let commandTitle = `${config.prefix}${command.name}`
             let commandHelpText = `${command.description}`
 
             if (command.args) {
@@ -28,7 +28,7 @@ export default {
             }
 
             commandList.push({
-                name: `${commandTitle}`,
+                name: `\`${commandTitle}\``,
                 value: `${commandHelpText}`,
                 commandInternal: command.name
             })
