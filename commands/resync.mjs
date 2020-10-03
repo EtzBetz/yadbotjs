@@ -4,7 +4,7 @@ import Discord from "discord.js"
 export default {
     name: 'resync',
     enabled: true,
-    description: "Refreshes available commands.",
+    description: "Refreshes available commands and events.",
     onlyOwner: true,
     execute(message, args) {
         yadBot.bindCommands()
