@@ -28,7 +28,6 @@ class YadBot {
 			console.log(`---------------------------------------------------------`)
 		});
 
-
 		this.bot.login(config.token);
 	}
 
@@ -100,7 +99,7 @@ class YadBot {
 		originMessage.channel.send(new Discord.MessageEmbed({
 			title: `Error while executing command`,
 			description: `${errorMessage}`,
-			color: 0xff6f00
+			color: 0xF44336
 		}))
 	}
 

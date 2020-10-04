@@ -12,7 +12,7 @@ export default (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    console.log(`Requested command "${config.prefix}${commandName}" (${message.content}) from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+    console.log(`Requested command ${config.prefix}${commandName} ("${message.content}") from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
 
     const command = yadBot.getBot().commands.get(commandName)
     if (command === undefined) {
