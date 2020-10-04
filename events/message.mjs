@@ -7,6 +7,11 @@ export default (message) => {
 
     if (message.author.bot) return
     if (message.channel.type === "dm" && message.author.id !== config.owner) yadBot.mirrorDirectMessageToAdmin(message)
+
+    if (message.mentions.users.get(config.bot) !== undefined || message.mentions.members?.get(config.bot) !== undefined) {
+        message.channel.send(new Discord.MessageEmbed({ title: `Hey!` }))
+    }
+
     if (!message.content.startsWith(prefix)) return
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
