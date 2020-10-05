@@ -2,7 +2,7 @@ import Discord from "discord.js"
 
 export default {
     name: 'raids',
-    enabled: true,
+    enabled: false,
     description: "Displays a list of all raid bosses in GW2 with your progress.",
     onlyOwner: true,
     execute(message, args) {
