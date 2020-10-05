@@ -1,6 +1,7 @@
 import yadBot from './../classes/YadBot'
 import Discord from "discord.js"
 import editJsonFile from "edit-json-file"
+import config from '../config.json'
 
 export default {
     name: 'notes',
@@ -61,6 +62,8 @@ export default {
                     color: 0xff6f00
                 })
             )
+        } else {
+            yadBot.sendCommandErrorEmbed(message, `Incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
         }
     }
 }
