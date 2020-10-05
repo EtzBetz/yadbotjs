@@ -9,7 +9,7 @@ export default (message) => {
     if (message.channel.type === "dm" && message.author.id !== config.owner) yadBot.mirrorDirectMessageToAdmin(message)
 
     if (message.mentions.users.get(config.bot) !== undefined || message.mentions.members?.get(config.bot) !== undefined) {
-        message.channel.send(new Discord.MessageEmbed({ title: `Hey!` }))
+        message.channel.send(new Discord.MessageEmbed({ title: `Hey!` })) // TODO: provide array of messages to randomly select from
     }
 
     if (!message.content.startsWith(prefix)) return
