@@ -93,7 +93,7 @@ class YadBot {
 	}
 
 	sendCommandErrorEmbed(originMessage, errorMessage) {
-		if (!errorMessage.endsWith(".") || !errorMessage.endsWith("!")) {
+		if (!errorMessage.endsWith(".") && !errorMessage.endsWith("!")) {
 			errorMessage += "."
 		}
 		originMessage.channel.send(new Discord.MessageEmbed({
