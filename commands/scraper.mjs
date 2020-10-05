@@ -41,7 +41,7 @@ export default {
             const turnOffScrapers = args[2] !== undefined && args[2] === "off" || args[2] === "false" || args[2] === "0"
 
             if (!turnOnScrapers && !turnOffScrapers || scraper === undefined) {
-                yadBot.sendCommandErrorEmbed(message, `You need to provide additional arguments for this command or no correct arguments were given.\n Use \`${config.prefix}help\` to get more information`)
+                yadBot.sendCommandErrorEmbed(message, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
                 return
             }
 
