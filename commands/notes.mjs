@@ -8,7 +8,6 @@ export default {
     enabled: true,
     description: "Lists, adds and removes entries to a note-list",
     args: "(<add/remove>) (@add<note>) (@remove<note-number>)",
-    onlyOwner: true,
     execute(message, args) {
         let file = editJsonFile(`./notes/notes.json`);
 
