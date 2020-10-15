@@ -27,7 +27,12 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     getScraperFileName(json) {
         const dateString = json.effectiveDate.toString().substring(0, 10)
         const gameSlugStringEnd = json.productSlug.toString().indexOf('/')
-        const gameSlugString = json.productSlug.toString().substring(0, gameSlugStringEnd)
+        let gameSlugString
+        if (gameSlugStringEnd !== -1) {
+            gameSlugString = json.productSlug.toString().substring(0, gameSlugStringEnd)
+        } else {
+            gameSlugString = json.productSlug.toString()
+        }
 
         let fileName = `${dateString}-${gameSlugString}`
         return this.filterStringForFileName(fileName + ".json")
