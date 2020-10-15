@@ -25,8 +25,13 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     getScraperFileName(json) {
-        json.promotions.promotionalOffers[0].promotionalOffers[0].startDate
-        const dateString = json.promotions.promotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
+        let dateString
+        if (json.promotions?.promotionalOffers.length > 0) {
+            dateString = json.promotions.promotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
+        } else if ((json.promotions?.upcomingPromotionalOffers.length > 0)) {
+            dateString = json.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
+        }
+
         const gameSlugStringEnd = json.productSlug.toString().indexOf('/')
         let gameSlugString
         if (gameSlugStringEnd !== -1) {
