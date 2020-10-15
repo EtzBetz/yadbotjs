@@ -25,7 +25,8 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     getScraperFileName(json) {
-        const dateString = json.effectiveDate.toString().substring(0, 10)
+        json.promotions.promotionalOffers[0].promotionalOffers[0].startDate
+        const dateString = json.promotions.promotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
         const gameSlugStringEnd = json.productSlug.toString().indexOf('/')
         let gameSlugString
         if (gameSlugStringEnd !== -1) {
