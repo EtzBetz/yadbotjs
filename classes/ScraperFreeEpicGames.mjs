@@ -19,7 +19,41 @@ class ScraperFreeEpicGames extends WebsiteScraper{
 
     parseWebsiteContentToJSON(response) {
         this.log(`Parsing website...`)
-        const elements = response.data.data.Catalog.searchStore.elements
+        const elements = []
+        response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
+            let entry = {}
+            entry.title = game.title
+            entry.imageUrl = game.keyImages?.find(image => image.type === "OfferImageWide").url
+
+            let slug
+            const slashPosition = game.productSlug.toString().indexOf('/')
+            if (slashPosition !== -1) {
+                slug = game.productSlug.toString().substring(0, slashPosition)
+            } else {
+                slug = game.productSlug.toString()
+            }
+            entry.slug = slug
+
+            let developer = game.customAttributes?.find(attribute => attribute.key === "developerName").value;
+            let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName").value;
+            if (developer !== undefined) {
+                entry.developer = developer
+            }
+            if (publisher !== undefined) {
+                entry.publisher = publisher
+            }
+
+            const originalPrice = game.price?.totalPrice?.originalPrice?.toString()
+            const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
+            let decimalPosition = originalPrice.length - (decimalCount || 2)
+            let priceEuro = originalPrice.substring(0, decimalPosition)
+            let priceDecimal = originalPrice.substring(originalPrice.length - decimalCount)
+            entry.price = `${priceEuro},${priceDecimal}€`
+
+            entry.promotions = game.promotions
+
+            elements.push(entry)
+        })
         this.log(`${elements.length} entries found...`)
         return elements
     }
@@ -32,15 +66,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             dateString = json.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
         }
 
-        const gameSlugStringEnd = json.productSlug.toString().indexOf('/')
-        let gameSlugString
-        if (gameSlugStringEnd !== -1) {
-            gameSlugString = json.productSlug.toString().substring(0, gameSlugStringEnd)
-        } else {
-            gameSlugString = json.productSlug.toString()
-        }
-
-        let fileName = `${dateString}-${gameSlugString}`
+        let fileName = `${dateString}-${json.slug}`
         return this.filterStringForFileName(fileName + ".json")
     }
 
@@ -69,21 +95,13 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             descriptionString = `Ab dem ${startTime.dayOfMonth}.${startTime.month}. kostenlos im Epic Games Store.`
         }
 
-        developer = content.customAttributes?.find(attribute => attribute.key === "developerName").value;
-        publisher = content.customAttributes?.find(attribute => attribute.key === "publisherName").value;
-
-        let originalPriceEuro = content.price.totalPrice.originalPrice.toString().substring(0, content.price.totalPrice.originalPrice.toString().length - (content?.price?.totalPrice?.currencyInfo?.decimals || 2))
-        let originalPriceDecimal = content.price.totalPrice.originalPrice.toString().substring(content.price.totalPrice.originalPrice.toString().length - (content?.price?.totalPrice?.currencyInfo?.decimals || 2))
-
-        const gameImage = content.keyImages?.find(image => image.type === "OfferImageWide").url;
-
         let embed = new Discord.MessageEmbed(
             {
                 "title": content.title,
                 "description": descriptionString,
-                "url": `https://www.epicgames.com/store/de/product/${content.productSlug}`,
+                "url": `https://www.epicgames.com/store/de/product/${content.slug}/home`,
                 "image": {
-                    "url": gameImage
+                    "url": content.imageUrl
                 },
                 "author": {
                     "name": "Epic Games Store",
@@ -93,7 +111,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 "fields": [
                     {
                         "name": "Originalpreis",
-                        "value": `~~${originalPriceEuro},${originalPriceDecimal}€~~`,
+                        "value": `~~${content.price}~~`,
                         "inline": true
                     }
                 ]
@@ -120,21 +138,21 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             )
         }
 
-        if (developer !== undefined && developer !== null) {
+        if (content.developer !== undefined) {
             embed.fields.push(
                 {
                     "name": "Entwickler",
-                    "value": `${developer}`,
+                    "value": `${content.developer}`,
                     "inline": true
                 }
             )
         }
 
-        if (publisher !== undefined && publisher !== null) {
+        if (content.publisher !== undefined) {
             embed.fields.push(
                 {
                     "name": "Publisher",
-                    "value": `${publisher}`,
+                    "value": `${content.publisher}`,
                     "inline": true
                 }
             )
