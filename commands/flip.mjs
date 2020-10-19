@@ -12,7 +12,6 @@ export default {
         let formattedText = ""
         for (let i = text.length - 1; i >= 0; i--) {
             formattedText += this.flipCharacter(text[i])
-            console.log(i, text[i], formattedText)
         }
         message.channel.send(new Discord.MessageEmbed({
             footer: {text: ""},
