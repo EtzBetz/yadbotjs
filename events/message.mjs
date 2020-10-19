@@ -17,11 +17,11 @@ export default (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    console.log(`Requested command ${config.prefix}${commandName} ("${message.content}") from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+    yadBot.log(`Requested command ${config.prefix}${commandName} ("${message.content}") from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
 
     const command = yadBot.getBot().commands.get(commandName)
     if (command === undefined) {
-        console.log(`Unknown command "${config.prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+        yadBot.log(`Unknown command "${config.prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
         yadBot.sendCommandErrorEmbed(message, `Command not found!\nUse \`${config.prefix}help\` to get a list of available commands`)
         return
     }

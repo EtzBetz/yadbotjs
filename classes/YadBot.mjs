@@ -3,6 +3,7 @@ import Discord from "discord.js"
 import config from '../config.json'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
+import luxon from 'luxon'
 
 class YadBot {
 
@@ -19,16 +20,22 @@ class YadBot {
 		this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
 
 		this.bot.once('ready', () => {
-			console.log('I\'m online! Setting presence...')
+			this.log(`---------------------------------------------------------`)
+			this.log('I\'m online! Setting presence...')
 			this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' });
-			console.log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
+			this.log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
 			this.bot.guilds.cache.forEach(guild => {
-				console.log(`  - ${guild.name} ( ${guild.id} )`)
+				this.log(` - ${guild.name}\t( ${guild.id} )`)
 			})
-			console.log(`---------------------------------------------------------`)
+			this.log(`---------------------------------------------------------`)
 		});
 
 		this.bot.login(config.token);
+	}
+
+	log(message) {
+		let currentTime = luxon.DateTime.local().toFormat('dd.MM. hh:mm:ss')
+		console.log(`\x1b[32m[${currentTime}]\x1b[0m ${message}`, )
 	}
 
 	bindCommands() {
