@@ -32,7 +32,7 @@ export const BGwhite = "\x1b[47m"
 
 export function getLoggingTimestamp() {
     let currentTime = luxon.DateTime.local()
-    return `${yellow}[${currentTime.toFormat('dd.MM.')} ${bright}${currentTime.toFormat('hh:mm:ss')}${reset}${yellow}.${currentTime.toFormat('SSS')}]${reset}`
+    return `${yellow}[${currentTime.toFormat('dd.MM.')} ${bright}${currentTime.toFormat('HH:mm')}${reset}${yellow}${currentTime.toFormat(':ss.SSS')}]${reset}`
 }
 
 export function log(message) {
