@@ -1,5 +1,6 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
+import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
 import yadBot from './YadBot'
@@ -50,7 +51,21 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             let priceDecimal = originalPrice.substring(originalPrice.length - decimalCount)
             entry.price = `${priceEuro},${priceDecimal}€`
 
-            entry.promotions = game.promotions
+            let promotions = []
+            if (game.promotions?.promotionalOffers[0]?.promotionalOffers !== undefined) {
+                promotions = promotions.concat(game.promotions?.promotionalOffers[0]?.promotionalOffers)
+            }
+            if (game.promotions?.upcomingPromotionalOffers[0]?.promotionalOffers !== undefined) {
+                promotions = promotions.concat(game.promotions?.upcomingPromotionalOffers[0]?.promotionalOffers)
+            }
+
+            let freePromotion = promotions.find(
+                promotion => promotion.discountSetting?.discountPercentage?.toString() === "0" ||
+                promotion.discountSetting?.discountPercentage?.toString() === "100"
+            );
+
+            entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO();
+            entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO();
 
             elements.push(entry)
         })
@@ -59,40 +74,22 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     getScraperFileName(json) {
-        let dateString
-        if (json.promotions?.promotionalOffers.length > 0) {
-            dateString = json.promotions.promotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
-        } else if ((json.promotions?.upcomingPromotionalOffers.length > 0)) {
-            dateString = json.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate.toString().substring(0, 10)
-        }
-
+        let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd');
         let fileName = `${dateString}-${json.slug}`
         return this.filterStringForFileName(fileName + ".json")
-    }
-
-    parseDateStringToObject(string) {
-        // 2020-10-01T15:00:00.000Z
-        return {
-            'dayOfMonth': string.substring(8, 10),
-            'month': string.substring(5, 7),
-            'year': string.substring(0, 4),
-            'timeHours': (parseInt(string.substring(11, 13)) + 2).toString().padStart(2, '0'),
-            'timeMinutes': string.substring(14, 16)
-        }
     }
 
     getEmbed(content) {
         this.log(`Generating embed...`)
 
-        let descriptionString, startTime, endTime, developer, publisher
-        if (content.promotions?.promotionalOffers.length > 0) {
-            startTime = this.parseDateStringToObject(content.promotions.promotionalOffers[0].promotionalOffers[0].startDate)
-            endTime = this.parseDateStringToObject(content.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
-            descriptionString = `Bis zum ${endTime.dayOfMonth}.${endTime.month}. kostenlos im Epic Games Store.`
-        } else if ((content.promotions?.upcomingPromotionalOffers.length > 0)) {
-            startTime = this.parseDateStringToObject(content.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate)
-            endTime = this.parseDateStringToObject(content.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].endDate)
-            descriptionString = `Ab dem ${startTime.dayOfMonth}.${startTime.month}. kostenlos im Epic Games Store.`
+        let descriptionString, startDate, endDate
+        startDate = luxon.DateTime.fromISO(content.startDate)
+        endDate = luxon.DateTime.fromISO(content.endDate)
+
+        if (startDate.diffNow() < 0) {
+            descriptionString = `Bis zum ${endDate.day}.${endDate.month}. kostenlos im Epic Games Store.`
+        } else {
+            descriptionString = `Ab dem ${startDate.day}.${startDate.month}. kostenlos im Epic Games Store.`
         }
 
         let embed = new Discord.MessageEmbed(
@@ -113,30 +110,20 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                         "name": "Originalpreis",
                         "value": `~~${content.price}~~`,
                         "inline": true
+                    },
+                    {
+                        "name": "Startdatum",
+                        "value": `${startDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                        "inline": true
+                    },
+                    {
+                        "name": "Enddatum",
+                        "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                        "inline": true
                     }
                 ]
             }
         )
-
-        if (startTime !== undefined && startTime !== null) {
-            embed.fields.push(
-                {
-                    "name": "Startdatum",
-                    "value": `${startTime.dayOfMonth}.${startTime.month}.${startTime.year} ${startTime.timeHours}:${startTime.timeMinutes} Uhr`,
-                    "inline": true
-                }
-            )
-        }
-
-        if (endTime !== undefined && endTime !== null) {
-            embed.fields.push(
-                {
-                    "name": "Enddatum",
-                    "value": `${endTime.dayOfMonth}.${endTime.month}.${endTime.year} ${endTime.timeHours}:${endTime.timeMinutes} Uhr`,
-                    "inline": true
-                }
-            )
-        }
 
         if (content.developer !== undefined) {
             embed.fields.push(
