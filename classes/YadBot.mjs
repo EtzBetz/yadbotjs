@@ -35,7 +35,7 @@ class YadBot {
 
 	log(message) {
 		let currentTime = luxon.DateTime.local().toFormat('dd.MM. hh:mm:ss')
-		console.log(`\x1b[32m[${currentTime}]\x1b[0m ${message}`, )
+		console.log(`\x1b[1m\x1b[32m[${currentTime}]\x1b[0m ${message}`, )
 	}
 
 	bindCommands() {
