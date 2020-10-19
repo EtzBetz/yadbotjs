@@ -27,7 +27,7 @@ export class WebsiteScraper {
 
     log(message) {
         let currentTime = luxon.DateTime.local().toFormat('dd.MM. hh:mm:ss')
-        console.log(`\x1b[32m[${currentTime}]\x1b[0m \x1b[34m${this.constructor.name}:\x1b[0m\t${message}`, )
+        console.log(`\x1b[32m[${currentTime}]\x1b[0m \x1b[31m[${this.constructor.name}]\x1b[0m\t${message}`, )
     }
 
     createTimerInterval() {
