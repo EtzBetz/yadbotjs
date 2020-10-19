@@ -49,7 +49,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             let decimalPosition = originalPrice.length - (decimalCount || 2)
             let priceEuro = originalPrice.substring(0, decimalPosition)
             let priceDecimal = originalPrice.substring(originalPrice.length - decimalCount)
-            entry.price = `${priceEuro},${priceDecimal}€`
+            entry.originalPrice = `${priceEuro},${priceDecimal}€`
 
             let promotions = []
             if (game.promotions?.promotionalOffers[0]?.promotionalOffers !== undefined) {
@@ -66,6 +66,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
 
             entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO();
             entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO();
+            entry.isFuturePromotion = (luxon.DateTime.fromISO(entry.startDate).diffNow() > 0)
 
             elements.push(entry)
         })
@@ -108,7 +109,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 "fields": [
                     {
                         "name": "Originalpreis",
-                        "value": `~~${content.price}~~`,
+                        "value": `~~${content.originalPrice}~~`,
                         "inline": true
                     },
                     {
