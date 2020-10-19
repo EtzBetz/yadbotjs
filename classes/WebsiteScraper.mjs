@@ -5,6 +5,7 @@ import yadBot from './YadBot'
 import fs from 'fs';
 import config from '../config.json'
 import luxon from 'luxon'
+import { getLoggingTimestamp, log, red, reset } from '../index'
 
 export class WebsiteScraper {
 
@@ -26,12 +27,11 @@ export class WebsiteScraper {
     }
 
     log(message) {
-        let currentTime = luxon.DateTime.local().toFormat('dd.MM. hh:mm:ss')
-        console.log(`\x1b[1m\x1b[32m[${currentTime}]\x1b[0m \x1b[31m[${this.constructor.name}]\x1b[0m\t${message}`, )
+        log(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
     }
 
     createTimerInterval() {
-        this.log(`Creating Interval...`)
+        console.log(`${this.constructor.name}:\tCreating Interval...`)
         setTimeout(() => {
             this.timeIntervalBody()
             this.timer = setInterval(() => {
