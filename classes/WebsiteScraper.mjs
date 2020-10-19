@@ -4,6 +4,7 @@ import * as Discord from 'discord.js'
 import yadBot from './YadBot'
 import fs from 'fs';
 import config from '../config.json'
+import luxon from 'luxon'
 
 export class WebsiteScraper {
 
@@ -25,10 +26,8 @@ export class WebsiteScraper {
     }
 
     log(message) {
-        let currentTime = new Date()
-        currentTime.setHours(currentTime.getHours() + 2)
-
-        console.log(`\x1b[32m${currentTime.toISOString()}\x1b[0m \x1b[34m${this.constructor.name}:\x1b[0m ${message}`, )
+        let currentTime = luxon.DateTime.local().toFormat('dd.MM. hh:mm:ss')
+        console.log(`\x1b[32m[${currentTime}]\x1b[0m \x1b[34m${this.constructor.name}:\x1b[0m\t${message}`, )
     }
 
     createTimerInterval() {
