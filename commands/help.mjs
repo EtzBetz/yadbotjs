@@ -10,11 +10,29 @@ export default {
         let commandList = []
 
         yadBot.bot.commands.forEach((command) => {
-            let commandTitle = `${config.prefix}${command.name}`
+            let commandTitle = `\`${config.prefix}${command.name}\``
             let commandHelpText = `${command.description}`
 
             if (command.args) {
-                commandTitle = `${commandTitle} ${command.args}`
+                let commandArgs = ""
+                let inParameter = false
+                for (let i = 0; i < command.args.length; i++) {
+                    if (command.args[i] === "(") {
+                        commandArgs += " `"
+                        inParameter = true
+                    } else if (command.args[i] === "<" && !inParameter) {
+                        commandArgs += " `"
+                    }
+                    commandArgs += command.args[i]
+                    if (command.args[i] === ">" && !inParameter) {
+                        commandArgs += "`"
+                    } else if (command.args[i] === ")") {
+                        commandArgs += "`"
+                        inParameter = false
+                    }
+                }
+
+                commandTitle = `${commandTitle} ${commandArgs}`
             }
 
             if (command.onlyAdmin) {
@@ -28,7 +46,7 @@ export default {
             }
 
             commandList.push({
-                name: `\`${commandTitle}\``,
+                name: `${commandTitle}`,
                 value: `${commandHelpText}`,
                 commandInternal: command.name
             })
@@ -45,11 +63,9 @@ export default {
         message.channel.send(
             new Discord.MessageEmbed({
                 "description": "Here is a list of commands that Yad is currently supporting:",
-                "thumbnail": {
-                    "url": yadBot.bot.user.avatarURL({dynamic: true} )
-                },
                 "author": {
-                    "name": "Yad's Commands"
+                    "name": "Yad's Commands",
+                    "icon_url": yadBot.bot.user.avatarURL({dynamic: true} )
                 },
                 "fields": commandList
             })
