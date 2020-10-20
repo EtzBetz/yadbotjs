@@ -5,7 +5,7 @@ import yadBot from './YadBot'
 import fs from 'fs';
 import config from '../config.json'
 import luxon from 'luxon'
-import { getLoggingTimestamp, log, red, reset } from '../index'
+import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
 
 export class WebsiteScraper {
 
@@ -26,8 +26,12 @@ export class WebsiteScraper {
         this.createTimerInterval()
     }
 
-    log(message) {
+    log(...message) {
         log(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
+    }
+
+    debugLog(...message) {
+        debugLog(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
     }
 
     createTimerInterval() {
@@ -104,22 +108,22 @@ export class WebsiteScraper {
                 { flag: 'r' },
                 (err, readData) => {
                     if (err) {
-                        this.log(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
+                        this.debugLog(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
                     }
                     let jsonString = JSON.stringify(newJson[i]);
 
                     if (readData?.toString() === jsonString) {
                         j++
 
-                        // this.log("debug3:", j)
-                        // this.log("debug4:", filteredJsonArray.length)
+                        // this.debugLog("debug3:", j)
+                        // this.debugLog("debug4:", filteredJsonArray.length)
                         if (j === (newJson.length)) {
                             callback(filteredJsonArray)
                         }
                     }
                     else {
                         filteredJsonArray.push(newJson[i])
-                        // this.log("debug2:", filteredJsonArray.length)
+                        // this.debugLog("debug2:", filteredJsonArray.length)
                         // write JSON string to file
                         fs.writeFile(
                             filePath,
@@ -129,11 +133,11 @@ export class WebsiteScraper {
                                 if (err) {
                                     console.dir(err);
                                 }
-                                this.log(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
+                                this.debugLog(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
                                 j++
 
-                                // this.log("debug5:", j)
-                                // this.log("debug6:", filteredJsonArray.length)
+                                // this.debugLog("debug5:", j)
+                                // this.debugLog("debug6:", filteredJsonArray.length)
                                 if (j === (newJson.length)) {
                                     callback(filteredJsonArray)
                                 }

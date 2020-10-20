@@ -4,7 +4,7 @@ import config from '../config.json'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
 import luxon from 'luxon'
-import { log } from '../index'
+import { log, debugLog } from '../index'
 
 class YadBot {
 

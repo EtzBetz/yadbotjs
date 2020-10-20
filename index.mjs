@@ -1,5 +1,6 @@
 import yadBot from './classes/YadBot.mjs'
 import luxon from 'luxon'
+import config from './config.json'
 
 yadBot.bindCommands()
 yadBot.bindEvents()
@@ -35,6 +36,12 @@ export function getLoggingTimestamp() {
     return `${yellow}[${currentTime.toFormat('dd.MM.')} ${bright}${currentTime.toFormat('HH:mm')}${reset}${yellow}${currentTime.toFormat(':ss.SSS')}]${reset}`
 }
 
-export function log(message) {
-    console.log(`${getLoggingTimestamp()} ${message}`, )
+export function log(...message) {
+    console.log(`${getLoggingTimestamp()} ${message}`)
+}
+
+export function debugLog(...message) {
+    if (!config.prod) {
+        log(`${BGred}${black}${bright}[DEBUG]${reset} ${message}`)
+    }
 }
