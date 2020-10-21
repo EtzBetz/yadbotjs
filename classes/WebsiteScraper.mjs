@@ -58,6 +58,7 @@ export class WebsiteScraper {
                     this.filterNewContent(content, (filteredContent) => {
                         this.log(`${filteredContent.length} entries are new.`)
                         if (yadBot.getBot().user === null) {
+                            // TODO: create interval
                             this.log("Bot is not yet online, not sending messages.")
                             return
                         }

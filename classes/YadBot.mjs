@@ -31,7 +31,27 @@ class YadBot {
 			log(`---------------------------------------------------------`)
 		});
 
-		this.bot.login(config.token);
+		this.getBot().login(config.token);
+		this.exitBindings();
+	}
+
+	exitBindings() {
+		// Even if the process gets an call to exit, continues until the exitHandler function is finished
+		process.stdin.resume();
+
+		process.on('exit', this.exitHandler.bind(this));
+		process.on('SIGINT', this.exitHandler.bind(this, {exit:true}));
+		process.on('SIGUSR1', this.exitHandler.bind(this, {exit:true}));
+		process.on('SIGUSR2', this.exitHandler.bind(this, {exit:true}));
+		process.on('uncaughtException', this.exitHandler.bind(this, {exit:true}));
+	}
+
+	exitHandler(options, exitCode) {
+		// destroy the Discord connection of the bot
+		this.getBot()?.destroy();
+
+		// exit the node process
+		process.exit(0);
 	}
 
 	bindCommands() {
