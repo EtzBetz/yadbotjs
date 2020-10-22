@@ -35,8 +35,8 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             }
             entry.slug = slug
 
-            let developer = game.customAttributes?.find(attribute => attribute.key === "developerName").value;
-            let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName").value;
+            let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value;
+            let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value;
             if (developer !== undefined) {
                 entry.developer = developer
             }
