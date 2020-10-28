@@ -38,7 +38,7 @@ class ScraperBlackBoard extends WebsiteScraper{
             $(this).children('div').children('div').children().each(function(index, entryParagraph) {
                 let paragraph = $(this).text().trim()
                 if (index === 0) {
-                    paragraph = paragraph.substring(paragraph.indexOf('|')+2)
+                    paragraph = paragraph.substring(paragraph.indexOf('|')+1).trim()
                 }
                 // this.log(paragraph)
                 entryParagraphs.push(paragraph)
