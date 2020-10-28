@@ -165,12 +165,26 @@ export class WebsiteScraper {
 
     getScraperFileName(json) {
         let fileName = `test`
-        return this.filterStringForFileName(fileName + ".json")
+        return this.filterStringForFileName(fileName) + ".json"
     }
 
     filterStringForFileName(fileName) {
-        const regex = /[/\\?%*:|"<> ]/g
-        return fileName.replace(regex, '_').toLowerCase();
+        const regexSpecialChars = /[/\\?%*:|"<>, ]/g
+        const regexAE = /[/\\ä ]/g
+        const regexOE = /[/\\ö ]/g
+        const regexUE = /[/\\ü ]/g
+        const regexDoubleUnderscore = /__+/g
+
+        let replaced = fileName.toLowerCase();
+        replaced = replaced.replace(regexSpecialChars, '_')
+        replaced = replaced.replace(regexAE, 'ae')
+        replaced = replaced.replace(regexOE, 'oe')
+        replaced = replaced.replace(regexUE, 'ue')
+        replaced = replaced.replace(regexDoubleUnderscore, '_')
+        if (replaced[replaced.length - 1] === "_"){
+            replaced = replaced.substring(0, replaced.length - 2)
+        }
+        return replaced
     }
 
     sendEmbedMessages(embeds) {
