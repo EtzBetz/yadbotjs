@@ -160,7 +160,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         return new Discord.MessageEmbed(
             {
-                "title": content.title,
+                "title": content.title || "Neuer Aushang",
                 "description": paragraphString,
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
                 // "color": 0x000fff,
