@@ -44,11 +44,11 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 entry.publisher = publisher
             }
 
-            const originalPrice = game.price?.totalPrice?.originalPrice?.toString()
+            const originalPrice = game.price?.totalPrice?.originalPrice?.toString().padStart(3, '0')
             const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
-            let decimalPosition = originalPrice.length - (decimalCount || 2)
-            let priceEuro = originalPrice.substring(0, decimalPosition)
-            let priceDecimal = originalPrice.substring(originalPrice.length - decimalCount)
+            const decimalPosition = originalPrice.length - (decimalCount || 2)
+            const priceEuro = originalPrice.substring(0, decimalPosition)
+            const priceDecimal = originalPrice.substring(originalPrice.length - decimalCount)
             entry.originalPrice = `${priceEuro},${priceDecimal}€`
 
             let promotions = []
