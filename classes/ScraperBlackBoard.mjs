@@ -130,6 +130,26 @@ class ScraperBlackBoard extends WebsiteScraper{
             paragraphString += paragraph
         })
 
+        const regexLinks = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$])/ig
+        let linkResults = [...paragraphString.matchAll(regexLinks)]
+
+        const linkHintPrefix = "#LINK"
+        const linkHintPostfix = "#"
+        let linkIndex = 0
+        paragraphString = paragraphString.replace(regexLinks, () => {
+            linkIndex++
+            return `${linkHintPrefix}${linkIndex}${linkHintPostfix}`
+        })
+        linkIndex = 0 // aftercare for later re-use
+
+        paragraphString = (Discord.Util.escapeMarkdown(paragraphString))
+
+        const regexLinkHints = new RegExp(`(${linkHintPrefix}\\d+${linkHintPostfix})`,"gm");
+        paragraphString = paragraphString.replace(regexLinkHints, () => {
+            linkIndex++
+            return `[\[Link: ${linkResults[linkIndex-1][0]}\]](${linkResults[linkIndex-1][0]})`
+        })
+
         let fields = []
 
         content.links.forEach((link, index) => {
@@ -160,7 +180,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         return new Discord.MessageEmbed(
             {
-                "title": content.title || "Neuer Aushang",
+                "title": Discord.Util.escapeMarkdown(content.title) || "Neuer Aushang",
                 "description": paragraphString,
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
                 // "color": 0x000fff,

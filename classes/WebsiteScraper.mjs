@@ -170,9 +170,9 @@ export class WebsiteScraper {
 
     filterStringForFileName(fileName) {
         const regexSpecialChars = /[/\\?%*:|"<>, ]/g
-        const regexAE = /[/\\ä ]/g
-        const regexOE = /[/\\ö ]/g
-        const regexUE = /[/\\ü ]/g
+        const regexAE = /[/\\ä]/g
+        const regexOE = /[/\\ö]/g
+        const regexUE = /[/\\ü]/g
         const regexDoubleUnderscore = /__+/g
 
         let replaced = fileName.toLowerCase();
