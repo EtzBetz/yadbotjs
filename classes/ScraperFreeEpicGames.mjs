@@ -66,9 +66,9 @@ class ScraperFreeEpicGames extends WebsiteScraper{
 
             entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO();
             entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO();
-            entry.isFuturePromotion = (luxon.DateTime.fromISO(entry.startDate).diffNow() > 0)
-
-            elements.push(entry)
+            if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
+                elements.push(entry)
+            }
         })
         this.log(`${elements.length} entries found...`)
         return elements
