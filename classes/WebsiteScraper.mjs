@@ -169,7 +169,7 @@ export class WebsiteScraper {
     }
 
     filterStringForFileName(fileName) {
-        const regexSpecialChars = /[/\\?%*:|"<>, ]/g
+        const regexSpecialChars = /[/\\?!#%*:|"<>,„“ ]/g
         const regexAE = /[/\\ä]/g
         const regexOE = /[/\\ö]/g
         const regexUE = /[/\\ü]/g
