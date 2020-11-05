@@ -92,8 +92,6 @@ class ScraperLab4Inf extends WebsiteScraper{
             break;
         }
 
-        //http://www.lab4inf.fh-muenster.de/lab4inf/docs/HPK/00-HPK-Uebersicht-2020.pdf
-
         let fileType = content.address.split("").reverse().join("");
         let lastDotIndex = fileType.indexOf('.')
         fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("");
