@@ -8,7 +8,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
 
     constructor() {
         super()
-        this.url = "https://www.guildwars2.com/de/news/page/150"
+        this.url = "https://www.guildwars2.com/de/news/"
         this.scrapingInterval = 1000 * 60 * 33
         this.guildChannelIds = config.scraper_guild_wars_2_news_guild_channels
         this.userIds = config.scraper_guild_wars_2_news_dm_users
