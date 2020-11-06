@@ -5,6 +5,7 @@ import fs from 'fs'
 import config from '../config.json'
 import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
 import jsdom from 'jsdom'
+import luxon from 'luxon'
 
 export class WebsiteScraper {
 
@@ -63,7 +64,7 @@ export class WebsiteScraper {
                             }
                             this.log("Bot is now online! Sending messages..")
                         }
-                        filteredContent = filteredContent.sort(this.sortJSON)
+                        filteredContent = filteredContent.sort(this.sortJson)
                         let embeds = []
                         filteredContent.forEach(content => {
                             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
@@ -239,7 +240,28 @@ export class WebsiteScraper {
         })
     }
 
-    sortJSON(jsonA, jsonB) {
+    sortJson(jsonA, jsonB) {
+        return 0
+    }
+
+    sortJsonByIsoDateAndTitleProperty(jsonA, jsonB) {
+        const jsonADate = parseInt(luxon.DateTime.fromISO(jsonA.date).toFormat('yyyyMMddHHmmss'), 10)
+        const jsonBDate = parseInt(luxon.DateTime.fromISO(jsonB.date).toFormat('yyyyMMddHHmmss'), 10)
+
+        if (jsonADate < jsonBDate) {
+            // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
+            return -1
+        } else if (jsonADate > jsonBDate) {
+            // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
+            return 1
+        } else if (jsonB.title > jsonA.title) {
+            // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
+            return -1
+        } else if (jsonA.title > jsonB.title) {
+            // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
+            return 1
+        }
+        // console.log(`sorting: ${jsonADate} === ${jsonBDate} && ${jsonA.title} === ${jsonB.title}`)
         return 0
     }
 
@@ -297,42 +319,42 @@ export class WebsiteScraper {
         }
 
 
-        if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+        if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
             this.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0,50)}:${embed.description?.substring(0,50)}"!`)
             if (embed.footer.text.length >= 1) {
                 this.log(`Cutting footer!`)
                 let newFooterLength =
-                    (embed.footer.text.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                    (embed.footer.text.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
                 embed.footer.text = this.cutStringAddDots(embed.footer.text, newFooterLength)
             }
 
-            if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+            if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
                 if (embed.author.name.length >= 1) {
                     this.log(`Cutting author!`)
                     let newAuthorLength =
-                        (embed.author.name.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                        (embed.author.name.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
                     embed.author.name = this.cutStringAddDots(embed.author.name, newAuthorLength)
                 }
 
-                if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+                if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
                     if (embed.title.length >= 1) {
                         this.log(`Cutting title!`)
                         let newTitleLength =
-                            (embed.title.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                            (embed.title.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
                         embed.title = this.cutStringAddDots(embed.title, newTitleLength)
                     }
                 }
 
-                if (this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT) {
+                if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
                     if (embed.description.length >= 1) {
                         this.log(`Cutting description!`)
                         let newDescriptionLength =
-                            (embed.description.length) - (this.getTotalCharactersLength(embed) - TOTAL_CHARACTERS_LIMIT)
+                            (embed.description.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
                         embed.description = this.cutStringAddDots(embed.description, newDescriptionLength)
                     }
 
                     while (
-                        this.getTotalCharactersLength(embed) > TOTAL_CHARACTERS_LIMIT ||
+                        this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT ||
                         embed.fields.length === 1
                     ) {
                         this.log(`Cutting last field!`)
@@ -345,7 +367,7 @@ export class WebsiteScraper {
         return embed
     }
 
-    getTotalCharactersLength(embed) {
+    getTotalCharactersLengthFromEmbed(embed) {
         let totalCharactersLength = 0
         if (embed.title?.length !== undefined) totalCharactersLength += embed.title?.length
         if (embed.description?.length !== undefined) totalCharactersLength += embed.description?.length

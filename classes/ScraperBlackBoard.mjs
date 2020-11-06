@@ -176,25 +176,8 @@ class ScraperBlackBoard extends WebsiteScraper{
         )
     }
 
-    sortJSON(jsonA, jsonB) {
-        const jsonADate = parseInt(luxon.DateTime.fromISO(jsonA.date).toFormat('yyyyMMddHHmmss'), 10)
-        const jsonBDate = parseInt(luxon.DateTime.fromISO(jsonB.date).toFormat('yyyyMMddHHmmss'), 10)
-
-        if (jsonADate < jsonBDate) {
-            // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
-            return -1
-        } else if (jsonADate > jsonBDate) {
-            // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
-            return 1
-        } else if (jsonB.title > jsonA.title) {
-            // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
-            return -1
-        } else if (jsonA.title > jsonB.title) {
-            // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
-            return 1
-        }
-        // console.log(`sorting: ${jsonADate} === ${jsonBDate} && ${jsonA.title} === ${jsonB.title}`)
-        return 0
+    sortJson(jsonA, jsonB) {
+        return this.sortJsonByIsoDateAndTitleProperty(jsonA,jsonB)
     }
 }
 
