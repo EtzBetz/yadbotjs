@@ -30,7 +30,7 @@ export default {
             message.channel.send(
                 new Discord.MessageEmbed({
                     "title": "Scraper Statuses",
-                    "description": `Here is a list of all scrapers and their status:${statusDescription}`
+                    "description": `Here is a list of all scrapers and their statuses:${statusDescription}`
                 })
             )
             break
