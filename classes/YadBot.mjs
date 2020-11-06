@@ -5,7 +5,7 @@ import scraperBlackBoard from './ScraperBlackBoard.mjs'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
 import scraperLab4Inf from './ScraperLab4Inf'
 import scraperRechnernetze from './ScraperRechnernetze.mjs'
-import luxon from 'luxon'
+import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
 import { log, debugLog } from '../index'
 
 class YadBot {
@@ -17,7 +17,8 @@ class YadBot {
 			scraperBlackBoard,
 			scraperFreeEpicGames,
 			scraperLab4Inf,
-			scraperRechnernetze
+			scraperRechnernetze,
+			scraperGuildWars2News
 		]
 
 		this.bot.commands = new Discord.Collection()
