@@ -64,7 +64,7 @@ export class WebsiteScraper {
                             }
                             this.log("Bot is now online! Sending messages..")
                         }
-                        filteredContent = filteredContent.sort(this.sortJson)
+                        filteredContent = filteredContent.sort(this.getSortingFunction())
                         let embeds = []
                         filteredContent.forEach(content => {
                             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
@@ -240,8 +240,10 @@ export class WebsiteScraper {
         })
     }
 
-    sortJson(jsonA, jsonB) {
-        return 0
+    getSortingFunction() {
+        return function(jsonA, jsonB) {
+            return 0
+        }
     }
 
     sortJsonByIsoDateAndTitleProperty(jsonA, jsonB) {

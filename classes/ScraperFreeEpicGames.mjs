@@ -146,8 +146,8 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         return embed
     }
 
-    sortJson(jsonA, jsonB) {
-        return this.sortJsonByIsoDateAndTitleProperty(jsonA,jsonB)
+    getSortingFunction() {
+        return this.sortJsonByIsoDateAndTitleProperty
     }
 }
 

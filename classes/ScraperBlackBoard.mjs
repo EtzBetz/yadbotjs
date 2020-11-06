@@ -176,8 +176,8 @@ class ScraperBlackBoard extends WebsiteScraper{
         )
     }
 
-    sortJson(jsonA, jsonB) {
-        return this.sortJsonByIsoDateAndTitleProperty(jsonA,jsonB)
+    getSortingFunction() {
+        return this.sortJsonByIsoDateAndTitleProperty
     }
 }
 
