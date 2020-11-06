@@ -1,8 +1,7 @@
-import axios from 'axios'
-import cheerio from 'cheerio'
+import jsdom from 'jsdom'
+import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import yadBot from './YadBot'
 import config from '../config.json'
 
 class ScraperBlackBoard extends WebsiteScraper{
@@ -18,52 +17,38 @@ class ScraperBlackBoard extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        this.log(`Parsing website...`)
-        const $ = cheerio.load(response.data)
+        const page = new jsdom.JSDOM(response.data).window.document
+        let elements = []
+        let entities = page.querySelectorAll("div.clearfix > div[style] > div[style]")
+        this.log(`${entities.length} entries found...`)
 
-        let blackBoardList = $('#content').children('div.clearfix').children('div');
-
-        this.log(`${blackBoardList.children().length} entries found...`)
-        // this.log(blackBoardList.text().trim())
-
-        let jsonEntries = []
-        blackBoardList.children('div').each(function(index, blackBoardEntry) {
-            // this.log("-------")
-            // this.log(index)
-            // this.log($(this).children('h2').text().trim())
-            // this.log($(this).children('div').children('div').children('p').children('strong').text().trim())
+        entities.forEach((entity, index) => {
 
             let entryParagraphs = []
 
-            $(this).children('div').children('div').children().each(function(index, entryParagraph) {
-                let paragraph = $(this).text().trim()
-                if (index === 0) {
-                    paragraph = paragraph.substring(paragraph.indexOf('|')+1).trim()
+            entity.querySelectorAll("div > div > p").forEach((entityParagraph, paragraphIndex) => {
+                let paragraph = entityParagraph.textContent.trim()
+                if (paragraphIndex === 0) {
+                    paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
                 }
-                // this.log(paragraph)
                 entryParagraphs.push(paragraph)
             })
 
             let entryLinks = [], entryDownloads = []
 
-            $(this).children('div:nth-child(3)').children('ul.verteiler').children('li').each(function(index, link) {
-                let linkText = $(this).children('a').children('strong').text().trim()
-                let linkAddress = $(this).children('a').attr('href').trim()
+            entity.querySelectorAll("div:nth-child(3) > ul.verteiler > li").forEach((linkContainer, linkIndex) => {
+                let linkText = linkContainer.querySelector('a > strong')?.textContent.trim()
+                let linkAddress = linkContainer.querySelector('a').href?.trim()
 
                 if (linkAddress.substring(0,1) === "/") {
                     linkAddress = "https://www.fh-muenster.de" + linkAddress
                 }
 
-                let downloadText = $(this).children('a[onclick]').text().trim()
-                let downloadInfo = $(this).children('a[onclick]').children('small').text().trim()
-                downloadText = downloadText.substring(0, downloadText.length-downloadInfo.length).trim();
+                let downloadText = linkContainer.querySelector('a[onclick]')?.textContent.trim()
+                let downloadInfo = linkContainer.querySelector('a[onclick] > small')?.textContent.trim()
+                downloadText = downloadText?.substring(0, downloadText.length-downloadInfo.length).trim()
 
-                // this.log(`linktext:    "${linkText}"`)
-                // this.log(`linkaddress: "${linkAddress}"`)
-                // this.log(`downloadtext:"${downloadText}"`)
-                // this.log(`downloadinfo:"${downloadInfo}"`)
-
-                if (downloadInfo.length === 0) {
+                if (downloadText === undefined) {
                     // button is link
                     entryLinks.push({text: linkText, address: linkAddress})
                 } else {
@@ -72,60 +57,57 @@ class ScraperBlackBoard extends WebsiteScraper{
                 }
             })
 
-            let entryDate;
-            let entryDateElement = $(this).children('div').children('div').children('p').children('strong')
+            let entryDateString;
+            let entryDateElement = entity.querySelector('div > div > p > strong')
 
             // check if the <strong> element exists
-            if (entryDateElement.length === 1) {
-                entryDate = entryDateElement.text().trim()
+            if (entryDateElement !== undefined) {
+                entryDateString = entryDateElement.textContent.trim()
             } else { // otherwise go back to it's parent
-                entryDateElement = entryDateElement.prevObject
-                let firstParagraph = entryDateElement.first().text().trim()
-                entryDate = firstParagraph.substring(0, firstParagraph.indexOf('|')-1)
+                entryDateElement = entity.querySelector('div > div > p')
+                let firstParagraph = entryDateElement.textContent.trim()
+                entryDateString = firstParagraph.substring(0, firstParagraph.indexOf('|')-1).trim()
             }
-
-            let entryDateDayOfMonth, entryDateMonth, entryDateYear
-            if (entryDate !== undefined && entryDate !== "") {
-                let firstSeparatorIndex = entryDate.indexOf('.')
-                let secondSeparatorIndex = entryDate.indexOf('.', firstSeparatorIndex + 1)
-                entryDateDayOfMonth = entryDate.substring(0, firstSeparatorIndex).padStart(2, '0')
-                entryDateMonth = entryDate.substring(firstSeparatorIndex + 1, secondSeparatorIndex).padStart(2, '0')
-                entryDateYear = entryDate.substring(secondSeparatorIndex + 1)
-            }
-
 
             let entry = {
-                title: $(this).children('h2').text().trim(),
-                date: {
-                    day: entryDateDayOfMonth,
-                    month: entryDateMonth,
-                    year: entryDateYear
-                },
+                title: entity.querySelector('h2').textContent.trim(),
+                date: this.parseDateString(entryDateString),
                 paragraphs: entryParagraphs,
                 links: entryLinks,
                 downloads: entryDownloads
-
             }
-            // this.log(entry)
-            jsonEntries.push(entry)
+            elements.push(entry)
         })
 
-        jsonEntries.reverse()
+        return elements
+    }
 
-        return jsonEntries
+    parseDateString(dateString) {
+        // index 1 = dd     -> "06"
+        // index 2 = MM     -> "09"
+        // index 3 = yyyy   -> "2020"
+        const regexCustomDate = /(\d+).(\d+).(\d{4})/
+
+        let dateRegexResult = regexCustomDate.exec(dateString)
+        let day = parseInt(dateRegexResult[1], 10)
+        let month = parseInt(dateRegexResult[2], 10)
+        let year = parseInt(dateRegexResult[3], 10)
+
+        return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, "d.M.yyyy").setZone('Europe/Berlin').toISO()
     }
 
     getScraperFileName(json) {
-        let fileName = `${json.date.year}.${json.date.month}.${json.date.day}-${json.title}`
+        let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
+        let fileName = `${dateString}-${json.title}`
         return this.filterStringForFileName(fileName + ".json")
     }
 
-    getEmbed(content) {
+    getEmbed(json) {
         this.log(`Generating embed...`)
 
         let paragraphString = ""
 
-        content.paragraphs.forEach((paragraph, index) => {
+        json.paragraphs.forEach((paragraph, index) => {
             if (index !== 0) paragraphString += '\n'
             paragraphString += paragraph
         })
@@ -144,7 +126,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         paragraphString = (Discord.Util.escapeMarkdown(paragraphString))
 
-        const regexLinkHints = new RegExp(`(${linkHintPrefix}\\d+${linkHintPostfix})`,"gm");
+        const regexLinkHints = new RegExp(`(${linkHintPrefix}\\d+${linkHintPostfix})`,"gm")
         paragraphString = paragraphString.replace(regexLinkHints, () => {
             linkIndex++
             return `[\[Link: ${linkResults[linkIndex-1][0]}\]](${linkResults[linkIndex-1][0]})`
@@ -152,13 +134,13 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         let fields = []
 
-        content.links.forEach((link, index) => {
+        json.links.forEach((link, index) => {
             fields.push({
                 name: link.text,
                 value: `[Link](${link.address})`
             })
         })
-        content.downloads.forEach((download, index) => {
+        json.downloads.forEach((download, index) => {
             fields.push({
                 name: `${download.text}`,
                 value: `[Download ${download.info}](${download.address})`
@@ -167,20 +149,17 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         let footerString = `Alle Angaben ohne Gewähr!  •  `
 
-        if (content.date !== undefined) {
-            footerString += `${content.date.day}.${content.date.month}.${content.date.year}`
+        let dateObj
+        if (json.date !== undefined) {
+            dateObj = luxon.DateTime.fromISO(json.date)
         } else {
-            let today = new Date();
-            let dd = String(today.getDate()).padStart(2, '0');
-            let mm = String(today.getMonth() + 1).padStart(2, '0'); // january is 0, so + 1!
-            let yyyy = today.getFullYear();
-
-            footerString += dd + '.' + mm + '.' + yyyy;
+            dateObj = luxon.DateTime.local()
         }
+        footerString += dateObj.toFormat('dd.MM.yyyy')
 
         return new Discord.MessageEmbed(
             {
-                "title": Discord.Util.escapeMarkdown(content.title) || "Neuer Aushang",
+                "title": Discord.Util.escapeMarkdown(json.title) || "Neuer Aushang",
                 "description": paragraphString,
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
                 // "color": 0x000fff,
@@ -197,10 +176,26 @@ class ScraperBlackBoard extends WebsiteScraper{
         );
     }
 
-    sortEmbeds(embedA, embedB) {
-        // TODO: finish sorting
+    sortJSON(jsonA, jsonB) {
+        const jsonADate = parseInt(luxon.DateTime.fromISO(jsonA.date).toFormat('yyyyMMddHHmmss'), 10)
+        const jsonBDate = parseInt(luxon.DateTime.fromISO(jsonB.date).toFormat('yyyyMMddHHmmss'), 10)
+
+        if (jsonADate < jsonBDate) {
+            // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
+            return -1
+        } else if (jsonADate > jsonBDate) {
+            // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
+            return 1
+        } else if (jsonB.title > jsonA.title) {
+            // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
+            return -1
+        } else if (jsonA.title > jsonB.title) {
+            // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
+            return 1
+        }
+        // console.log(`sorting: ${jsonADate} === ${jsonBDate} && ${jsonA.title} === ${jsonB.title}`)
         return 0
     }
 }
 
-export default new ScraperBlackBoard();
+export default new ScraperBlackBoard()

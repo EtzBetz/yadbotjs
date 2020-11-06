@@ -1,9 +1,7 @@
-import axios from 'axios'
-import cheerio from 'cheerio'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import yadBot from './YadBot'
 import config from '../config.json'
+import jsdom from 'jsdom'
 
 class ScraperRechnernetze extends WebsiteScraper{
 
@@ -18,36 +16,30 @@ class ScraperRechnernetze extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        this.log(`Parsing website...`)
-        const $ = cheerio.load(response.data)
+        const page = new jsdom.JSDOM(response.data).window.document
+        let elements = []
+        let entities = page.querySelectorAll("#content > div.clearfix > div > ul.verteiler > li > a")
+        this.log(`${entities.length} entries found...`)
 
-        let parentList = $("h2:contains('Praktikum')").siblings('div:has("ul.verteiler")').children('ul.verteiler')
+        entities.forEach((entity, index) => {
 
-        this.log(`${parentList.children().length} entries found...`)
-        // this.log(parentList.text().trim())
+            let entryTitle = entity.querySelector('strong').textContent.trim()
+            let entryLink = entity.href.trim()
 
-        let jsonEntries = []
-        parentList.children().each(function(index, blackBoardEntry) {
-
-            // console.log("-------")
-            // console.log(index, ":")
-            // console.log($(this).text().trim())
-            // console.log($(this).children('a').attr('href').trim())
-
-            let entryTitle = $(this).children('a').children('strong').text().trim()
-            let entryLink = $(this).children('a').attr('href').trim()
             if (entryLink.substring(0,1) === "/") {
                 entryLink = "https://www.fh-muenster.de" + entryLink
             }
+
             let entry = {
                 title: entryTitle,
                 link: entryLink,
             }
-            // console.log(entry)
-            jsonEntries.push(entry)
+
+            elements.push(entry)
+
         })
 
-        return jsonEntries
+        return elements
     }
 
     getScraperFileName(json) {
@@ -64,12 +56,11 @@ class ScraperRechnernetze extends WebsiteScraper{
 
         let fileName = content.title.split("").reverse().join("");
         let lastDotIndexTitle = fileName.indexOf('.')
-        // console.log(`index: "${lastDotIndexTitle}"`);
+
         if (lastDotIndexTitle !== -1) {
             fileName = fileName.substring(lastDotIndexTitle + 1)
         }
         fileName = fileName.split("").reverse().join("");
-        // console.log(`fileName: "${fileName}"`);
 
         return new Discord.MessageEmbed(
             {
@@ -80,11 +71,6 @@ class ScraperRechnernetze extends WebsiteScraper{
                 }
             }
         )
-    }
-
-    sortEmbeds(embedA, embedB) {
-        // TODO: finish sorting
-        return 0
     }
 }
 

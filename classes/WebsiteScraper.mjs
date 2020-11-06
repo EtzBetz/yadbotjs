@@ -1,11 +1,10 @@
 import axios from 'axios'
-import cheerio from 'cheerio'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
 import fs from 'fs';
 import config from '../config.json'
-import luxon from 'luxon'
 import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
+import jsdom from 'jsdom'
 
 export class WebsiteScraper {
 
@@ -53,19 +52,21 @@ export class WebsiteScraper {
         this.log(`Fetching website...`)
         const request = this.requestWebsite()
             .then((response) => {
+                this.log(`Parsing website...`)
                 const content = this.parseWebsiteContentToJSON(response)
                 this.setUpScraperModuleFolder((err) => {
                     this.filterNewContent(content, (filteredContent) => {
                         this.log(`${filteredContent.length} entries are new.`)
                         if (yadBot.getBot().user === null) {
-                            // TODO: create interval
-                            this.log("Bot is not yet online, not sending messages.")
-                            return
+                            this.log("Bot is not yet online, not sending messages..")
+                            while (yadBot.getBot().user === null) {
+                            }
+                            this.log("Bot is now online! Sending messages..")
                         }
+                        filteredContent = filteredContent.sort(this.sortJSON)
                         let embeds = []
                         filteredContent.forEach(content => {
                             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
-                            embeds = embeds.sort(this.sortEmbeds)
                         })
                         if (embeds.length >= 1) {
                             this.sendEmbedMessages(embeds)
@@ -87,14 +88,18 @@ export class WebsiteScraper {
     }
 
     parseWebsiteContentToJSON(response) {
-        this.log("Parsing website...")
-        const $ = cheerio.load(response.data)
-        let title = $('title');
-        return [
-            {
-                title: title.text()
-            }
-        ]
+        const page = new jsdom.JSDOM(response.data).window.document
+        let elements = []
+        let entities = page.querySelectorAll("title")
+        this.log(`${entities.length} entries found...`)
+
+        entities.forEach((entity, index) => {
+            elements.push({
+                title: entity.textContent.trim()
+            })
+        })
+
+        return elements
     }
 
     filterNewContent(newJson, callback) {
@@ -234,7 +239,7 @@ export class WebsiteScraper {
         });
     }
 
-    sortEmbeds(embedA, embedB) {
+    sortJSON(jsonA, jsonB) {
         return 0
     }
 

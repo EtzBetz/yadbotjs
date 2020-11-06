@@ -1,9 +1,6 @@
-import axios from 'axios'
-import cheerio from 'cheerio'
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import yadBot from './YadBot'
 import config from '../config.json'
 
 class ScraperFreeEpicGames extends WebsiteScraper{
@@ -149,64 +146,24 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         return embed
     }
 
-    sortEmbeds(embedA, embedB) {
-        const descriptionLetterA = embedA.description.substring(0,1)
-        const descriptionLetterB = embedB.description.substring(0,1)
+    sortJSON(jsonA, jsonB) {
+        const jsonADate = parseInt(luxon.DateTime.fromISO(jsonA.date).toFormat('yyyyMMddHHmmss'), 10)
+        const jsonBDate = parseInt(luxon.DateTime.fromISO(jsonB.date).toFormat('yyyyMMddHHmmss'), 10)
 
-        if (descriptionLetterA === descriptionLetterB) {
-            const startTextA = embedA.fields.find(field => field.name === "Startdatum").value
-            const startTextB = embedB.fields.find(field => field.name === "Startdatum").value
-
-            const yearA = parseInt(startTextA.substring(6, 10))
-            const monthA = parseInt(startTextA.substring(3, 5))
-            const dayOfMonthA = parseInt(startTextA.substring(0, 2))
-            const hourA = parseInt(startTextA.substring(11, 13))
-            const minuteA = parseInt(startTextA.substring(14, 16))
-            const yearB = parseInt(startTextB.substring(6, 10))
-            const monthB = parseInt(startTextB.substring(3, 5))
-            const dayOfMonthB = parseInt(startTextB.substring(0, 2))
-            const hourB = parseInt(startTextB.substring(11, 13))
-            const minuteB = parseInt(startTextB.substring(14, 16))
-            if (yearA < yearB) return -1 // TODO: calculate difference
-            else if (yearA > yearB) return 1
-            else if (monthA < monthB) return -1
-            else if (monthA > monthB) return 1
-            else if (dayOfMonthA < dayOfMonthB) return -1
-            else if (dayOfMonthA > dayOfMonthB) return 1
-            else if (hourA < hourB) return -1
-            else if (hourA > hourB) return 1
-            else if (minuteA < minuteB) return -1
-            else if (minuteA > minuteB) return 1
-            else {
-                const endTextA = embedA.fields.find(field => field.name === "Enddatum").value
-                const endTextB = embedB.fields.find(field => field.name === "Enddatum").value
-
-                const yearA = parseInt(endTextA.substring(6, 10))
-                const monthA = parseInt(endTextA.substring(3, 5))
-                const dayOfMonthA = parseInt(endTextA.substring(0, 2))
-                const hourA = parseInt(endTextA.substring(11, 13))
-                const minuteA = parseInt(endTextA.substring(14, 16))
-                const yearB = parseInt(endTextB.substring(6, 10))
-                const monthB = parseInt(endTextB.substring(3, 5))
-                const dayOfMonthB = parseInt(endTextB.substring(0, 2))
-                const hourB = parseInt(endTextB.substring(11, 13))
-                const minuteB = parseInt(endTextB.substring(14, 16))
-                if (yearA < yearB) return -1 // TODO: calculate difference
-                else if (yearA > yearB) return 1
-                else if (monthA < monthB) return -1
-                else if (monthA > monthB) return 1
-                else if (dayOfMonthA < dayOfMonthB) return -1
-                else if (dayOfMonthA > dayOfMonthB) return 1
-                else if (hourA < hourB) return -1
-                else if (hourA > hourB) return 1
-                else if (minuteA < minuteB) return -1
-                else if (minuteA > minuteB) return 1
-            }
-        } else if (descriptionLetterA === "B") {
+        if (jsonADate < jsonBDate) {
+            // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
             return -1
-        } else if (descriptionLetterB === "B") {
+        } else if (jsonADate > jsonBDate) {
+            // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
+            return 1
+        } else if (jsonB.title > jsonA.title) {
+            // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
+            return -1
+        } else if (jsonA.title > jsonB.title) {
+            // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
             return 1
         }
+        // console.log(`sorting: ${jsonADate} === ${jsonBDate} && ${jsonA.title} === ${jsonB.title}`)
         return 0
     }
 }

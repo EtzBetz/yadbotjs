@@ -1,7 +1,7 @@
-import cheerio from 'cheerio'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
 import config from '../config.json'
+import jsdom from 'jsdom'
 
 class ScraperLab4Inf extends WebsiteScraper{
 
@@ -16,55 +16,26 @@ class ScraperLab4Inf extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        this.log(`Parsing website...`)
-        const $ = cheerio.load(response.data)
+        const page = new jsdom.JSDOM(response.data).window.document
         let elements = []
+        let entities = page.querySelectorAll("table > tbody > tr > td")
 
+        entities.forEach((columnElement, columnIndex) => {
 
+            let rows = columnElement.querySelectorAll("ol > li > a")
 
-
-        let columnsList = $('table tbody tr:has(td)')
-        // this.log(`${columnsList.length} entries found...`)
-        // this.debugLog(columnsList.text().trim())
-
-
-        columnsList.children('td').each(function(index, column) {
-
-            // console.log("-------")
-            // console.log(index)
-            $(this).children('ol').children('li').children('a').each(function(indexChildren, row) {
-                // console.log("-------")
-                // console.log(indexChildren)
-                let category = index
-                let title = $(this).text().trim()
-                let address = $(this).attr('href').trim()
-
-                // console.log(`${category}, ${title}, ${address}`)
-
+            rows.forEach((rowElement, rowIndex) => {
                 let entry = {
-                    category,
-                    title,
-                    address
+                    category: columnIndex,
+                    title: rowElement.textContent.trim(),
+                    address: rowElement.href.trim()
                 }
 
                 elements.push(entry)
             })
-
-            // $(this).children().each(function(indexChildren, row) {
-            //     console.log("-------")
-            //     console.log(indexChildren)
-            //     console.log($(this).children().text().trim())
-            // })
         })
-
-
-        // let scriptsList = $('table>tbody>tr').children('div.clearfix').children('div')
-        // let trainingsList = $('#content').children('div.clearfix').children('div')
-        // let testsList = $('#content').children('div.clearfix').children('div')
-
-
-
         this.log(`${elements.length} entries found...`)
+
         return elements
     }
 
