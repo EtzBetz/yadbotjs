@@ -33,9 +33,9 @@ export default {
                     "description": `Here is a list of all scrapers and their status:${statusDescription}`
                 })
             )
-            break;
+            break
         case "toggle":
-            const scraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(args[1].toLowerCase()));
+            const scraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(args[1].toLowerCase()))
 
             const turnOnScrapers = args[2] !== undefined && args[2] === "on" || args[2] === "true" || args[2] === "1"
             const turnOffScrapers = args[2] !== undefined && args[2] === "off" || args[2] === "false" || args[2] === "0"
@@ -78,7 +78,7 @@ export default {
                     })
                 )
             }
-            break;
+            break
         }
     }
 }

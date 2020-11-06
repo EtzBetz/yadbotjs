@@ -57,7 +57,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 }
             })
 
-            let entryDateString;
+            let entryDateString
             let entryDateElement = entity.querySelector('div > div > p > strong')
 
             // check if the <strong> element exists
@@ -173,7 +173,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 },
                 "fields": fields
             }
-        );
+        )
     }
 
     sortJSON(jsonA, jsonB) {

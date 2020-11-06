@@ -51,21 +51,21 @@ class ScraperLab4Inf extends WebsiteScraper{
         switch (content.category) {
         case 0:
             category = "Skript-"
-            break;
+            break
         case 1:
             category = "Übungs-"
-            break;
+            break
         case 2:
             category = "Praktikums-"
-            break;
+            break
         default:
             category = ""
-            break;
+            break
         }
 
-        let fileType = content.address.split("").reverse().join("");
+        let fileType = content.address.split("").reverse().join("")
         let lastDotIndex = fileType.indexOf('.')
-        fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("");
+        fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")
 
         return new Discord.MessageEmbed(
             {
@@ -79,4 +79,4 @@ class ScraperLab4Inf extends WebsiteScraper{
     }
 }
 
-export default new ScraperLab4Inf();
+export default new ScraperLab4Inf()

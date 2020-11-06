@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
-import fs from 'fs';
+import fs from 'fs'
 import config from '../config.json'
 import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
 import jsdom from 'jsdom'
@@ -84,7 +84,7 @@ export class WebsiteScraper {
             url: this.url,
             headers: {'User-Agent': this.userAgent},
             responseType: this.expectedResponse
-        });
+        })
     }
 
     parseWebsiteContentToJSON(response) {
@@ -105,7 +105,7 @@ export class WebsiteScraper {
     filterNewContent(newJson, callback) {
 
         let filteredJsonArray = []
-        let j = 0;
+        let j = 0
         for (let i = 0; i < newJson.length; i++) {
             const filePath = `${this.getScraperFilesDirectory()}/${this.getScraperFileName(newJson[i])}`
 
@@ -116,7 +116,7 @@ export class WebsiteScraper {
                     if (err) {
                         this.debugLog(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
                     }
-                    let jsonString = JSON.stringify(newJson[i]);
+                    let jsonString = JSON.stringify(newJson[i])
 
                     if (readData?.toString() === jsonString) {
                         j++
@@ -137,9 +137,9 @@ export class WebsiteScraper {
                             { flag: 'w' },
                             (err) => {
                                 if (err) {
-                                    console.dir(err);
+                                    console.dir(err)
                                 }
-                                this.debugLog(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`);
+                                this.debugLog(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`)
                                 j++
 
                                 // this.debugLog("debug5:", j)
@@ -148,7 +148,7 @@ export class WebsiteScraper {
                                     callback(filteredJsonArray)
                                 }
                             }
-                        );
+                        )
                     }
                 }
             )
@@ -158,7 +158,7 @@ export class WebsiteScraper {
     setUpScraperModuleFolder(callback) {
         fs.mkdir(this.getScraperFilesDirectory(), { recursive: true }, (err) => {
             if (err) {
-                console.dir(err);
+                console.dir(err)
             }
             callback(err)
         })
@@ -180,7 +180,7 @@ export class WebsiteScraper {
         const regexUE = /[/\\ü]/g
         const regexDoubleUnderscore = /__+/g
 
-        let replaced = fileName.toLowerCase();
+        let replaced = fileName.toLowerCase()
         replaced = replaced.replace(regexSpecialChars, '_')
         replaced = replaced.replace(regexAE, 'ae')
         replaced = replaced.replace(regexOE, 'oe')
@@ -236,7 +236,7 @@ export class WebsiteScraper {
             description: `Website title: "${content.title}"`,
             color: 0xeb6734,
             url: this.url
-        });
+        })
     }
 
     sortJSON(jsonA, jsonB) {
@@ -249,18 +249,18 @@ export class WebsiteScraper {
             title: `Update`,
             description: `Yad has been updated, some embeds will eventually be resent!`,
             color: 0xff6f00
-        });
+        })
     }
 
     filterEmbedLength(embed) {
-        const TITLE_LIMIT = 256;
-        const DESCRIPTION_LIMIT = 2048;
-        const FIELDS_COUNT_LIMIT = 25;
-        const FIELDS_NAME_LIMIT = 256;
-        const FIELDS_VALUE_LIMIT = 1024;
-        const FOOTER_TEXT_LIMIT = 2048;
-        const AUTHOR_NAME_LIMIT = 256;
-        const TOTAL_CHARACTERS_LIMIT = 6000;
+        const TITLE_LIMIT = 256
+        const DESCRIPTION_LIMIT = 2048
+        const FIELDS_COUNT_LIMIT = 25
+        const FIELDS_NAME_LIMIT = 256
+        const FIELDS_VALUE_LIMIT = 1024
+        const FOOTER_TEXT_LIMIT = 2048
+        const AUTHOR_NAME_LIMIT = 256
+        const TOTAL_CHARACTERS_LIMIT = 6000
 
         if (embed?.title?.length > TITLE_LIMIT) {
             this.log(`Title limit has been exceeded in current embed "${embed.title.substring(0,50)}"!`)

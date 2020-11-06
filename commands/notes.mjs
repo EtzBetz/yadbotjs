@@ -9,10 +9,10 @@ export default {
     description: "Lists, adds and removes entries to a note-list",
     args: "(<add/remove>) (@add<note>) (@remove<note-number>)",
     execute(message, args) {
-        let file = editJsonFile(`./notes/notes.json`);
+        let file = editJsonFile(`./notes/notes.json`)
 
         if (file.get()[message.author.id] === undefined) {
-            file.set([message.author.id], []);
+            file.set([message.author.id], [])
             file.save()
         }
 
@@ -27,8 +27,8 @@ export default {
         } else if (args[0] === "add") {
             let notes = file.get()
             notes[message.author.id]?.push(args.shift() && args.join(' '))
-            file.set(message.author.id, notes[message.author.id]);
-            file.save();
+            file.set(message.author.id, notes[message.author.id])
+            file.save()
 
             let notesString = ""
             notes[message.author.id]?.forEach((entry, index) => {
@@ -49,8 +49,8 @@ export default {
 
             let oldNotes = JSON.stringify(notes[message.author.id])
             notes[message.author.id]?.splice((parseInt(args[1]) - 1), 1)
-            file.set(message.author.id, notes[message.author.id]);
-            file.save();
+            file.set(message.author.id, notes[message.author.id])
+            file.save()
 
             let notesString = ""
             JSON.parse(oldNotes).forEach((entry, index) => {

@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs'
 import Discord from "discord.js"
 import config from '../config.json'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
@@ -11,7 +11,7 @@ import { log, debugLog } from '../index'
 class YadBot {
 
 	constructor() {
-		this.bot = new Discord.Client();
+		this.bot = new Discord.Client()
 
 		this.scrapers = [
 			scraperBlackBoard,
@@ -27,35 +27,35 @@ class YadBot {
 		this.bot.once('ready', () => {
 			log(`---------------------------------------------------------`)
 			log('I\'m online! Setting presence...')
-			this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' });
+			this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' })
 			log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
 			this.bot.guilds.cache.forEach(guild => {
 				log(` - ${guild.name}\t( ${guild.id} )`)
 			})
 			log(`---------------------------------------------------------`)
-		});
+		})
 
-		this.getBot().login(config.token);
-		this.exitBindings();
+		this.getBot().login(config.token)
+		this.exitBindings()
 	}
 
 	exitBindings() {
 		// Even if the process gets an call to exit, continues until the exitHandler function is finished
-		process.stdin.resume();
+		process.stdin.resume()
 
-		process.on('exit', this.exitHandler.bind(this));
-		process.on('SIGINT', this.exitHandler.bind(this, {exit:true}));
-		process.on('SIGUSR1', this.exitHandler.bind(this, {exit:true}));
-		process.on('SIGUSR2', this.exitHandler.bind(this, {exit:true}));
-		process.on('uncaughtException', this.exitHandler.bind(this, {exit:true}));
+		process.on('exit', this.exitHandler.bind(this))
+		process.on('SIGINT', this.exitHandler.bind(this, {exit:true}))
+		process.on('SIGUSR1', this.exitHandler.bind(this, {exit:true}))
+		process.on('SIGUSR2', this.exitHandler.bind(this, {exit:true}))
+		process.on('uncaughtException', this.exitHandler.bind(this, {exit:true}))
 	}
 
 	exitHandler(options, exitCode) {
 		// destroy the Discord connection of the bot
-		this.getBot()?.destroy();
+		this.getBot()?.destroy()
 
 		// exit the node process
-		process.exit(0);
+		process.exit(0)
 	}
 
 	bindCommands() {
@@ -76,15 +76,15 @@ class YadBot {
 		for (const file of this.eventFiles) {
 			import(`./../events/${file}`)
 				.then((event) => {
-					let eventName = file.split(".")[0];
-					this.bot.on(eventName, event.default.bind(this.bot));
+					let eventName = file.split(".")[0]
+					this.bot.on(eventName, event.default.bind(this.bot))
 				})
 		}
 	}
 
 	unbindEvents() {
 		for (const file of this.eventFiles) {
-			let eventName = file.split(".")[0];
+			let eventName = file.split(".")[0]
 			this.bot.listeners(eventName).forEach((oldEvent) => {
 				this.bot.off(eventName, oldEvent)
 			})
@@ -116,7 +116,7 @@ class YadBot {
 	}
 
 	getBot() {
-		return this.bot;
+		return this.bot
 	}
 
 	sendCommandErrorEmbed(originMessage, errorMessage) {
@@ -151,4 +151,4 @@ class YadBot {
 
 }
 
-export default new YadBot();
+export default new YadBot()

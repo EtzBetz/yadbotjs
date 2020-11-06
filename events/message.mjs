@@ -4,7 +4,7 @@ import yadBot from './../classes/YadBot'
 import { log } from '../index'
 
 export default (message) => {
-    const prefix = config.prefix;
+    const prefix = config.prefix
 
     if (message.author.bot) return
     if (message.channel.type === "dm" && message.author.id !== config.owner) yadBot.mirrorDirectMessageToAdmin(message)
@@ -15,8 +15,8 @@ export default (message) => {
 
     if (!message.content.startsWith(prefix)) return
 
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    const commandName = args.shift().toLowerCase();
+    const args = message.content.slice(prefix.length).trim().split(/ +/)
+    const commandName = args.shift().toLowerCase()
 
     log(`Requested command ${config.prefix}${commandName} ("${message.content}") from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
 
@@ -62,4 +62,4 @@ export default (message) => {
         return
     }
     command?.execute(message, args)
-};
+}

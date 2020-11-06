@@ -32,8 +32,8 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             }
             entry.slug = slug
 
-            let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value;
-            let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value;
+            let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value
+            let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value
             if (developer !== undefined) {
                 entry.developer = developer
             }
@@ -59,10 +59,10 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             let freePromotion = promotions.find(
                 promotion => promotion.discountSetting?.discountPercentage?.toString() === "0" ||
                 promotion.discountSetting?.discountPercentage?.toString() === "100"
-            );
+            )
 
-            entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO();
-            entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO();
+            entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO()
+            entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO()
             if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
                 elements.push(entry)
             }
@@ -72,7 +72,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     getScraperFileName(json) {
-        let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd');
+        let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.slug}`
         return this.filterStringForFileName(fileName + ".json")
     }
@@ -168,4 +168,4 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 }
 
-export default new ScraperFreeEpicGames();
+export default new ScraperFreeEpicGames()

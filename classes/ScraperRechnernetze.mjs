@@ -50,17 +50,17 @@ class ScraperRechnernetze extends WebsiteScraper{
     getEmbed(content) {
         this.log(`Generating embed...`)
 
-        let fileType = content.link.split("").reverse().join("");
+        let fileType = content.link.split("").reverse().join("")
         let lastDotIndex = fileType.indexOf('.')
-        fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("");
+        fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")
 
-        let fileName = content.title.split("").reverse().join("");
+        let fileName = content.title.split("").reverse().join("")
         let lastDotIndexTitle = fileName.indexOf('.')
 
         if (lastDotIndexTitle !== -1) {
             fileName = fileName.substring(lastDotIndexTitle + 1)
         }
-        fileName = fileName.split("").reverse().join("");
+        fileName = fileName.split("").reverse().join("")
 
         return new Discord.MessageEmbed(
             {
@@ -74,4 +74,4 @@ class ScraperRechnernetze extends WebsiteScraper{
     }
 }
 
-export default new ScraperRechnernetze();
+export default new ScraperRechnernetze()
