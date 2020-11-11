@@ -6,6 +6,7 @@ import scraperFreeEpicGames from './ScraperFreeEpicGames'
 import scraperLab4Inf from './ScraperLab4Inf'
 import scraperRechnernetze from './ScraperRechnernetze.mjs'
 import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
+import scraperTeamspeakBadges from './ScraperTeamspeakBadges.mjs'
 import { log, debugLog } from '../index'
 
 class YadBot {
@@ -18,7 +19,8 @@ class YadBot {
 			scraperFreeEpicGames,
 			scraperLab4Inf,
 			scraperRechnernetze,
-			scraperGuildWars2News
+			scraperGuildWars2News,
+			scraperTeamspeakBadges
 		]
 
 		this.bot.commands = new Discord.Collection()
