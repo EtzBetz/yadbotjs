@@ -122,6 +122,14 @@ class YadBot {
 		return this.bot
 	}
 
+	getUserSnowflakeFromMentionString(mentionString) {
+		const snowflakeRegex = /<@!(\d+)>/g
+		let idResult = snowflakeRegex.exec(mentionString)
+
+		if (idResult !== null) return idResult[1]
+		return false
+	}
+
 	sendCommandErrorEmbed(originMessage, errorMessage) {
 		if (!errorMessage.endsWith(".") && !errorMessage.endsWith("!")) {
 			errorMessage += "."
