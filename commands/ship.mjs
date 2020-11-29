@@ -103,11 +103,11 @@ export default {
                                 fields: [
                                     {
                                         "name": "Ships",
-                                        "value": shipList
+                                        "value": shipList !== "" ? shipList : "Owns no ship yet."
                                     },
                                     {
                                         "name": "Vehicles",
-                                        "value": vehicleList
+                                        "value": vehicleList !== "" ? vehicleList : "Owns no vehicle yet."
                                     },
                                 ]
                             }))
