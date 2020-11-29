@@ -7,7 +7,7 @@ export default {
     enabled: true,
     args: "<add/remove/list> (@add/@remove<ship-name>) (<user>)",
     description: "Can be used to manage your owned ships inside the Star Citizen Universe.",
-    onlyServer: "488635560613773314",
+    onlyServer: "677333180784836618",
     execute(message, args) {
         let userToHandle = message.author
 
