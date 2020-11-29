@@ -12,12 +12,13 @@ export default {
         let userToHandle = message.author
 
         if (args[0] === "add" || args[0] === "remove") {
+            let mentionArgumentIndex = 2
             if (
-                message.mentions.members.size === 1 &&
-                yadBot.getUserSnowflakeFromMentionString(args[2]) ===
-                message.mentions.members.get(yadBot.getUserSnowflakeFromMentionString(args[2])).id
+                message.mentions.users.size === 1 &&
+                yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]) ===
+                message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex])).id
             ){
-                userToHandle = message.mentions.members.get(yadBot.getUserSnowflakeFromMentionString(args[2]))
+                userToHandle = message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))
             }
 
             let shipName = undefined
@@ -69,12 +70,13 @@ export default {
                 })
 
         } else if (args[0] === "list") {
+            let mentionArgumentIndex = 1
             if (
-                message.mentions.members.size === 1 &&
-                yadBot.getUserSnowflakeFromMentionString(args[2]) ===
-                message.mentions.members.get(yadBot.getUserSnowflakeFromMentionString(args[2])).id
+                message.mentions.users.size === 1 &&
+                yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]) ===
+                message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))?.id
             ) {
-                userToHandle = message.mentions.members.get(yadBot.getUserSnowflakeFromMentionString(args[2]))
+                userToHandle = message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))
             }
 
             let shipList = ""
