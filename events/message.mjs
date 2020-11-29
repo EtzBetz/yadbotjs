@@ -15,6 +15,7 @@ export default (message) => {
 
     if (!message.content.startsWith(prefix)) return
 
+    // TODO: parse parts from " to " as one argument: "Mercury Star Runner"
     const args = message.content.slice(prefix.length).trim().split(/ +/)
     const commandName = args.shift().toLowerCase()
 
@@ -29,6 +30,13 @@ export default (message) => {
 
     if (!command.enabled && !yadBot.isMessageAuthorOwner(message)) {
         yadBot.sendCommandErrorEmbed(message, `Command is currently disabled. Try again later`)
+        return
+    }
+
+    // todo: add check if pm and user is part of required guild
+    // todo: add required guild's name in the error message
+    if (command.onlyServer && message.guild?.id !== command.onlyServer) {
+        yadBot.sendCommandErrorEmbed(message, `You can only access this command from a specific server`)
         return
     }
 

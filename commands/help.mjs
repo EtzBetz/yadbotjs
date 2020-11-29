@@ -13,6 +13,8 @@ export default {
             let commandTitle = `\`${config.prefix}${command.name}\``
             let commandHelpText = `${command.description}`
 
+            // todo: allow e.g. in ship command non-optional parameters: @add/@remove<ship-name> (without braces)
+            // todo: update all parameters where non-optional
             if (command.args) {
                 let commandArgs = ""
                 let inParameter = false
@@ -33,6 +35,10 @@ export default {
                 }
 
                 commandTitle = `${commandTitle} ${commandArgs}`
+            }
+
+            if (command.onlyServer) {
+                commandHelpText = `Requires server membership.\n${commandHelpText}`
             }
 
             if (command.onlyAdmin) {
