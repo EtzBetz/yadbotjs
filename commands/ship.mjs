@@ -277,6 +277,7 @@ export default {
         "Consolidated Mustang Omega",
         "Consolidated Mustang Omega : AMD Edition",
         "Consolidated Pioneer",
+        "Consolidated CNOU Nomad",
         "Crusader A2 Hercules",
         "Crusader Ares Inferno",
         "Crusader Ares Ion",
