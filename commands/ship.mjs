@@ -119,12 +119,18 @@ export default {
 
                         shipList.forEach((ship) => {
                             if (shipString !== "") shipString += "\n"
-                            shipString += ` - ${ship.name} (${ship.count})`
+                            shipString += ` - ${ship.count}x ${ship.name} `
+                            ship.users.forEach((user) => {
+                                shipString += `(${user.displayName})`
+                            })
                         })
 
                         vehicleList.forEach((vehicle) => {
                             if (vehicleString !== "") vehicleString += "\n"
-                            vehicleString += ` - ${vehicle.name} (${vehicle.count})`
+                            vehicleString += ` - ${vehicle.count}x ${vehicle.name} `
+                            vehicle.users.forEach((user) => {
+                                vehicleString += `(${user.displayName})`
+                            })
                         })
 
                         message.channel.send(new Discord.MessageEmbed({
