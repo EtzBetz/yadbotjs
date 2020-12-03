@@ -138,16 +138,7 @@ export default {
                                 "name": `All Ships and Vehicles`,
                                 "icon_url": guild.iconURL({dynamic: true} )
                             },
-                            fields: [
-                                {
-                                    "name": "Ships",
-                                    "value": shipString !== "" ? shipString : "No ships added."
-                                },
-                                {
-                                    "name": "Vehicles",
-                                    "value": vehicleString !== "" ? vehicleString : "No vehicles added."
-                                },
-                            ]
+                            description: `**Ships:**\n${shipString}\n\n**Vehicles:**\n${vehicleString}`
                         }))
                     })
 
