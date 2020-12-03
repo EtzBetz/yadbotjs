@@ -121,7 +121,7 @@ export default {
                             if (shipString !== "") shipString += "\n"
                             shipString += ` - ${ship.count}x ${ship.name} `
                             ship.users.forEach((user) => {
-                                shipString += `(${user.displayName})`
+                                shipString += `(${user.toString()})`
                             })
                         })
 
@@ -129,7 +129,7 @@ export default {
                             if (vehicleString !== "") vehicleString += "\n"
                             vehicleString += ` - ${vehicle.count}x ${vehicle.name} `
                             vehicle.users.forEach((user) => {
-                                vehicleString += `(${user.displayName})`
+                                vehicleString += `(${user.toString()})`
                             })
                         })
 
