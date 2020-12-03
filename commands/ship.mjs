@@ -70,52 +70,130 @@ export default {
                 })
 
         } else if (args[0] === "list") {
-            let mentionArgumentIndex = 1
-            if (
-                message.mentions.users.size === 1 &&
-                yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]) ===
-                message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))?.id
-            ) {
-                userToHandle = message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))
-            }
+            if (args[1] === "all") {
+                let shipList = []
+                let vehicleList = []
 
-            let shipList = ""
-            let vehicleList = ""
-            yadBot.getBot().guilds.fetch(this.onlyServer)
-                .then(guild => {
-                    guild.members.fetch(userToHandle)
-                        .then(guildMember => {
-                            guildMember.roles.cache.forEach((memberRole) => {
+                yadBot.getBot().guilds.fetch(this.onlyServer)
+                    .then(guild => {
+                        guild.members.cache.each((member) => {
+                            member.roles.cache.forEach((memberRole) => {
                                 const roleColor = memberRole.color.toString(16)
                                 if (roleColor === "2e90ff") {
-                                    if (shipList !== "") shipList += "\n"
-                                    shipList += ` - ${memberRole.name}`
+                                    let shipIndex = shipList.findIndex((ship) => {
+                                        return ship.name === memberRole.name
+                                    })
+
+                                    if (shipIndex === -1) {
+                                        shipList.push({
+                                            name: memberRole.name,
+                                            count: 1,
+                                            users: [member]
+                                        })
+                                    } else {
+                                        shipList[shipIndex].count++
+                                        shipList[shipIndex].users.push(member)
+                                    }
                                 }
                                 if (roleColor === "4ca264") {
-                                    if (vehicleList !== "") vehicleList += "\n"
-                                    vehicleList += ` - ${memberRole.name}`
+                                    let vehicleIndex = vehicleList.findIndex((vehicle) => {
+                                        return vehicle.name === memberRole.name
+                                    })
+
+                                    if (vehicleIndex === -1) {
+                                        vehicleList.push({
+                                            name: memberRole.name,
+                                            count: 1,
+                                            users: [member]
+                                        })
+                                    } else {
+                                        vehicleList[vehicleIndex].count++
+                                        vehicleList[vehicleIndex].users.push(member)
+                                    }
                                 }
                             })
-
-                            message.channel.send(new Discord.MessageEmbed({
-                                "author": {
-                                    "name": `${userToHandle.username}'s Ships and Vehicles`,
-                                    "icon_url": userToHandle.avatarURL({dynamic: true} )
-                                },
-                                fields: [
-                                    {
-                                        "name": "Ships",
-                                        "value": shipList !== "" ? shipList : "Owns no ship yet."
-                                    },
-                                    {
-                                        "name": "Vehicles",
-                                        "value": vehicleList !== "" ? vehicleList : "Owns no vehicle yet."
-                                    },
-                                ]
-                            }))
-
                         })
-                })
+
+                        let shipString = ""
+                        let vehicleString = ""
+
+                        shipList.forEach((ship) => {
+                            if (shipString !== "") shipString += "\n"
+                            shipString += ` - ${ship.name} (${ship.count})`
+                        })
+
+                        vehicleList.forEach((vehicle) => {
+                            if (vehicleString !== "") vehicleString += "\n"
+                            vehicleString += ` - ${vehicle.name} (${vehicle.count})`
+                        })
+
+                        message.channel.send(new Discord.MessageEmbed({
+                            "author": {
+                                "name": `All Ships and Vehicles`,
+                                "icon_url": guild.iconURL({dynamic: true} )
+                            },
+                            fields: [
+                                {
+                                    "name": "Ships",
+                                    "value": shipString !== "" ? shipString : "No ships added."
+                                },
+                                {
+                                    "name": "Vehicles",
+                                    "value": vehicleString !== "" ? vehicleString : "No vehicles added."
+                                },
+                            ]
+                        }))
+                    })
+
+
+            } else {
+                let mentionArgumentIndex = 1
+                if (
+                    message.mentions.users.size === 1 &&
+                    yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]) ===
+                    message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))?.id
+                ) {
+                    userToHandle = message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))
+                }
+
+                let shipList = ""
+                let vehicleList = ""
+                yadBot.getBot().guilds.fetch(this.onlyServer)
+                    .then(guild => {
+                        guild.members.fetch(userToHandle)
+                            .then(guildMember => {
+                                guildMember.roles.cache.forEach((memberRole) => {
+                                    const roleColor = memberRole.color.toString(16)
+                                    if (roleColor === "2e90ff") {
+                                        if (shipList !== "") shipList += "\n"
+                                        shipList += ` - ${memberRole.name}`
+                                    }
+                                    if (roleColor === "4ca264") {
+                                        if (vehicleList !== "") vehicleList += "\n"
+                                        vehicleList += ` - ${memberRole.name}`
+                                    }
+                                })
+
+                                message.channel.send(new Discord.MessageEmbed({
+                                    "author": {
+                                        "name": `${userToHandle.username}'s Ships and Vehicles`,
+                                        "icon_url": userToHandle.avatarURL({dynamic: true} )
+                                    },
+                                    fields: [
+                                        {
+                                            "name": "Ships",
+                                            "value": shipList !== "" ? shipList : "Owns no ship yet."
+                                        },
+                                        {
+                                            "name": "Vehicles",
+                                            "value": vehicleList !== "" ? vehicleList : "Owns no vehicle yet."
+                                        },
+                                    ]
+                                }))
+
+                            })
+                    })
+            }
         }
     },
     shipNames: [
