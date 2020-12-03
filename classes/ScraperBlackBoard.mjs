@@ -23,60 +23,61 @@ class ScraperBlackBoard extends WebsiteScraper{
         this.log(`${entities.length} entries found...`)
 
         entities.forEach((entity, index) => {
+            if (entity.textContent.trim() !== "") {
+                let entryParagraphs = []
 
-            let entryParagraphs = []
+                entity.querySelectorAll("div > div > p").forEach((entityParagraph, paragraphIndex) => {
+                    let paragraph = entityParagraph.textContent.trim()
+                    if (paragraphIndex === 0) {
+                        paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
+                    }
+                    entryParagraphs.push(paragraph)
+                })
 
-            entity.querySelectorAll("div > div > p").forEach((entityParagraph, paragraphIndex) => {
-                let paragraph = entityParagraph.textContent.trim()
-                if (paragraphIndex === 0) {
-                    paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
+                let entryLinks = [], entryDownloads = []
+
+                entity.querySelectorAll("div:nth-child(3) > ul.verteiler > li").forEach((linkContainer, linkIndex) => {
+                    let linkText = linkContainer.querySelector('a > strong')?.textContent.trim()
+                    let linkAddress = linkContainer.querySelector('a').href?.trim()
+
+                    if (linkAddress.substring(0, 1) === "/") {
+                        linkAddress = "https://www.fh-muenster.de" + linkAddress
+                    }
+
+                    let downloadText = linkContainer.querySelector('a[onclick]')?.textContent.trim()
+                    let downloadInfo = linkContainer.querySelector('a[onclick] > small')?.textContent.trim()
+                    downloadText = downloadText?.substring(0, downloadText.length - downloadInfo.length).trim()
+
+                    if (downloadText === undefined) {
+                        // button is link
+                        entryLinks.push({ text: linkText, address: linkAddress })
+                    } else {
+                        // button is download
+                        entryDownloads.push({ text: downloadText, address: linkAddress, info: downloadInfo })
+                    }
+                })
+
+                let entryDateString
+                let entryDateElement = entity.querySelector('div > div > p > strong')
+
+                // check if the <strong> element exists
+                if (entryDateElement !== null) {
+                    entryDateString = entryDateElement?.textContent.trim()
+                } else { // otherwise go back to it's parent
+                    entryDateElement = entity.querySelector('div > div > p')
+                    let firstParagraph = entryDateElement.textContent.trim()
+                    entryDateString = firstParagraph.substring(0, firstParagraph.indexOf('|') - 1).trim()
                 }
-                entryParagraphs.push(paragraph)
-            })
 
-            let entryLinks = [], entryDownloads = []
-
-            entity.querySelectorAll("div:nth-child(3) > ul.verteiler > li").forEach((linkContainer, linkIndex) => {
-                let linkText = linkContainer.querySelector('a > strong')?.textContent.trim()
-                let linkAddress = linkContainer.querySelector('a').href?.trim()
-
-                if (linkAddress.substring(0,1) === "/") {
-                    linkAddress = "https://www.fh-muenster.de" + linkAddress
+                let entry = {
+                    title: entity.querySelector('h2')?.textContent.trim(),
+                    date: this.parseDateString(entryDateString),
+                    paragraphs: entryParagraphs,
+                    links: entryLinks,
+                    downloads: entryDownloads
                 }
-
-                let downloadText = linkContainer.querySelector('a[onclick]')?.textContent.trim()
-                let downloadInfo = linkContainer.querySelector('a[onclick] > small')?.textContent.trim()
-                downloadText = downloadText?.substring(0, downloadText.length-downloadInfo.length).trim()
-
-                if (downloadText === undefined) {
-                    // button is link
-                    entryLinks.push({text: linkText, address: linkAddress})
-                } else {
-                    // button is download
-                    entryDownloads.push({text: downloadText, address: linkAddress, info: downloadInfo})
-                }
-            })
-
-            let entryDateString
-            let entryDateElement = entity.querySelector('div > div > p > strong')
-
-            // check if the <strong> element exists
-            if (entryDateElement !== undefined) {
-                entryDateString = entryDateElement.textContent.trim()
-            } else { // otherwise go back to it's parent
-                entryDateElement = entity.querySelector('div > div > p')
-                let firstParagraph = entryDateElement.textContent.trim()
-                entryDateString = firstParagraph.substring(0, firstParagraph.indexOf('|')-1).trim()
+                elements.push(entry)
             }
-
-            let entry = {
-                title: entity.querySelector('h2').textContent.trim(),
-                date: this.parseDateString(entryDateString),
-                paragraphs: entryParagraphs,
-                links: entryLinks,
-                downloads: entryDownloads
-            }
-            elements.push(entry)
         })
 
         return elements
@@ -159,7 +160,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         return new Discord.MessageEmbed(
             {
-                "title": Discord.Util.escapeMarkdown(json.title) || "Neuer Aushang",
+                "title": json.title !== undefined ? Discord.Util.escapeMarkdown(json.title) : "Neuer Aushang",
                 "description": paragraphString,
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
                 // "color": 0x000fff,
