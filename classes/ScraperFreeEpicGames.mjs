@@ -21,7 +21,10 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
             let entry = {}
             entry.title = game.title
-            entry.imageUrl = game.keyImages?.find(image => image.type === "OfferImageWide").url
+            entry.imageUrl = game.keyImages?.find(image => image.type === "OfferImageWide")?.url
+            if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
+                entry.imageUrl = game.keyImages[0].url
+            }
 
             let slug
             const slashPosition = game.productSlug.toString().indexOf('/')
@@ -95,9 +98,6 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 "title": content.title,
                 "description": descriptionString,
                 "url": `https://www.epicgames.com/store/de/product/${content.slug}/home`,
-                "image": {
-                    "url": content.imageUrl
-                },
                 "author": {
                     "name": "Epic Games Store",
                     "url": "https://www.epicgames.com/store/de/free-games",
@@ -122,6 +122,12 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 ]
             }
         )
+
+        if (content.imageUrl !== undefined) {
+            embed.image =  {
+                url: content.imageUrl
+            }
+        }
 
         if (content.developer !== undefined) {
             embed.fields.push(
