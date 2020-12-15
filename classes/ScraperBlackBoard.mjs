@@ -26,10 +26,25 @@ class ScraperBlackBoard extends WebsiteScraper{
             if (entity.textContent.trim() !== "") {
                 let entryParagraphs = []
 
-                entity.querySelectorAll("div > div > p").forEach((entityParagraph, paragraphIndex) => {
-                    let paragraph = entityParagraph.textContent.trim()
-                    if (paragraphIndex === 0) {
-                        paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
+                entity.querySelectorAll("div > div > div > div > div > p, div > div > div > div > div > ul").forEach((entityParagraph, paragraphIndex) => {
+                    let paragraph
+                    switch(entityParagraph.tagName.toLowerCase()) {
+                    case "p":
+                        paragraph = entityParagraph.textContent.trim()
+                        if (paragraphIndex === 0) {
+                            paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
+                        }
+                        break;
+                    case "ul":
+                        paragraph = ""
+                        entityParagraph.querySelectorAll('li').forEach((listParagraph, listIndex) => {
+                            paragraph += `\n• ${listParagraph.textContent.trim()}\n`
+                        })
+                        break;
+                    default:
+                        console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
+                        console.log(entityParagraph.tagName.toLowerCase())
+                        console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
                     }
                     entryParagraphs.push(paragraph)
                 })
