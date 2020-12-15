@@ -46,6 +46,14 @@ class ScraperBlackBoard extends WebsiteScraper{
                         console.log(entityParagraph.tagName.toLowerCase())
                         console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
                     }
+                    entityParagraph.querySelectorAll('a.SP-encrypted-email').forEach((mailAddressElement, addressIndex) => {
+                        let mailLink = mailAddressElement.href?.trim()
+                        mailLink = mailLink.replace(/%E2%9A%B9/g,"@")
+                        mailLink = mailLink.replace(/%E2%97%A6/g,".")
+                        mailLink = mailLink.replace(/mailto:/g,"")
+
+                        paragraph = paragraph.replace(mailAddressElement.textContent.trim(), mailLink)
+                    })
                     entryParagraphs.push(paragraph)
                 })
 
