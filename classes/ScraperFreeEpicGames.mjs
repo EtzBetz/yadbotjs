@@ -21,7 +21,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
             let entry = {}
             entry.title = game.title
-            entry.imageUrl = game.keyImages?.find(image => image.type === "OfferImageWide")?.url
+            entry.imageUrl = game.keyImages?.find(image => image.type === "DieselStoreFrontWide")?.url
             if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
                 entry.imageUrl = game.keyImages[0].url
             }
