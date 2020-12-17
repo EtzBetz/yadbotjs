@@ -61,13 +61,15 @@ class ScraperFreeEpicGames extends WebsiteScraper{
 
             let freePromotion = promotions.find(
                 promotion => promotion.discountSetting?.discountPercentage?.toString() === "0" ||
-                promotion.discountSetting?.discountPercentage?.toString() === "100"
+                             promotion.discountSetting?.discountPercentage?.toString() === "100"
             )
 
-            entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO()
-            entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO()
-            if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
-                elements.push(entry)
+            if (freePromotion !== undefined) {
+                entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO()
+                entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO()
+                if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
+                    elements.push(entry)
+                }
             }
         })
         this.log(`${elements.length} entries found...`)
