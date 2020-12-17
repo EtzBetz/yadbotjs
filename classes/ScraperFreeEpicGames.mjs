@@ -8,7 +8,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     constructor() {
         super()
         this.url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE"
-        this.scrapingInterval = 1000 * 60 * 30
+        this.scrapingInterval = 1000 * 60 * 5
         this.guildChannelIds = config.scraper_free_epic_games_guild_channels
         this.userIds = config.scraper_free_epic_games_dm_users
         this.scrapingFolder = "freeEpicGames"
