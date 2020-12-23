@@ -30,7 +30,8 @@ class YadBot {
 		this.bot.once('ready', () => {
 			log(`---------------------------------------------------------`)
 			log('I\'m online! Setting presence...')
-			this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' })
+			this.bot.user.setActivity(' nach Slash Commands', { type: 'WATCHING' });
+			// this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' })
 			log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
 			this.bot.guilds.cache.forEach(guild => {
 				log(` - ${guild.name}\t( ${guild.id} )`)
