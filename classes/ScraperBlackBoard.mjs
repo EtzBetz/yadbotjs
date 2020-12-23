@@ -193,7 +193,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                 "author": {
                     "name": "Fachhochschule Münster",
                     "url": "https://fh-muenster.de",
-                    "icon_url": "https://pbs.twimg.com/profile_images/658944515689029632/kV1Khbmx.jpg"
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 },
                 "fields": fields
             }

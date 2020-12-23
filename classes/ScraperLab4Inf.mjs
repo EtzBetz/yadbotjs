@@ -72,7 +72,8 @@ class ScraperLab4Inf extends WebsiteScraper{
                 "description": `Neue ${category}Datei zum Download:\n[${content.title} (.${fileType})](http://www.lab4inf.fh-muenster.de/${content.address})`,
                 "author": {
                     "name": "Höhere Programmierkonzepte",
-                    "url": this.url
+                    "url": this.url,
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 }
             }
         )

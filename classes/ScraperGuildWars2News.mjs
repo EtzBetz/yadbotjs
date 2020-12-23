@@ -111,7 +111,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
                 "author": {
                     "name": `Guild Wars 2`,
                     "url": "https://www.guildwars2.com/de/",
-                    "icon_url": "https://guildwars2.staticwars.com/wp-content/themes/guildwars2.com-live/img/bumpers/gw2-eu.a1d090a1.png"
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_gw2.png"
                 },
                 footer: {
                     text: `${json.author}  •  ${luxon.DateTime.fromISO(json.date).toFormat('dd.MM.yyyy')}`

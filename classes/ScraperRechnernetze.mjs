@@ -67,7 +67,8 @@ class ScraperRechnernetze extends WebsiteScraper{
                 "description": `Neue Datei zum Download:\n[${fileName} (.${fileType})](${content.link})`,
                 "author": {
                     "name": "Rechnernetze",
-                    "url": this.url
+                    "url": this.url,
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 }
             }
         )

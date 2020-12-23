@@ -86,7 +86,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
                 "author": {
                     "name": "Teamspeak",
                     "url": "https://teamspeak.com",
-                    "icon_url": "https://pbs.twimg.com/profile_images/1334574607161040896/gdIpgvnG_200x200.jpg"
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_ts.png"
                 },
                 "fields": [
                     {

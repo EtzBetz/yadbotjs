@@ -103,7 +103,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 "author": {
                     "name": "Epic Games Store",
                     "url": "https://www.epicgames.com/store/de/free-games",
-                    "icon_url": "https://pbs.twimg.com/profile_images/1273739401387036676/y3-FozWF_400x400.jpg"
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_epic_games.png"
                 },
                 "fields": [
                     {
