@@ -88,13 +88,13 @@ class ScraperBlackBoard extends WebsiteScraper{
                     entryDateString = entryDateElement?.textContent.trim()
                 } else { // otherwise go back to it's parent
                     entryDateElement = entity.querySelector('div > div > p')
-                    let firstParagraph = entryDateElement.textContent.trim()
-                    entryDateString = firstParagraph.substring(0, firstParagraph.indexOf('|') - 1).trim()
+                    let firstParagraph = entryDateElement?.textContent.trim()
+                    entryDateString = firstParagraph?.substring(0, firstParagraph.indexOf('|') - 1).trim()
                 }
 
                 let entry = {
                     title: entity.querySelector('h2')?.textContent.trim(),
-                    date: this.parseDateString(entryDateString),
+                    date: entryDateString !== undefined ? this.parseDateString(entryDateString) : undefined,
                     paragraphs: entryParagraphs,
                     links: entryLinks,
                     downloads: entryDownloads
