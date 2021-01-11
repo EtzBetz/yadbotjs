@@ -94,7 +94,7 @@ class ScraperBlackBoard extends WebsiteScraper{
 
                 let entry = {
                     title: entity.querySelector('h2')?.textContent.trim(),
-                    date: entryDateString !== undefined ? this.parseDateString(entryDateString) : undefined,
+                    date: (entryDateString !== undefined) && (entryDateString !== null) ? this.parseDateString(entryDateString) : undefined,
                     paragraphs: entryParagraphs,
                     links: entryLinks,
                     downloads: entryDownloads
@@ -113,6 +113,10 @@ class ScraperBlackBoard extends WebsiteScraper{
         const regexCustomDate = /(\d+).(\d+).(\d{4})/
 
         let dateRegexResult = regexCustomDate.exec(dateString)
+        if (dateRegexResult === null) {
+            return
+        }
+
         let day = parseInt(dateRegexResult[1], 10)
         let month = parseInt(dateRegexResult[2], 10)
         let year = parseInt(dateRegexResult[3], 10)
