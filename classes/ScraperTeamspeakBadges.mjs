@@ -8,7 +8,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
     constructor() {
         super()
         this.url = "https://community.teamspeak.com/t/teamspeak-badge-list/358"
-        this.scrapingInterval = 1000 * 60 * 35
+        this.scrapingInterval = 1000 * 60 * 10
         this.guildChannelIds = config.scraper_teamspeak_badges_guild_channels
         this.userIds = config.scraper_teamspeak_badges_dm_users
         this.scrapingFolder = "tsbadges"

@@ -8,7 +8,7 @@ class ScraperLab4Inf extends WebsiteScraper{
     constructor() {
         super()
         this.url = "http://www.lab4inf.fh-muenster.de/Lab4Inf/index.php/Content?subject=hoeh_prog"
-        this.scrapingInterval = 1000 * 60 * 32
+        this.scrapingInterval = 1000 * 60 * 7
         this.guildChannelIds = config.scraper_lab_4_inf_guild_channels
         this.userIds = config.scraper_lab_4_inf_dm_users
         this.scrapingFolder = "lab4inf"

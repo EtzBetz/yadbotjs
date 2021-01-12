@@ -9,7 +9,7 @@ class ScraperBlackBoard extends WebsiteScraper{
     constructor() {
         super()
         this.url = "https://www.fh-muenster.de/eti/aktuell/aushang/index.php"
-        this.scrapingInterval = 1000 * 60 * 31
+        this.scrapingInterval = 1000 * 60 * 6
         this.guildChannelIds = config.scraper_black_board_guild_channels
         this.userIds = config.scraper_black_board_dm_users
         this.scrapingFolder = "blackBoard"

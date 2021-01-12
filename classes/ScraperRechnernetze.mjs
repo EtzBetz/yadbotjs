@@ -8,7 +8,7 @@ class ScraperRechnernetze extends WebsiteScraper{
     constructor() {
         super()
         this.url = "https://www.fh-muenster.de/eti/labore_forschung/nw/rn.php"
-        this.scrapingInterval = 1000 * 60 * 33
+        this.scrapingInterval = 1000 * 60 * 8
         this.guildChannelIds = config.scraper_rechnernetze_guild_channels
         this.userIds = config.scraper_rechnernetze_dm_users
         this.scrapingFolder = "rechnernetze"
