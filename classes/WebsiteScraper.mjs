@@ -71,7 +71,7 @@ export class WebsiteScraper {
                             embeds.push(this.filterEmbedLength(this.getEmbed(content)))
                         })
                         if (embeds.length >= 1) {
-                            this.sendEmbedMessages(embeds)
+                            // this.sendEmbedMessages(embeds)
                         }
                     })
                 })
