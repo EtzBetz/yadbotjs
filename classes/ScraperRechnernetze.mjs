@@ -44,7 +44,7 @@ class ScraperRechnernetze extends WebsiteScraper{
 
     getScraperFileName(json) {
         let fileName = `${json.title}`
-        return this.filterStringForFileName(fileName + ".json")
+        return this.generateSlugFromString(fileName) + ".json"
     }
 
     getEmbed(content) {

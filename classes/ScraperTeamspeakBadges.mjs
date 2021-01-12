@@ -72,7 +72,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
 
     getScraperFileName(json) {
         let fileName = `${json.expiration}-${json.title}-${json.unlock}`
-        return this.filterStringForFileName(fileName + ".json")
+        return this.generateSlugFromString(fileName) + ".json"
     }
 
     getEmbed(json) {

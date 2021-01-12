@@ -6,22 +6,23 @@ import config from '../config.json'
 import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
+import json from './Json.mjs'
 
 export class WebsiteScraper {
 
     constructor() {
         this.timer = null
-        this.url = "https://google.com"
-        this.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36"
+        this.url = 'https://google.com'
+        this.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
         this.expectedResponse = 'text/html'
         this.scrapingInterval = 1000 * 60 * 5
         this.guildChannelIds = [
-            config.test_channel
+            config.test_channel,
         ]
         this.userIds = [
-            config.owner
+            config.owner,
         ]
-        this.scrapingFolder = "googleExample"
+        this.scrapingFolder = 'googleExample'
         this.websiteData = {}
         this.createTimerInterval()
     }
@@ -51,7 +52,7 @@ export class WebsiteScraper {
 
     timeIntervalBody() {
         this.log(`Fetching website...`)
-        const request = this.requestWebsite()
+        const request = this.requestWebsite(this.getScrapingUrl())
             .then((response) => {
                 this.log(`Parsing website...`)
                 const content = this.parseWebsiteContentToJSON(response)
@@ -59,10 +60,10 @@ export class WebsiteScraper {
                     this.filterNewContent(content, (filteredContent) => {
                         this.log(`${filteredContent.length} entries are new.`)
                         if (yadBot.getBot().user === null) {
-                            this.log("Bot is not yet online, not sending messages..")
+                            this.log('Bot is not yet online, not sending messages..')
                             while (yadBot.getBot().user === null) {
                             }
-                            this.log("Bot is now online! Sending messages..")
+                            this.log('Bot is now online! Sending messages..')
                         }
                         filteredContent = filteredContent.sort(this.getSortingFunction())
                         let embeds = []
@@ -78,25 +79,28 @@ export class WebsiteScraper {
             .catch((error) => console.dir(error))
     }
 
-    requestWebsite() {
-        this.log(`Requesting website...`)
+    getScrapingUrl() {
+        return this.url
+    }
+
+    requestWebsite(url) {
         return axios({
             method: 'get',
-            url: this.url,
-            headers: {'User-Agent': this.userAgent},
-            responseType: this.expectedResponse
+            url: url,
+            headers: { 'User-Agent': this.userAgent },
+            responseType: this.expectedResponse,
         })
     }
 
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []
-        let entities = page.querySelectorAll("title")
+        let entities = page.querySelectorAll('title')
         this.log(`${entities.length} entries found...`)
 
         entities.forEach((entity, index) => {
             elements.push({
-                title: entity.textContent.trim()
+                title: entity.textContent.trim(),
             })
         })
 
@@ -115,7 +119,7 @@ export class WebsiteScraper {
                 { flag: 'r' },
                 (err, readData) => {
                     if (err) {
-                        this.debugLog(this.getScraperFileName(newJson[i]), "does not exist, so it is new content.")
+                        this.debugLog(this.getScraperFileName(newJson[i]), 'does not exist, so it is new content.')
                     }
                     let jsonString = JSON.stringify(newJson[i])
 
@@ -148,16 +152,16 @@ export class WebsiteScraper {
                                 if (j === (newJson.length)) {
                                     callback(filteredJsonArray)
                                 }
-                            }
+                            },
                         )
                     }
-                }
+                },
             )
         }
     }
 
     setUpScraperModuleFolder(callback) {
-        fs.mkdir(this.getScraperFilesDirectory(), { recursive: true }, (err) => {
+        fs.mkdir(`${this.getScraperFilesDirectory()}/config`, { recursive: true }, (err) => {
             if (err) {
                 console.dir(err)
             }
@@ -171,26 +175,7 @@ export class WebsiteScraper {
 
     getScraperFileName(json) {
         let fileName = `test`
-        return this.filterStringForFileName(fileName) + ".json"
-    }
-
-    filterStringForFileName(fileName) {
-        const regexSpecialChars = /[/\\?!#%*:|"<>,„“ ]/g
-        const regexAE = /[/\\ä]/g
-        const regexOE = /[/\\ö]/g
-        const regexUE = /[/\\ü]/g
-        const regexDoubleUnderscore = /__+/g
-
-        let replaced = fileName.toLowerCase()
-        replaced = replaced.replace(regexSpecialChars, '_')
-        replaced = replaced.replace(regexAE, 'ae')
-        replaced = replaced.replace(regexOE, 'oe')
-        replaced = replaced.replace(regexUE, 'ue')
-        replaced = replaced.replace(regexDoubleUnderscore, '_')
-        if (replaced[replaced.length - 1] === "_"){
-            replaced = replaced.substring(0, replaced.length - 2)
-        }
-        return replaced
+        return this.generateSlugFromString(fileName) + ".json"
     }
 
     sendEmbedMessages(embeds) {
@@ -233,10 +218,10 @@ export class WebsiteScraper {
     getEmbed(content) {
         this.log(`Generating embed...`)
         return new Discord.MessageEmbed({
-            title: "Preview Embed",
+            title: 'Preview Embed',
             description: `Website title: "${content.title}"`,
             color: 0xeb6734,
-            url: this.url
+            url: this.url,
         })
     }
 
@@ -253,13 +238,16 @@ export class WebsiteScraper {
         if (jsonADate < jsonBDate) {
             // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
             return -1
-        } else if (jsonADate > jsonBDate) {
+        }
+        else if (jsonADate > jsonBDate) {
             // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
             return 1
-        } else if (jsonB.title > jsonA.title) {
+        }
+        else if (jsonB.title > jsonA.title) {
             // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
             return -1
-        } else if (jsonA.title > jsonB.title) {
+        }
+        else if (jsonA.title > jsonB.title) {
             // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
             return 1
         }
@@ -272,7 +260,7 @@ export class WebsiteScraper {
         return new Discord.MessageEmbed({
             title: `Update`,
             description: `Yad has been updated, some embeds will eventually be resent!`,
-            color: 0xff6f00
+            color: 0xff6f00,
         })
     }
 
@@ -287,15 +275,15 @@ export class WebsiteScraper {
         const TOTAL_CHARACTERS_LIMIT = 6000
 
         if (embed?.title?.length > TITLE_LIMIT) {
-            this.log(`Title limit has been exceeded in current embed "${embed.title.substring(0,50)}"!`)
+            this.log(`Title limit has been exceeded in current embed "${embed.title.substring(0, 50)}"!`)
             embed.title = this.cutStringAddDots(embed.title, TITLE_LIMIT)
         }
         if (embed?.description?.length > DESCRIPTION_LIMIT) {
-            this.log(`Description limit has been exceeded in current embed "${embed.description.substring(0,50)}"!`)
+            this.log(`Description limit has been exceeded in current embed "${embed.description.substring(0, 50)}"!`)
             embed.description = this.cutStringAddDots(embed.description, DESCRIPTION_LIMIT)
         }
         if (embed?.fields?.length > FIELDS_COUNT_LIMIT) {
-            this.log(`Fields count limit has been exceeded in current embed "${embed.title.substring(0,50)}": ${embed.fields.length}!`)
+            this.log(`Fields count limit has been exceeded in current embed "${embed.title.substring(0, 50)}": ${embed.fields.length}!`)
             let numOfCutFields = embed.fields.length - FIELDS_COUNT_LIMIT
             embed.fields.splice(-1, numOfCutFields)
 
@@ -303,26 +291,26 @@ export class WebsiteScraper {
         }
         embed?.fields?.forEach((field, index) => {
             if (field.name?.length > FIELDS_NAME_LIMIT) {
-                this.log(`Field name limit has been exceeded in current embed "${index}(${field.name.substring(0,50)})"!`)
+                this.log(`Field name limit has been exceeded in current embed "${index}(${field.name.substring(0, 50)})"!`)
                 field.name = this.cutStringAddDots(field.name, FIELDS_NAME_LIMIT)
             }
             if (field.value?.length > FIELDS_VALUE_LIMIT) {
-                this.log(`Field value limit has been exceeded in current embed "${index}(${field.value.substring(0,50)})"!`)
+                this.log(`Field value limit has been exceeded in current embed "${index}(${field.value.substring(0, 50)})"!`)
                 field.value = this.cutStringAddDots(field.value, FIELDS_VALUE_LIMIT)
             }
         })
         if (embed?.footer?.text?.length > FOOTER_TEXT_LIMIT) {
-            this.log(`Footer text limit has been exceeded in current embed "${embed.footer.text.substring(0,50)}"!`)
+            this.log(`Footer text limit has been exceeded in current embed "${embed.footer.text.substring(0, 50)}"!`)
             embed.footer.text = this.cutStringAddDots(embed.footer.text, FOOTER_TEXT_LIMIT)
         }
         if (embed?.author?.name?.length > AUTHOR_NAME_LIMIT) {
-            this.log(`Author name limit has been exceeded in current embed "${embed.author.name.substring(0,50)}"!`)
+            this.log(`Author name limit has been exceeded in current embed "${embed.author.name.substring(0, 50)}"!`)
             embed.author.name = this.cutStringAddDots(embed.author.name, AUTHOR_NAME_LIMIT)
         }
 
 
         if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
-            this.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0,50)}:${embed.description?.substring(0,50)}"!`)
+            this.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0, 50)}:${embed.description?.substring(0, 50)}"!`)
             if (embed.footer.text.length >= 1) {
                 this.log(`Cutting footer!`)
                 let newFooterLength =
@@ -358,7 +346,7 @@ export class WebsiteScraper {
                     while (
                         this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT ||
                         embed.fields.length === 1
-                    ) {
+                        ) {
                         this.log(`Cutting last field!`)
                         embed.fields.pop()
                     }
@@ -385,14 +373,48 @@ export class WebsiteScraper {
     }
 
     cutStringAddDots(string, maxLength, extraStringEnd = null) {
-        let stringEnd = "..."
+        let stringEnd = '...'
         if (extraStringEnd !== null) stringEnd = extraStringEnd
 
-        if (typeof string === "string") {
-            return string.substring(0, (maxLength) - stringEnd.length ) + stringEnd
-        } else {
-            this.log("string to cut is not a string:", typeof string)
+        if (typeof string === 'string') {
+            return string.substring(0, (maxLength) - stringEnd.length) + stringEnd
+        }
+        else {
+            this.log('string to cut is not a string:', typeof string)
             return string
         }
+    }
+
+    generateSlugFromString(originalString) {
+        const regexDisallowedChars = /([^a-zA-Z0-9])+/gm
+        const regexSequenceFilter = /[^a-zA-Z0-9]*([a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9])[^a-zA-Z0-9]*/gm
+        const regexAE = /[ä]/g
+        const regexOE = /[ö]/g
+        const regexUE = /[ü]/g
+        const regexMultipleHyphens = /--+/g
+
+
+        let replaced = originalString.toLowerCase()
+        replaced = replaced.replace(regexAE, 'ae')
+        replaced = replaced.replace(regexOE, 'oe')
+        replaced = replaced.replace(regexUE, 'ue')
+        replaced = replaced.replace(regexDisallowedChars, '-')
+        replaced = replaced.replace(regexMultipleHyphens, '-')
+
+        let slugStringResult = regexSequenceFilter.exec(replaced)
+
+        return slugStringResult[1]
+    }
+
+    getConfig() {
+        return json.get(`${this.getScraperFilesDirectory()}/config/config.json`)
+    }
+
+    setConfigParameter(parameter, value) {
+        json.set(`${this.getScraperFilesDirectory()}/config/config.json`, parameter, value)
+    }
+
+    clearConfig() {
+        json.clearFile(`${this.getScraperFilesDirectory()}/config/config.json`)
     }
 }

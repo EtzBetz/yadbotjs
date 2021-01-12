@@ -16,7 +16,6 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     }
 
     parseWebsiteContentToJSON(response) {
-        this.log(`Parsing website...`)
         const elements = []
         response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
             let entry = {}
@@ -79,7 +78,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
     getScraperFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.slug}`
-        return this.filterStringForFileName(fileName + ".json")
+        return this.generateSlugFromString(fileName) + ".json"
     }
 
     getEmbed(content) {

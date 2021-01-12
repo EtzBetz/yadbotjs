@@ -127,7 +127,7 @@ class ScraperBlackBoard extends WebsiteScraper{
     getScraperFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
-        return this.filterStringForFileName(fileName + ".json")
+        return this.generateSlugFromString(fileName) + ".json"
     }
 
     getEmbed(json) {
