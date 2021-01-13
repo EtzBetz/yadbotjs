@@ -4,7 +4,7 @@ import { WebsiteScraper } from './WebsiteScraper'
 import config from '../config.json'
 import yadBot from './YadBot.mjs'
 
-class ScraperFreeSteamGamesVariant extends WebsiteScraper {
+class ScraperFreeSteamGames extends WebsiteScraper {
 
     constructor() {
         super()
@@ -125,4 +125,4 @@ class ScraperFreeSteamGamesVariant extends WebsiteScraper {
     }
 }
 
-export default new ScraperFreeSteamGamesVariant()
+export default new ScraperFreeSteamGames()
