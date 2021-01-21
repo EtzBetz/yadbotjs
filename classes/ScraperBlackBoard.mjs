@@ -3,6 +3,7 @@ import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
 import config from '../config.json'
+import yadBot from './YadBot.mjs'
 
 class ScraperBlackBoard extends WebsiteScraper{
 
@@ -26,7 +27,7 @@ class ScraperBlackBoard extends WebsiteScraper{
             if (entity.textContent.trim() !== "") {
                 let entryParagraphs = []
 
-                entity.querySelectorAll("div > div > div > div > div > p, div > div > div > div > div > ul").forEach((entityParagraph, paragraphIndex) => {
+                entity.querySelectorAll("div > div > div > div > div > *").forEach((entityParagraph, paragraphIndex) => {
                     let paragraph
                     switch(entityParagraph.tagName.toLowerCase()) {
                     case "p":
@@ -35,13 +36,15 @@ class ScraperBlackBoard extends WebsiteScraper{
                             paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
                         }
                         break;
+                    case "ol":
                     case "ul":
                         paragraph = ""
                         entityParagraph.querySelectorAll('li').forEach((listParagraph, listIndex) => {
-                            paragraph += `\n• ${listParagraph.textContent.trim()}\n`
+                            paragraph += `\n> ${listParagraph.textContent.trim()}\n`
                         })
                         break;
                     default:
+                        paragraph = `\n[ Unimplemented element <${entityParagraph.tagName.toLowerCase()}>, message admin ]\n`
                         console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
                         console.log(entityParagraph.tagName.toLowerCase())
                         console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
