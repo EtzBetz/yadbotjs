@@ -160,21 +160,6 @@ class ScraperBlackBoard extends WebsiteScraper{
             return `[\[Link: ${linkResults[linkIndex-1][0]}\]](${linkResults[linkIndex-1][0]})`
         })
 
-        let fields = []
-
-        json.links.forEach((link, index) => {
-            fields.push({
-                name: "Link",
-                value: `[${link.text}](${link.address})`
-            })
-        })
-        json.downloads.forEach((download, index) => {
-            fields.push({
-                name: `Download`,
-                value: `[${download.info} ${download.text}](${download.address})`
-            })
-        })
-
         let footerString = `Alle Angaben ohne Gewähr!  •  `
 
         let dateObj
@@ -185,10 +170,10 @@ class ScraperBlackBoard extends WebsiteScraper{
         }
         footerString += dateObj.toFormat('dd.MM.yyyy')
 
-        return new Discord.MessageEmbed(
+        let embed = new Discord.MessageEmbed(
             {
                 "title": json.title !== undefined ? Discord.Util.escapeMarkdown(json.title) : "Neuer Aushang",
-                "description": paragraphString,
+                "description": paragraphString + "\n",
                 "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
                 // "color": 0x000fff,
                 "footer": {
@@ -199,9 +184,34 @@ class ScraperBlackBoard extends WebsiteScraper{
                     "url": "https://fh-muenster.de",
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 },
-                "fields": fields
+                "fields": []
             }
         )
+
+        let linksString = ""
+        let downloadsString = ""
+
+        json.links.forEach((link, index) => {
+            linksString += `> [• ${link.text}](${link.address})\n`
+        })
+        json.downloads.forEach((download, index) => {
+            downloadsString += `> [• ${download.text} ${download.info}](${download.address})\n`
+        })
+
+        if (linksString !== "") {
+            embed.description += "\n> **Link"
+            embed.description += json.links?.length > 1 ? "s" : ""
+            embed.description += ":**\n"
+            embed.description += linksString
+        }
+        if (downloadsString !== "") {
+            embed.description += "\n> **Download"
+            embed.description += json.downloads?.length > 1 ? "s" : ""
+            embed.description += ":**\n"
+            embed.description += downloadsString
+        }
+
+        return embed
     }
 
     getSortingFunction() {
