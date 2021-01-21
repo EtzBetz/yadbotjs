@@ -164,14 +164,14 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         json.links.forEach((link, index) => {
             fields.push({
-                name: link.text,
-                value: `[Link](${link.address})`
+                name: "Link",
+                value: `[${link.text}](${link.address})`
             })
         })
         json.downloads.forEach((download, index) => {
             fields.push({
-                name: `${download.text}`,
-                value: `[Download ${download.info}](${download.address})`
+                name: `Download`,
+                value: `[${download.info} ${download.text}](${download.address})`
             })
         })
 
