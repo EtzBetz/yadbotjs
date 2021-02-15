@@ -98,7 +98,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
                         "value": json.note
                     },
                     {
-                        "name": "Expires on",
+                        "name": "Unlockable until",
                         "value": json.expiration
                     },
                     {
