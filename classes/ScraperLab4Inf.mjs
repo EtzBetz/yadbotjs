@@ -12,7 +12,6 @@ class ScraperLab4Inf extends WebsiteScraper{
         this.guildChannelIds = config.scraper_lab_4_inf_guild_channels
         this.userIds = config.scraper_lab_4_inf_dm_users
         this.scrapingFolder = "lab4inf"
-        this.websiteData = {}
     }
 
     parseWebsiteContentToJSON(response) {

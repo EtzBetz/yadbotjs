@@ -12,7 +12,6 @@ class ScraperMovieReleases extends WebsiteScraper {
         this.guildChannelIds = config.scraper_movie_releases_guild_channels
         this.userIds = config.scraper_movie_releases_dm_users
         this.scrapingFolder = 'movieReleases'
-        this.websiteData = {}
     }
 
     getScrapingUrl() {

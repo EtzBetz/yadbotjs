@@ -12,7 +12,6 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
         this.guildChannelIds = config.scraper_teamspeak_badges_guild_channels
         this.userIds = config.scraper_teamspeak_badges_dm_users
         this.scrapingFolder = "tsbadges"
-        this.websiteData = {}
     }
 
     parseWebsiteContentToJSON(response) {

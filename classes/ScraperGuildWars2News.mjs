@@ -13,7 +13,6 @@ class ScraperGuildWars2News extends WebsiteScraper{
         this.guildChannelIds = config.scraper_guild_wars_2_news_guild_channels
         this.userIds = config.scraper_guild_wars_2_news_dm_users
         this.scrapingFolder = "gw2news"
-        this.websiteData = {}
     }
 
     parseWebsiteContentToJSON(response) {

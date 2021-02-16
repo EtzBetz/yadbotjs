@@ -13,7 +13,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         this.guildChannelIds = []
         this.userIds = ['145657504922075136']
         this.scrapingFolder = 'freeSteamGames'
-        this.websiteData = {}
     }
 
     getLastScrapingUnixTime() {

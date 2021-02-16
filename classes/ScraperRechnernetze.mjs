@@ -12,7 +12,6 @@ class ScraperRechnernetze extends WebsiteScraper{
         this.guildChannelIds = config.scraper_rechnernetze_guild_channels
         this.userIds = config.scraper_rechnernetze_dm_users
         this.scrapingFolder = "rechnernetze"
-        this.websiteData = {}
     }
 
     parseWebsiteContentToJSON(response) {

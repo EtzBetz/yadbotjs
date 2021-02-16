@@ -23,7 +23,6 @@ export class WebsiteScraper {
             config.owner,
         ]
         this.scrapingFolder = 'googleExample'
-        this.websiteData = {}
         this.createTimerInterval()
     }
 

@@ -14,7 +14,6 @@ class ScraperBlackBoard extends WebsiteScraper{
         this.guildChannelIds = config.scraper_black_board_guild_channels
         this.userIds = config.scraper_black_board_dm_users
         this.scrapingFolder = "blackBoard"
-        this.websiteData = {}
     }
 
     parseWebsiteContentToJSON(response) {

@@ -12,7 +12,6 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         this.guildChannelIds = config.scraper_free_epic_games_guild_channels
         this.userIds = config.scraper_free_epic_games_dm_users
         this.scrapingFolder = "freeEpicGames"
-        this.websiteData = {}
     }
 
     parseWebsiteContentToJSON(response) {
