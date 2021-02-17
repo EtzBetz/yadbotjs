@@ -186,8 +186,8 @@ export class WebsiteScraper {
     }
 
     sendEmbedMessages(embeds) {
-        let sendState = files.readJson(this.getScraperConfigPath(), "send-embeds", true)
-        if (embeds.length >= 1 && sendState) {
+        let sendState = files.readJson(this.getScraperConfigPath(), "send_embeds", true)
+        if (embeds.length >= 1 && sendState && config.global_send_embeds) {
             this.log(`Sending embed(s)...`)
             this.getSubGuildChannelIds().forEach(channelId => {
                 yadBot.getBot().channels.fetch(channelId)
