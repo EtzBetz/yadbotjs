@@ -3,7 +3,7 @@ import * as Discord from 'discord.js'
 import yadBot from './YadBot'
 import fs from 'fs'
 import config from '../config.json'
-import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
+import { getLoggingTimestamp, log, debugLog, errorLog, red, reset } from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import files from './Files.mjs'
@@ -83,7 +83,6 @@ export class WebsiteScraper {
         this.log(`Fetching and parsing website...`)
         this.requestWebsite(this.getScrapingUrl())
             .then((response) => {
-                this.log(`Parsing website...`)
                 const content = this.parseWebsiteContentToJSON(response)
                 this.filterNewContent(content, (filteredContent) => {
                     this.log(`${filteredContent.length} entries are new.`)
@@ -134,51 +133,34 @@ export class WebsiteScraper {
         let filteredJsonArray = []
         let j = 0
         for (let i = 0; i < newJson.length; i++) {
-            const filePath = `${this.getScraperFolderPath()}/${this.generateFileNameFromJson(newJson[i])}`
+            const fileName = this.generateFileNameFromJson(newJson[i])
+            const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
-            fs.readFile(
-                filePath,
-                { flag: 'r' },
-                (err, readData) => {
-                    if (err) {
-                        this.debugLog(this.generateFileNameFromJson(newJson[i]), 'does not exist, so it is new content.')
-                    }
-                    let jsonString = JSON.stringify(newJson[i])
+            let readData = files.readCompleteJson(filePath)
 
-                    if (readData?.toString() === jsonString) {
-                        j++
+            if (Object.keys(readData).length === 0 && readData.constructor === Object) {
+                console.log(fileName, 'does not exist, so it is new content.')
+            }
 
-                        // this.debugLog("debug3:", j)
-                        // this.debugLog("debug4:", filteredJsonArray.length)
-                        if (j === (newJson.length)) {
-                            callback(filteredJsonArray)
-                        }
-                    }
-                    else {
-                        filteredJsonArray.push(newJson[i])
-                        // this.debugLog("debug2:", filteredJsonArray.length)
-                        // write JSON string to file
-                        fs.writeFile(
-                            filePath,
-                            jsonString,
-                            { flag: 'w' },
-                            (err) => {
-                                if (err) {
-                                    console.dir(err)
-                                }
-                                this.debugLog(`JSON data is saved in ${this.generateFileNameFromJson(newJson[i])}.`)
-                                j++
+            if (JSON.stringify(readData) === JSON.stringify(newJson[i])) {
+                j++
 
-                                // this.debugLog("debug5:", j)
-                                // this.debugLog("debug6:", filteredJsonArray.length)
-                                if (j === (newJson.length)) {
-                                    callback(filteredJsonArray)
-                                }
-                            },
-                        )
-                    }
-                },
-            )
+                if (j === (newJson.length)) {
+                    callback(filteredJsonArray)
+                }
+            }
+            else {
+                filteredJsonArray.push(newJson[i])
+                // write JSON string to file
+                files.writeJson(filePath, newJson[i])
+
+                console.log(`JSON data is saved in ${this.generateFileNameFromJson(newJson[i])}.`)
+                j++
+
+                if (j === (newJson.length)) {
+                    callback(filteredJsonArray)
+                }
+            }
         }
     }
 
@@ -194,13 +176,18 @@ export class WebsiteScraper {
         return `${this.getScraperFolderPath()}/config/config.json`
     }
 
+    getScraperEmbedPath() {
+        return `${this.getScraperFolderPath()}/embeds`
+    }
+
     generateFileNameFromJson(json) {
         let fileName = `test`
         return this.generateSlugFromString(fileName) + '.json'
     }
 
     sendEmbedMessages(embeds) {
-        if (embeds.length >= 1) {
+        let sendState = files.readJson(this.getScraperConfigPath(), "send-embeds", true)
+        if (embeds.length >= 1 && sendState) {
             this.log(`Sending embed(s)...`)
             this.getSubGuildChannelIds().forEach(channelId => {
                 yadBot.getBot().channels.fetch(channelId)
