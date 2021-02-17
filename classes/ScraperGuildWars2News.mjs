@@ -8,11 +8,22 @@ class ScraperGuildWars2News extends WebsiteScraper{
 
     constructor() {
         super()
-        this.url = "https://www.guildwars2.com/de/news/"
-        this.scrapingInterval = 1000 * 60 * 9
-        this.guildChannelIds = config.scraper_guild_wars_2_news_guild_channels
-        this.userIds = config.scraper_guild_wars_2_news_dm_users
-        this.scrapingFolder = "gw2news"
+    }
+
+    getScrapingUrl() {
+        return 'https://www.guildwars2.com/de/news/'
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 9
+    }
+
+    getSubUserIds() {
+        return config.scraper_guild_wars_2_news_dm_users
+    }
+
+    getSubGuildChannelIds() {
+        return config.scraper_guild_wars_2_news_guild_channels
     }
 
     parseWebsiteContentToJSON(response) {
@@ -92,7 +103,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
         return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, "d.M.yyyy").setZone('Europe/Berlin').toISO()
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title.substring(0, 50)}`
         return this.generateSlugFromString(fileName) + ".json"

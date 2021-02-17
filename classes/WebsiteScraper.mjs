@@ -6,24 +6,42 @@ import config from '../config.json'
 import { getLoggingTimestamp, log, debugLog, red, reset } from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
+import files from './Files.mjs'
 import json from './Json.mjs'
 
 export class WebsiteScraper {
 
     constructor() {
         this.timer = null
-        this.url = 'https://google.com'
-        this.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
-        this.expectedResponse = 'text/html'
-        this.scrapingInterval = 1000 * 60 * 5
-        this.guildChannelIds = [
-            config.test_channel,
+        this.setup()
+    }
+
+    getUserAgent() {
+        return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
+    }
+
+    getExpectedResponseType() {
+        return 'text/html'
+    }
+
+    getScrapingUrl() {
+        return 'https://google.com'
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 5
+    }
+
+    getSubUserIds() {
+        return [
+            config.owner
         ]
-        this.userIds = [
-            config.owner,
+    }
+
+    getSubGuildChannelIds() {
+        return [
+            config.test_channel
         ]
-        this.scrapingFolder = 'googleExample'
-        this.createTimerInterval()
     }
 
     log(...message) {
@@ -34,14 +52,26 @@ export class WebsiteScraper {
         debugLog(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
     }
 
+    errorLog(...message) {
+        errorLog(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
+    }
+
+    setup() {
+        console.log(`${this.constructor.name}:\tSetting Up...`)
+
+        let scraperState = files.readJson(this.getScraperConfigPath(), "enabled", true)
+        if (scraperState === true) {
+            setTimeout(() => {
+                this.createTimerInterval()
+            }, 5000)
+        }
+    }
+
     createTimerInterval() {
-        console.log(`${this.constructor.name}:\tCreating Interval...`)
-        setTimeout(() => {
+        this.timeIntervalBody()
+        this.timer = setInterval(() => {
             this.timeIntervalBody()
-            this.timer = setInterval(() => {
-                this.timeIntervalBody()
-            }, this.scrapingInterval)
-        }, 5000)
+        }, this.getScrapingInterval())
     }
 
     destroyTimerInterval() {
@@ -50,44 +80,38 @@ export class WebsiteScraper {
     }
 
     timeIntervalBody() {
-        this.log(`Fetching website...`)
-        const request = this.requestWebsite(this.getScrapingUrl())
+        this.log(`Fetching and parsing website...`)
+        this.requestWebsite(this.getScrapingUrl())
             .then((response) => {
                 this.log(`Parsing website...`)
                 const content = this.parseWebsiteContentToJSON(response)
-                this.setUpScraperModuleFolder((err) => {
-                    this.filterNewContent(content, (filteredContent) => {
-                        this.log(`${filteredContent.length} entries are new.`)
-                        if (yadBot.getBot().user === null) {
-                            this.log('Bot is not yet online, not sending messages..')
-                            while (yadBot.getBot().user === null) {
-                            }
-                            this.log('Bot is now online! Sending messages..')
+                this.filterNewContent(content, (filteredContent) => {
+                    this.log(`${filteredContent.length} entries are new.`)
+                    if (yadBot.getBot().user === null) {
+                        this.log('Bot is not yet online, not sending messages..')
+                        while (yadBot.getBot().user === null) {
                         }
-                        filteredContent = filteredContent.sort(this.getSortingFunction())
-                        let embeds = []
-                        filteredContent.forEach(content => {
-                            embeds.push(this.filterEmbedLength(this.getEmbed(content)))
-                        })
-                        if (embeds.length >= 1) {
-                            this.sendEmbedMessages(embeds)
-                        }
+                        this.log('Bot is now online! Sending messages..')
+                    }
+                    filteredContent = filteredContent.sort(this.getSortingFunction())
+                    let embeds = []
+                    filteredContent.forEach(content => {
+                        embeds.push(this.filterEmbedLength(this.getEmbed(content)))
                     })
+                    if (embeds.length >= 1) {
+                        this.sendEmbedMessages(embeds)
+                    }
                 })
             })
             .catch((error) => console.dir(error))
-    }
-
-    getScrapingUrl() {
-        return this.url
     }
 
     requestWebsite(url) {
         return axios({
             method: 'get',
             url: url,
-            headers: { 'User-Agent': this.userAgent },
-            responseType: this.expectedResponse,
+            headers: { 'User-Agent': this.getUserAgent() },
+            responseType: this.getExpectedResponseType(),
         })
     }
 
@@ -107,18 +131,17 @@ export class WebsiteScraper {
     }
 
     filterNewContent(newJson, callback) {
-
         let filteredJsonArray = []
         let j = 0
         for (let i = 0; i < newJson.length; i++) {
-            const filePath = `${this.getScraperFilesDirectory()}/${this.getScraperFileName(newJson[i])}`
+            const filePath = `${this.getScraperFolderPath()}/${this.generateFileNameFromJson(newJson[i])}`
 
             fs.readFile(
                 filePath,
                 { flag: 'r' },
                 (err, readData) => {
                     if (err) {
-                        this.debugLog(this.getScraperFileName(newJson[i]), 'does not exist, so it is new content.')
+                        this.debugLog(this.generateFileNameFromJson(newJson[i]), 'does not exist, so it is new content.')
                     }
                     let jsonString = JSON.stringify(newJson[i])
 
@@ -143,7 +166,7 @@ export class WebsiteScraper {
                                 if (err) {
                                     console.dir(err)
                                 }
-                                this.debugLog(`JSON data is saved in ${this.getScraperFileName(newJson[i])}.`)
+                                this.debugLog(`JSON data is saved in ${this.generateFileNameFromJson(newJson[i])}.`)
                                 j++
 
                                 // this.debugLog("debug5:", j)
@@ -159,28 +182,27 @@ export class WebsiteScraper {
         }
     }
 
-    setUpScraperModuleFolder(callback) {
-        fs.mkdir(`${this.getScraperFilesDirectory()}/config`, { recursive: true }, (err) => {
-            if (err) {
-                console.dir(err)
-            }
-            callback(err)
-        })
+    getGlobalScraperFolderPath() {
+        return "./scraperFiles"
     }
 
-    getScraperFilesDirectory() {
-        return `./scraperFiles/${this.scrapingFolder}`
+    getScraperFolderPath() {
+        return `${this.getGlobalScraperFolderPath()}/${this.constructor.name}`
     }
 
-    getScraperFileName(json) {
+    getScraperConfigPath() {
+        return `${this.getScraperFolderPath()}/config/config.json`
+    }
+
+    generateFileNameFromJson(json) {
         let fileName = `test`
-        return this.generateSlugFromString(fileName) + ".json"
+        return this.generateSlugFromString(fileName) + '.json'
     }
 
     sendEmbedMessages(embeds) {
         if (embeds.length >= 1) {
             this.log(`Sending embed(s)...`)
-            this.guildChannelIds.forEach(channelId => {
+            this.getSubGuildChannelIds().forEach(channelId => {
                 yadBot.getBot().channels.fetch(channelId)
                     .then(channel => {
                         if (yadBot.getBot().user === null) return
@@ -195,7 +217,7 @@ export class WebsiteScraper {
                         console.dir(e)
                     })
             })
-            this.userIds.forEach(userId => {
+            this.getSubUserIds().forEach(userId => {
                 yadBot.getBot().users.fetch(userId)
                     .then(user => {
                         if (yadBot.getBot().user === null) return
@@ -220,7 +242,7 @@ export class WebsiteScraper {
             title: 'Preview Embed',
             description: `Website title: "${content.title}"`,
             color: 0xeb6734,
-            url: this.url,
+            url: this.getScrapingUrl(),
         })
     }
 

@@ -45,3 +45,9 @@ export function debugLog(...message) {
         log(`${BGred}${black}${bright}[DEBUG]${reset} ${message}`)
     }
 }
+
+export function errorLog(...message) {
+    if (!config.prod) {
+        log(`${BGblack}${red}${bright}[ERROR]${reset} ${message}`)
+    }
+}

@@ -7,11 +7,22 @@ class ScraperLab4Inf extends WebsiteScraper{
 
     constructor() {
         super()
-        this.url = "http://www.lab4inf.fh-muenster.de/Lab4Inf/index.php/Content?subject=hoeh_prog"
-        this.scrapingInterval = 1000 * 60 * 7
-        this.guildChannelIds = config.scraper_lab_4_inf_guild_channels
-        this.userIds = config.scraper_lab_4_inf_dm_users
-        this.scrapingFolder = "lab4inf"
+    }
+
+    getScrapingUrl() {
+        return 'http://www.lab4inf.fh-muenster.de/Lab4Inf/index.php/Content?subject=hoeh_prog'
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 7
+    }
+
+    getSubUserIds() {
+        return config.scraper_lab_4_inf_dm_users
+    }
+
+    getSubGuildChannelIds() {
+        return config.scraper_lab_4_inf_guild_channels
     }
 
     parseWebsiteContentToJSON(response) {
@@ -38,7 +49,7 @@ class ScraperLab4Inf extends WebsiteScraper{
         return elements
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let fileName = `${json.title}`
         return this.generateSlugFromString(fileName) + ".json"
     }
@@ -71,7 +82,7 @@ class ScraperLab4Inf extends WebsiteScraper{
                 "description": `Neue ${category}Datei zum Download:\n[${content.title} (.${fileType})](http://www.lab4inf.fh-muenster.de/${content.address})`,
                 "author": {
                     "name": "Höhere Programmierkonzepte",
-                    "url": this.url,
+                    "url": this.getScrapingUrl(),
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 }
             }

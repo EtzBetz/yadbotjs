@@ -7,11 +7,6 @@ class ScraperMovieReleases extends WebsiteScraper {
 
     constructor() {
         super()
-        this.url = ''
-        this.scrapingInterval = 1000 * 60 * 5
-        this.guildChannelIds = config.scraper_movie_releases_guild_channels
-        this.userIds = config.scraper_movie_releases_dm_users
-        this.scrapingFolder = 'movieReleases'
     }
 
     getScrapingUrl() {
@@ -26,6 +21,18 @@ class ScraperMovieReleases extends WebsiteScraper {
         url += `&sort_by=release_date.asc`
         url += `&api_key=${config.tmdb_api_key}`
         return url
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 12
+    }
+
+    getSubUserIds() {
+        return config.scraper_movie_releases_dm_users
+    }
+
+    getSubGuildChannelIds() {
+        return config.scraper_movie_releases_guild_channels
     }
 
     parseWebsiteContentToJSON(response) {
@@ -59,7 +66,7 @@ class ScraperMovieReleases extends WebsiteScraper {
         return elements
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
         return this.generateSlugFromString(fileName) + '.json'

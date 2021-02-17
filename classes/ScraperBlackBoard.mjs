@@ -3,17 +3,27 @@ import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
 import config from '../config.json'
-import yadBot from './YadBot.mjs'
 
 class ScraperBlackBoard extends WebsiteScraper{
 
     constructor() {
         super()
-        this.url = "https://www.fh-muenster.de/eti/aktuell/aushang/index.php"
-        this.scrapingInterval = 1000 * 60 * 6
-        this.guildChannelIds = config.scraper_black_board_guild_channels
-        this.userIds = config.scraper_black_board_dm_users
-        this.scrapingFolder = "blackBoard"
+    }
+
+    getSubUserIds() {
+        return config.scraper_black_board_dm_users
+    }
+
+    getSubGuildChannelIds() {
+        return config.scraper_black_board_guild_channels
+    }
+
+    getScrapingUrl() {
+        return 'https://www.fh-muenster.de/eti/aktuell/aushang/index.php'
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 6
     }
 
     parseWebsiteContentToJSON(response) {
@@ -126,7 +136,7 @@ class ScraperBlackBoard extends WebsiteScraper{
         return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, "d.M.yyyy").setZone('Europe/Berlin').toISO()
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
         return this.generateSlugFromString(fileName) + ".json"

@@ -7,11 +7,22 @@ class ScraperRechnernetze extends WebsiteScraper{
 
     constructor() {
         super()
-        this.url = "https://www.fh-muenster.de/eti/labore_forschung/nw/rn.php"
-        this.scrapingInterval = 1000 * 60 * 8
-        this.guildChannelIds = config.scraper_rechnernetze_guild_channels
-        this.userIds = config.scraper_rechnernetze_dm_users
-        this.scrapingFolder = "rechnernetze"
+    }
+
+    getScrapingUrl() {
+        return 'https://www.fh-muenster.de/eti/labore_forschung/nw/rn.php'
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 8
+    }
+
+    getSubUserIds() {
+        return config.scraper_rechnernetze_dm_users
+    }
+
+    getSubGuildChannelIds() {
+        return config.scraper_rechnernetze_guild_channels
     }
 
     parseWebsiteContentToJSON(response) {
@@ -41,7 +52,7 @@ class ScraperRechnernetze extends WebsiteScraper{
         return elements
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let fileName = `${json.title}`
         return this.generateSlugFromString(fileName) + ".json"
     }
@@ -66,7 +77,7 @@ class ScraperRechnernetze extends WebsiteScraper{
                 "description": `Neue Datei zum Download:\n[${fileName} (.${fileType})](${content.link})`,
                 "author": {
                     "name": "Rechnernetze",
-                    "url": this.url,
+                    "url": this.getScrapingUrl(),
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 }
             }

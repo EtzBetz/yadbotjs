@@ -2,17 +2,31 @@ import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
 import config from '../config.json'
-import yadBot from './YadBot.mjs'
 
 class ScraperFreeSteamGames extends WebsiteScraper {
 
     constructor() {
         super()
-        this.url = `https://api.steampowered.com/IStoreService/GetAppList/v1/?key=${config.steam_dev_api_key}`
-        this.scrapingInterval = 1000 * 60 * 11
-        this.guildChannelIds = []
-        this.userIds = ['145657504922075136']
-        this.scrapingFolder = 'freeSteamGames'
+    }
+
+    getScrapingUrl() {
+        return `https://api.steampowered.com/IStoreService/GetAppList/v1/?key=${config.steam_dev_api_key}&if_modified_since=${this.getLastScrapingUnixTime()}`
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 11
+    }
+
+    getSubUserIds() {
+        return [
+            config.owner
+        ]
+    }
+
+    getSubGuildChannelIds() {
+        return [
+            config.test_channel
+        ]
     }
 
     getLastScrapingUnixTime() {
@@ -26,10 +40,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
 
     refreshLastScrapingUnixTime() {
         this.setConfigParameter('last_scraping_unix_time', Math.floor(luxon.DateTime.local().toSeconds()))
-    }
-
-    getScrapingUrl() {
-        return `https://api.steampowered.com/IStoreService/GetAppList/v1/?key=${config.steam_dev_api_key}&if_modified_since=${this.getLastScrapingUnixTime()}`
     }
 
     requestWebsite(url) {
@@ -82,7 +92,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return elements
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let dateString = luxon.DateTime.fromSeconds(json.raw.last_modified).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${this.generateSlugFromString(json.title)}`
         return this.generateSlugFromString(fileName) + '.json'

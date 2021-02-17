@@ -7,11 +7,22 @@ class ScraperFreeEpicGames extends WebsiteScraper{
 
     constructor() {
         super()
-        this.url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE"
-        this.scrapingInterval = 1000 * 60 * 5
-        this.guildChannelIds = config.scraper_free_epic_games_guild_channels
-        this.userIds = config.scraper_free_epic_games_dm_users
-        this.scrapingFolder = "freeEpicGames"
+    }
+
+    getScrapingUrl() {
+        return 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
+    }
+
+    getScrapingInterval() {
+        return 1000 * 60 * 5
+    }
+
+    getSubUserIds() {
+        return config.scraper_free_epic_games_dm_users
+    }
+
+    getSubGuildChannelIds() {
+        return config.scraper_free_epic_games_guild_channels
     }
 
     parseWebsiteContentToJSON(response) {
@@ -74,7 +85,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         return elements
     }
 
-    getScraperFileName(json) {
+    generateFileNameFromJson(json) {
         let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.slug}`
         return this.generateSlugFromString(fileName) + ".json"
