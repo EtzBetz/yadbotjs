@@ -53,6 +53,11 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                 entry.publisher = publisher
             }
 
+            game.tags.forEach((tag) => {
+                if (tag.id === "9547") entry.windowsCompatibility = true
+                if (tag.id === "9548") entry.macCompatibility = true
+            })
+
             const originalPrice = game.price?.totalPrice?.originalPrice?.toString().padStart(3, '0')
             const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
             const decimalPosition = originalPrice.length - (decimalCount || 2)
@@ -104,6 +109,14 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             descriptionString = `Ab dem ${startDate.day}.${startDate.month}. kostenlos im Epic Games Store.`
         }
 
+        let osString = ""
+
+        if (content.windowsCompatibility) osString += "Windows"
+        if (content.macCompatibility) {
+            if (osString !== "") osString += ", "
+            osString += "macOS"
+        }
+
         let embed = new Discord.MessageEmbed(
             {
                 "title": content.title,
@@ -128,6 +141,11 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                     {
                         "name": "Enddatum",
                         "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                        "inline": true
+                    },
+                    {
+                        "name": "Unterstützte Betriebssysteme",
+                        "value": osString,
                         "inline": true
                     }
                 ]
