@@ -425,15 +425,4 @@ export class WebsiteScraper {
         return slugStringResult[1]
     }
 
-    getConfig() {
-        return json.get(`${this.getScraperFilesDirectory()}/config/config.json`)
-    }
-
-    setConfigParameter(parameter, value) {
-        json.set(`${this.getScraperFilesDirectory()}/config/config.json`, parameter, value)
-    }
-
-    clearConfig() {
-        json.clearFile(`${this.getScraperFilesDirectory()}/config/config.json`)
-    }
 }
