@@ -84,7 +84,7 @@ class ScraperXRelReleases extends WebsiteScraper {
             typeString = `TV-Show`
             break
         case "console":
-            typeString = `Console`
+            typeString = `Console-Game`
             break
         case "software":
             typeString = `Software`
