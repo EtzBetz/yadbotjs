@@ -104,7 +104,7 @@ class ScraperXRelReleases extends WebsiteScraper {
                 description: `${typeString}:\n[${content.title}](${content.main_link})\n${detailString}[\`${content.release_title}\`](${content.release_link})`,
                 timestamp: content.date,
                 author: {
-                    name: 'xRel Releases',
+                    name: 'xREL Releases',
                     url: 'https://www.xrel.to/releases.html',
                     icon_url: 'https://status.xrel.to/images/xrel_logo2x.png',
                 },
