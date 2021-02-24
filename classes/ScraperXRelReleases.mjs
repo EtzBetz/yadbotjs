@@ -77,6 +77,9 @@ class ScraperXRelReleases extends WebsiteScraper {
 
         let typeString = ""
         switch (content.release_type) {
+        case "movie":
+            typeString = `Movie`
+            break
         case "tv":
             typeString = `TV-Show`
             break
