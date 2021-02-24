@@ -1,4 +1,5 @@
 import editJsonFile from 'edit-json-file'
+import xml2js from 'xml2js'
 
 class Json {
 
@@ -26,6 +27,11 @@ class Json {
         file.empty()
     }
 
+    parseXmlToJson(str) {
+        let result;
+        xml2js.Parser().parseString(str, (e, r) => { result = r });
+        return result;
+    }
 
 }
 
