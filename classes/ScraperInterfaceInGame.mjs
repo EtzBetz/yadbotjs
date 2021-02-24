@@ -19,11 +19,11 @@ class ScraperInterfaceInGame extends WebsiteScraper {
     }
 
     getSubUserIds() {
-        return config.scraper_interface_ingame_dm_users
+        return config.scraper_interface_in_game_dm_users
     }
 
     getSubGuildChannelIds() {
-        return config.scraper_interface_ingame_guild_channels
+        return config.scraper_interface_in_game_guild_channels
     }
 
     parseWebsiteContentToJSON(response) {
