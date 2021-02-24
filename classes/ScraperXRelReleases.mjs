@@ -83,6 +83,9 @@ class ScraperXRelReleases extends WebsiteScraper {
         case "console":
             typeString = `Console`
             break
+        case "software":
+            typeString = `Software`
+            break
         default:
             typeString = `UNKNOWN (${content.release_type})`
             break
