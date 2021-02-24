@@ -15,8 +15,8 @@ class ScraperMovieReleases extends WebsiteScraper {
         let url = `https://api.themoviedb.org/3/discover/movie`
         url += `?language=de-DE`
         url += `&region=de`
-        url += `&release_date.gte=${pastDate}` // ${todayDate}
-        url += `&release_date.lte=${todayDate}` // 2020-01-02
+        url += `&release_date.gte=${pastDate}`
+        url += `&release_date.lte=${todayDate}`
         url += `&with_release_type=2|3`
         url += `&sort_by=release_date.asc`
         url += `&api_key=${config.tmdb_api_key}`
