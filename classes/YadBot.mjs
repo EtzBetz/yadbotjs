@@ -7,6 +7,7 @@ import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
 import scraperTeamspeakBadges from './ScraperTeamspeakBadges.mjs'
 import ScraperMovieReleases from './ScraperMovieReleases.mjs'
 import ScraperXRelReleases from './ScraperXRelReleases.mjs'
+import ScraperInterfaceInGame from './ScraperInterfaceInGame.mjs'
 import { log, debugLog } from '../index'
 
 class YadBot {
@@ -20,7 +21,8 @@ class YadBot {
 			scraperGuildWars2News,
 			scraperTeamspeakBadges,
 			ScraperMovieReleases,
-			ScraperXRelReleases
+			ScraperXRelReleases,
+			ScraperInterfaceInGame
 		]
 
 		this.bot.commands = new Discord.Collection()
