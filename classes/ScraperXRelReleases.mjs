@@ -42,7 +42,8 @@ class ScraperXRelReleases extends WebsiteScraper {
             entry.size_raw = release.size[0].number[0]
             entry.size_unit = release.size[0].unit[0]
             entry.language = release.flags[0].english?.[0] ? "en_US" : "de_DE"
-            entry.fixed_release = release.flags[0].fix_rls?.[0]
+            // noinspection RedundantConditionalExpressionJS
+            entry.fixed_release = release.flags[0].fix_rls?.[0] ? true : false
 
             if (entry.release_type === "tv") {
                 entry.series_details = {}
