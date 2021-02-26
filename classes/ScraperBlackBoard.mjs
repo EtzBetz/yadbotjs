@@ -10,14 +10,6 @@ class ScraperBlackBoard extends WebsiteScraper{
         super()
     }
 
-    getSubUserIds() {
-        return config.scraper_black_board_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_black_board_guild_channels
-    }
-
     getScrapingUrl() {
         return 'https://www.fh-muenster.de/eti/aktuell/aushang/index.php'
     }

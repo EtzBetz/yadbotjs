@@ -7,7 +7,7 @@ import { getLoggingTimestamp, log, debugLog, errorLog, red, reset } from '../ind
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import files from './Files.mjs'
-import json from './Json.mjs'
+import scraper from '../commands/scraper.mjs'
 
 export class WebsiteScraper {
 
@@ -33,15 +33,23 @@ export class WebsiteScraper {
     }
 
     getSubUserIds() {
-        return [
-            config.owner
-        ]
+        return files.readJson(
+            this.getScraperConfigPath(),
+            'sub_user_ids',
+            false,
+            [
+                files.readJson(yadBot.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
+            ]
+        )
     }
 
     getSubGuildChannelIds() {
-        return [
-            config.test_channel
-        ]
+        return files.readJson(
+            this.getScraperConfigPath(),
+            'sub_guild_channel_ids',
+            false,
+            []
+        )
     }
 
     log(...message) {
@@ -59,7 +67,7 @@ export class WebsiteScraper {
     setup() {
         console.log(`${this.constructor.name}:\tSetting Up...`)
 
-        let scraperState = files.readJson(this.getScraperConfigPath(), "enabled", true)
+        let scraperState = files.readJson(this.getScraperConfigPath(), "enabled", false,true)
         if (scraperState === true) {
             setTimeout(() => {
                 this.createTimerInterval()
@@ -186,8 +194,9 @@ export class WebsiteScraper {
     }
 
     sendEmbedMessages(embeds) {
-        let sendState = files.readJson(this.getScraperConfigPath(), "send_embeds", true)
-        if (embeds.length >= 1 && sendState && config.global_send_embeds) {
+        let sendState = files.readJson(this.getScraperConfigPath(), "send_embeds", false, true)
+        let globalSendState = files.readJson(yadBot.getYadConfigPath(), "global_send_embeds", false, true)
+        if (embeds.length >= 1 && sendState && globalSendState) {
             this.log(`Sending embed(s)...`)
             this.getSubGuildChannelIds().forEach(channelId => {
                 yadBot.getBot().channels.fetch(channelId)

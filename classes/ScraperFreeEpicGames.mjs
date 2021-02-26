@@ -17,14 +17,6 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         return 1000 * 60 * 5
     }
 
-    getSubUserIds() {
-        return config.scraper_free_epic_games_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_free_epic_games_guild_channels
-    }
-
     parseWebsiteContentToJSON(response) {
         const elements = []
         response.data.data.Catalog?.searchStore?.elements?.forEach(game => {

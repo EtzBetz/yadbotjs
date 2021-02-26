@@ -18,14 +18,6 @@ class ScraperInterfaceInGame extends WebsiteScraper {
         return 1000 * 60 * 14
     }
 
-    getSubUserIds() {
-        return config.scraper_interface_in_game_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_interface_in_game_guild_channels
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

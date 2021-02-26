@@ -17,14 +17,6 @@ class ScraperRechnernetze extends WebsiteScraper{
         return 1000 * 60 * 8
     }
 
-    getSubUserIds() {
-        return config.scraper_rechnernetze_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_rechnernetze_guild_channels
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

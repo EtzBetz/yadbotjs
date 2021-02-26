@@ -1,6 +1,5 @@
 import fs from 'fs'
 import Discord from 'discord.js'
-import config from '../config.json'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
 import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
@@ -9,6 +8,8 @@ import ScraperMovieReleases from './ScraperMovieReleases.mjs'
 import ScraperXRelReleases from './ScraperXRelReleases.mjs'
 import ScraperInterfaceInGame from './ScraperInterfaceInGame.mjs'
 import { log, debugLog } from '../index'
+import files from './Files.mjs'
+import activityTypes from '../constants/ActivityTypes.mjs'
 
 class YadBot {
 
@@ -30,18 +31,24 @@ class YadBot {
         this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
 
         this.bot.once('ready', () => {
-            log(`---------------------------------------------------------`)
+            log(`-------------------------------`)
             log('I\'m online! Setting presence...')
-            this.bot.user.setActivity(' nach Slash Commands', { type: 'WATCHING' })
-            // this.bot.user.setActivity(` Version ${config.version}`, { type: 'PLAYING' })
+
+            let customActivityState = files.readJson(this.getYadConfigPath(), 'set_custom_activity', false, true)
+            if (customActivityState) {
+                let customActivityType = files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, activityTypes.PLAYING)
+                let customActivityText = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
+                this.bot.user.setActivity(customActivityText, { type: customActivityType })
+            }
             log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
             this.bot.guilds.cache.forEach(guild => {
                 log(` - ${guild.name}\t( ${guild.id} )`)
             })
-            log(`---------------------------------------------------------`)
+            log(`-------------------------------`)
         })
 
-        this.getBot().login(config.token)
+        let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
+        this.getBot().login(botToken)
         this.exitBindings()
     }
 
@@ -97,8 +104,13 @@ class YadBot {
         }
     }
 
+    getYadConfigPath() {
+        return './config.json'
+    }
+
     isUserIdAdmin(userId) {
-        return (config.admins.includes(userId))
+        let admins = files.readJson(this.getYadConfigPath(), 'admins', true, ['ENTER ADMIN IDS HERE'])
+        return (admins.includes(userId))
     }
 
     isUserAdmin(user) {
@@ -110,7 +122,8 @@ class YadBot {
     }
 
     isUserIdOwner(userId) {
-        return (userId === config.owner)
+        let owner = files.readJson(this.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
+        return (userId === owner)
     }
 
     isUserOwner(user) {
@@ -145,7 +158,8 @@ class YadBot {
     }
 
     mirrorDirectMessageToAdmin(message) {
-        this.bot.users.fetch(config.owner)
+        let owner = files.readJson(this.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
+        this.bot.users.fetch(owner)
             .then(owner => {
                 if (this.bot.user === null) return
                 owner?.send(new Discord.MessageEmbed({

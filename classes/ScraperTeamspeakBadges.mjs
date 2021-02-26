@@ -17,14 +17,6 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
         return 1000 * 60 * 5
     }
 
-    getSubUserIds() {
-        return config.scraper_teamspeak_badges_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_teamspeak_badges_guild_channels
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

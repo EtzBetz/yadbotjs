@@ -27,14 +27,6 @@ class ScraperMovieReleases extends WebsiteScraper {
         return 1000 * 60 * 12
     }
 
-    getSubUserIds() {
-        return config.scraper_movie_releases_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_movie_releases_guild_channels
-    }
-
     parseWebsiteContentToJSON(response) {
         const elements = []
 

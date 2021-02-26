@@ -17,18 +17,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return 1000 * 60 * 11
     }
 
-    getSubUserIds() {
-        return [
-            config.owner
-        ]
-    }
-
-    getSubGuildChannelIds() {
-        return [
-            config.test_channel
-        ]
-    }
-
     getLastScrapingUnixTime() {
         const scraperConfig = this.getConfig()
 

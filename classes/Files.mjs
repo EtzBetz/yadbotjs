@@ -57,18 +57,21 @@ class Files {
         return file.get()
     }
 
-    readJson(path, key, defaultValue) {
+    readJson(path, key, shutdownIfEmpty, defaultValue) {
         this.ensureFile(path)
         const file = editJsonFile(path)
         let content = file.get(key)
         if (
             content === undefined ||
             content === null ||
-            (Object.keys(content).length === 0 && content.constructor === Object) &&
-            defaultValue !== undefined
+            (this.isObjectEmpty(content))
         ) {
-            this.writeJson(path, key, defaultValue)
-            return defaultValue
+            if (defaultValue !== undefined) this.writeJson(path, key, defaultValue)
+            if (shutdownIfEmpty) {
+                console.log(`Key ${key} was not found in file ${path}, shutting down.`)
+                process.exit(1)
+            }
+            if (defaultValue !== undefined) return defaultValue
         }
         return content
     }
@@ -78,6 +81,10 @@ class Files {
         const file = editJsonFile(path)
         file.set(key, json)
         file.save()
+    }
+
+    isObjectEmpty(object) {
+        return Object.keys(object).length === 0 && object.constructor === Object
     }
 }
 

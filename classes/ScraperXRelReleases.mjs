@@ -18,14 +18,6 @@ class ScraperXRelReleases extends WebsiteScraper {
         return 1000 * 60 * 13
     }
 
-    getSubUserIds() {
-        return config.scraper_x_rel_releases_dm_users
-    }
-
-    getSubGuildChannelIds() {
-        return config.scraper_x_rel_releases_guild_channels
-    }
-
     parseWebsiteContentToJSON(response) {
         let elements = []
         let result = Json.parseXmlToJson(response.data)
