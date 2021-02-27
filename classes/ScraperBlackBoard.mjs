@@ -171,18 +171,41 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         let fields = []
 
-        json.links.forEach((link, index) => {
-            fields.push({
-                name: "Link",
-                value: `[${link.text}](${link.address})`
+        let linkTitle = "Link"
+        let linkContent = ""
+        if (json.links?.length > 0) {
+            if (json.links?.length > 1) {
+                linkTitle += 's'
+            }
+
+            json.links.forEach((link, index) => {
+                if (index !== 0) linkContent += "\n"
+                linkContent += `> [${link.text}](${link.address})`
             })
-        })
-        json.downloads.forEach((download, index) => {
+
             fields.push({
-                name: `Download`,
-                value: `[${download.info} ${download.text}](${download.address})`
+                name: `> ${linkTitle}:`,
+                value: linkContent
             })
-        })
+        }
+        let downloadTitle = "Download"
+        let downloadContent = ""
+        if (json.downloads?.length > 0) {
+            if (json.downloads?.length > 1) {
+                downloadTitle += 's'
+            }
+
+            downloadTitle += 's'
+            json.downloads.forEach((download, index) => {
+                if (index !== 0) downloadContent += "\n"
+                downloadContent += `> [${download.info} ${download.text}](${download.address})`
+            })
+
+            fields.push({
+                name: `> ${downloadTitle}:`,
+                value: downloadContent
+            })
+        }
 
         let footerString = `Alle Angaben ohne Gewähr!  •  `
 
