@@ -4,7 +4,7 @@ import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
 import config from '../config.json'
 
-class ScraperBlackBoard extends WebsiteScraper{
+class ScraperBlackBoard extends WebsiteScraper {
 
     constructor() {
         super()
@@ -21,43 +21,43 @@ class ScraperBlackBoard extends WebsiteScraper{
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []
-        let entities = page.querySelectorAll("div.clearfix > div[style] > div[style]")
+        let entities = page.querySelectorAll('div.clearfix > div[style] > div[style]')
         this.log(`${entities.length} entries found...`)
 
         entities.forEach((entity, index) => {
-            if (entity.textContent.trim() !== "") {
+            if (entity.textContent.trim() !== '') {
                 let entryParagraphs = []
 
-                entity.querySelectorAll("div > div > div > div > div > *").forEach((entityParagraph, paragraphIndex) => {
+                entity.querySelectorAll('div > div > div > div > div > *').forEach((entityParagraph, paragraphIndex) => {
                     let paragraph
-                    switch(entityParagraph.tagName.toLowerCase()) {
-                    case "p":
+                    switch (entityParagraph.tagName.toLowerCase()) {
+                    case 'p':
                         paragraph = entityParagraph.textContent.trim()
                         if (paragraphIndex === 0) {
                             paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
                         }
-                        break;
-                    case "ol":
-                    case "ul":
-                        paragraph = ""
+                        break
+                    case 'ol':
+                    case 'ul':
+                        paragraph = ''
                         entityParagraph.querySelectorAll('li').forEach((listParagraph, listIndex) => {
                             paragraph += `\n> ${listParagraph.textContent.trim()}\n`
                         })
-                        break;
+                        break
                     default:
                         paragraph = `\n[ Unimplemented element <${entityParagraph.tagName.toLowerCase()}>, message admin ]\n`
-                        console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
+                        console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
                         console.log(entityParagraph.tagName.toLowerCase())
-                        console.log("NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!")
+                        console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
                     }
                     entityParagraph.querySelectorAll('.SP-encrypted-email').forEach((mailAddressElement, addressIndex) => {
                         let rawMail = mailAddressElement.textContent.trim()
 
-                        let emailDomain = mailAddressElement.querySelector("i").textContent.trim()
+                        let emailDomain = mailAddressElement.querySelector('i').textContent.trim()
                         let emailDomainIndex = rawMail.indexOf(emailDomain)
 
                         let emailName = rawMail.substring(0, emailDomainIndex)
-                        let emailTld = rawMail.substring(emailDomainIndex+emailDomain.length)
+                        let emailTld = rawMail.substring(emailDomainIndex + emailDomain.length)
 
                         let mailLink = `${emailName}@${emailDomain}.${emailTld}`
 
@@ -68,12 +68,12 @@ class ScraperBlackBoard extends WebsiteScraper{
 
                 let entryLinks = [], entryDownloads = []
 
-                entity.querySelectorAll("div:nth-child(3) > ul.verteiler > li").forEach((linkContainer, linkIndex) => {
+                entity.querySelectorAll('div:nth-child(3) > ul.verteiler > li').forEach((linkContainer, linkIndex) => {
                     let linkText = linkContainer.querySelector('a > strong')?.textContent.trim()
                     let linkAddress = linkContainer.querySelector('a').href?.trim()
 
-                    if (linkAddress.substring(0, 1) === "/") {
-                        linkAddress = "https://www.fh-muenster.de" + linkAddress
+                    if (linkAddress.substring(0, 1) === '/') {
+                        linkAddress = 'https://www.fh-muenster.de' + linkAddress
                     }
 
                     let downloadText = linkContainer.querySelector('a[onclick]')?.textContent.trim()
@@ -83,7 +83,8 @@ class ScraperBlackBoard extends WebsiteScraper{
                     if (downloadText === undefined) {
                         // button is link
                         entryLinks.push({ text: linkText, address: linkAddress })
-                    } else {
+                    }
+                    else {
                         // button is download
                         entryDownloads.push({ text: downloadText, address: linkAddress, info: downloadInfo })
                     }
@@ -95,7 +96,8 @@ class ScraperBlackBoard extends WebsiteScraper{
                 // check if the <strong> element exists
                 if (entryDateElement !== null) {
                     entryDateString = entryDateElement?.textContent.trim()
-                } else { // otherwise go back to it's parent
+                }
+                else { // otherwise go back to it's parent
                     entryDateElement = entity.querySelector('div > div > p')
                     let firstParagraph = entryDateElement?.textContent.trim()
                     entryDateString = firstParagraph?.substring(0, firstParagraph.indexOf('|') - 1).trim()
@@ -106,7 +108,7 @@ class ScraperBlackBoard extends WebsiteScraper{
                     date: (entryDateString !== undefined) && (entryDateString !== null) ? this.parseDateString(entryDateString) : undefined,
                     paragraphs: entryParagraphs,
                     links: entryLinks,
-                    downloads: entryDownloads
+                    downloads: entryDownloads,
                 }
                 elements.push(entry)
             }
@@ -130,19 +132,19 @@ class ScraperBlackBoard extends WebsiteScraper{
         let month = parseInt(dateRegexResult[2], 10)
         let year = parseInt(dateRegexResult[3], 10)
 
-        return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, "d.M.yyyy").setZone('Europe/Berlin').toISO()
+        return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO()
     }
 
     generateFileNameFromJson(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
-        return this.generateSlugFromString(fileName) + ".json"
+        return this.generateSlugFromString(fileName) + '.json'
     }
 
     getEmbed(json) {
         this.log(`Generating embed...`)
 
-        let paragraphString = ""
+        let paragraphString = ''
 
         json.paragraphs.forEach((paragraph, index) => {
             if (index !== 0) paragraphString += '\n'
@@ -152,8 +154,8 @@ class ScraperBlackBoard extends WebsiteScraper{
         const regexLinks = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$])/ig
         let linkResults = [...paragraphString.matchAll(regexLinks)]
 
-        const linkHintPrefix = "#LINK"
-        const linkHintPostfix = "#"
+        const linkHintPrefix = '#LINK'
+        const linkHintPostfix = '#'
         let linkIndex = 0
         paragraphString = paragraphString.replace(regexLinks, () => {
             linkIndex++
@@ -163,33 +165,33 @@ class ScraperBlackBoard extends WebsiteScraper{
 
         paragraphString = (Discord.Util.escapeMarkdown(paragraphString))
 
-        const regexLinkHints = new RegExp(`(${linkHintPrefix}\\d+${linkHintPostfix})`,"gm")
+        const regexLinkHints = new RegExp(`(${linkHintPrefix}\\d+${linkHintPostfix})`, 'gm')
         paragraphString = paragraphString.replace(regexLinkHints, () => {
             linkIndex++
-            return `[\[Link: ${linkResults[linkIndex-1][0]}\]](${linkResults[linkIndex-1][0]})`
+            return `[\[Link: ${linkResults[linkIndex - 1][0]}\]](${linkResults[linkIndex - 1][0]})`
         })
 
         let fields = []
 
-        let linkTitle = "Link"
-        let linkContent = ""
+        let linkTitle = 'Link'
+        let linkContent = ''
         if (json.links?.length > 0) {
             if (json.links?.length > 1) {
                 linkTitle += 's'
             }
 
             json.links.forEach((link, index) => {
-                if (index !== 0) linkContent += "\n"
+                if (index !== 0) linkContent += '\n'
                 linkContent += `> [${link.text}](${link.address})`
             })
 
             fields.push({
                 name: `> ${linkTitle}:`,
-                value: linkContent
+                value: linkContent,
             })
         }
-        let downloadTitle = "Download"
-        let downloadContent = ""
+        let downloadTitle = 'Download'
+        let downloadContent = ''
         if (json.downloads?.length > 0) {
             if (json.downloads?.length > 1) {
                 downloadTitle += 's'
@@ -197,13 +199,13 @@ class ScraperBlackBoard extends WebsiteScraper{
 
             downloadTitle += 's'
             json.downloads.forEach((download, index) => {
-                if (index !== 0) downloadContent += "\n"
+                if (index !== 0) downloadContent += '\n'
                 downloadContent += `> [${download.info} ${download.text}](${download.address})`
             })
 
             fields.push({
                 name: `> ${downloadTitle}:`,
-                value: downloadContent
+                value: downloadContent,
             })
         }
 
@@ -212,27 +214,27 @@ class ScraperBlackBoard extends WebsiteScraper{
         let dateObj
         if (json.date !== undefined) {
             dateObj = luxon.DateTime.fromISO(json.date)
-        } else {
+        }
+        else {
             dateObj = luxon.DateTime.local()
         }
         footerString += dateObj.toFormat('dd.MM.yyyy')
 
         return new Discord.MessageEmbed(
             {
-                "title": json.title !== undefined ? Discord.Util.escapeMarkdown(json.title) : "Neuer Aushang",
-                "description": paragraphString,
-                "url": "https://www.fh-muenster.de/eti/aktuell/aushang/index.php",
-                // "color": 0x000fff,
-                "footer": {
-                    "text": footerString
+                title: json.title !== undefined ? Discord.Util.escapeMarkdown(json.title) : 'Neuer Aushang',
+                description: paragraphString,
+                url: 'https://www.fh-muenster.de/eti/aktuell/aushang/index.php',
+                footer: {
+                    text: footerString,
                 },
-                "author": {
-                    "name": "Fachhochschule Münster",
-                    "url": "https://fh-muenster.de",
-                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
+                author: {
+                    name: 'Fachhochschule Münster',
+                    url: 'https://fh-muenster.de',
+                    icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
                 },
-                "fields": fields
-            }
+                fields: fields,
+            },
         )
     }
 
