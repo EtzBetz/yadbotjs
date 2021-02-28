@@ -6,7 +6,7 @@ export default {
     name: 'ticket',
     enabled: true,
     description: 'I will respond with the ticket drawn.',
-    args: '(<info>)',
+    args: '(<info>/<undo>)',
     onlyOwner: true,
     execute(message, args) {
         let ticketChances = files.readJson(
