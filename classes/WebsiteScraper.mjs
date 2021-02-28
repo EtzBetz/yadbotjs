@@ -411,6 +411,43 @@ export class WebsiteScraper {
         }
     }
 
+    subscribe(message) {
+        switch (message.channel.type) {
+        case 'unknown':
+            return { error: true, data: 'Message channel type was unknown.' }
+        case 'dm':
+            let subUsers = files.readJson(this.getScraperConfigPath(), "sub_user_ids", false, [])
+
+            let indexResult = subUsers.indexOf(message.author.id)
+            if (indexResult === -1) {
+                subUsers.push(message.author.id)
+            } else {
+                subUsers.splice(indexResult, 1)
+            }
+            files.writeJson(this.getScraperConfigPath(), "sub_user_ids", subUsers)
+            if (indexResult === -1) {
+                return { error: false, data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.` }
+            } else {
+                return { error: false, data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.` }
+            }
+        case 'text':
+        case 'news':
+            let subChannels = files.readJson(this.getScraperConfigPath(), "sub_guild_channel_ids", false, [])
+            let indexResultGuild = subChannels.indexOf(message.channel.id)
+            if (indexResultGuild === -1) {
+                subChannels.push(message.channel.id)
+            } else {
+                subChannels.splice(indexResultGuild, 1)
+            }
+            files.writeJson(this.getScraperConfigPath(), "sub_guild_channel_ids", subChannels)
+            if (indexResultGuild === -1) {
+                return { error: false, data: `This channel has been added to the subscribers list of scraper **${this.constructor.name}**.` }
+            } else {
+                return { error: false, data: `This channel has been removed from the subscribers list of scraper **${this.constructor.name}**.` }
+            }
+        }
+    }
+
     generateSlugFromString(originalString) {
         const regexDisallowedChars = /([^a-zA-Z0-9])+/gm
         const regexSequenceFilter = /[^a-zA-Z0-9]*([a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9])[^a-zA-Z0-9]*/gm

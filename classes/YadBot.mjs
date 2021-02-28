@@ -19,6 +19,7 @@ class YadBot {
         this.bot.commands = new Discord.Collection()
         this.commandFiles = []
         this.eventFiles = []
+        this.scrapers = []
 
         this.bot.once('ready', () => {
             this.bindCommands()
