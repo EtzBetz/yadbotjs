@@ -1,8 +1,6 @@
 import axios from 'axios'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
-import fs from 'fs'
-import config from '../config.json'
 import { getLoggingTimestamp, log, debugLog, errorLog, red, reset } from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'

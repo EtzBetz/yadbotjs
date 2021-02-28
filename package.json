@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --experimental-specifier-resolution=node --experimental-json-modules index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run-watch-server": "nodemon --experimental-specifier-resolution=node --experimental-json-modules --ignore './scraperFiles/' --ignore './notes/' index.mjs",
+    "run-watch-server": "nodemon --experimental-specifier-resolution=node --experimental-json-modules --ignore './scraperFiles/' --ignore './commandFiles/' --ignore './config.json' --ignore './notes/' index.mjs",
     "dev": "npm run run-watch-server"
   },
   "author": "",

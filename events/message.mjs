@@ -1,15 +1,17 @@
-import config from '../config.json'
 import Discord from "discord.js"
 import yadBot from './../classes/YadBot'
 import { log } from '../index'
+import files from '../classes/Files.mjs'
 
 export default (message) => {
-    const prefix = config.prefix
+    const prefix = files.readJson(yadBot.getYadConfigPath(), 'prefix', false, '!')
+    const ownerId = files.readJson(yadBot.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
+    const botId = files.readJson(yadBot.getYadConfigPath(), 'bot', true, 'ENTER BOT ID HERE')
 
     if (message.author.bot) return
-    if (message.channel.type === "dm" && message.author.id !== config.owner) yadBot.mirrorDirectMessageToAdmin(message)
+    if (message.channel.type === "dm" && message.author.id !== ownerId) yadBot.mirrorDirectMessageToAdmin(message)
 
-    if (message.mentions.users.get(config.bot) !== undefined || message.mentions.members?.get(config.bot) !== undefined) {
+    if (message.mentions.users.get(botId) !== undefined || message.mentions.members?.get(botId) !== undefined) {
         message.channel.send(new Discord.MessageEmbed({ title: `Hey!` })) // TODO: provide array of messages to randomly select from
     }
 
@@ -19,12 +21,12 @@ export default (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/)
     const commandName = args.shift().toLowerCase()
 
-    log(`Requested command ${config.prefix}${commandName} ("${message.content}") from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+    log(`Requested command ${prefix}${commandName} ("${message.content}") from "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
 
     const command = yadBot.getBot().commands.get(commandName)
     if (command === undefined) {
-        log(`Unknown command "${config.prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
-        yadBot.sendCommandErrorEmbed(message, `Command not found!\nUse \`${config.prefix}help\` to get a list of available commands`)
+        log(`Unknown command "${prefix}${commandName}" for "${message.author.username}.${message.author.discriminator}" (ID:${message.author.id}).`)
+        yadBot.sendCommandErrorEmbed(message, `Command not found!\nUse \`${prefix}help\` to get a list of available commands`)
         return
     }
 
@@ -45,7 +47,8 @@ export default (message) => {
         return
     } else if (command.onlyAdmin) {
         if (!yadBot.isMessageAuthorOwner(message)) {
-            yadBot.getBot().users.fetch(config.owner)
+            let owner = files.readJson(yadBot.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
+            yadBot.getBot().users.fetch(owner)
                 .then(owner => {
                     if (yadBot.getBot().user !== null) {
                         owner?.send(new Discord.MessageEmbed({

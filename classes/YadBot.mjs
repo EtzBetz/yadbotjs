@@ -16,21 +16,13 @@ class YadBot {
     constructor() {
         this.bot = new Discord.Client()
 
-        this.scrapers = [
-            scraperBlackBoard,
-            scraperFreeEpicGames,
-            scraperGuildWars2News,
-            scraperTeamspeakBadges,
-            ScraperMovieReleases,
-            ScraperXRelReleases,
-            ScraperInterfaceInGame,
-        ]
-
         this.bot.commands = new Discord.Collection()
-        this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
-        this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
+        this.commandFiles = []
+        this.eventFiles = []
 
         this.bot.once('ready', () => {
+            this.bindCommands()
+            this.bindEvents()
             log(`-------------------------------`)
             log('I\'m online! Setting presence...')
 
@@ -45,6 +37,17 @@ class YadBot {
                 log(` - ${guild.name}\t( ${guild.id} )`)
             })
             log(`-------------------------------`)
+
+            // todo: build in waiting for the main bot to come online (interval in scrapers?)
+            this.scrapers = [
+                scraperBlackBoard,
+                scraperFreeEpicGames,
+                scraperGuildWars2News,
+                scraperTeamspeakBadges,
+                ScraperMovieReleases,
+                ScraperXRelReleases,
+                ScraperInterfaceInGame,
+            ]
         })
 
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
@@ -106,6 +109,10 @@ class YadBot {
 
     getYadConfigPath() {
         return './config.json'
+    }
+
+    getCommandConfigPath(commandName) {
+        return `./commandFiles/${commandName}/config.json`
     }
 
     isUserIdAdmin(userId) {
@@ -176,7 +183,6 @@ class YadBot {
             })
             .catch(e => console.dir(e))
     }
-
 }
 
 export default new YadBot()

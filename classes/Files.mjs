@@ -57,7 +57,7 @@ class Files {
         return file.get()
     }
 
-    readJson(path, key, shutdownIfEmpty, defaultValue) {
+    readJson(path, key, shutdownIfUndefined, defaultValue) {
         this.ensureFile(path)
         const file = editJsonFile(path)
         let content = file.get(key)
@@ -67,7 +67,7 @@ class Files {
             (this.isObjectEmpty(content))
         ) {
             if (defaultValue !== undefined) this.writeJson(path, key, defaultValue)
-            if (shutdownIfEmpty) {
+            if (shutdownIfUndefined) {
                 console.log(`Key ${key} was not found in file ${path}, shutting down.`)
                 process.exit(1)
             }
