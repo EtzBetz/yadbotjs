@@ -1,5 +1,6 @@
 import Discord from "discord.js"
 import yadBot from './../classes/YadBot'
+import config from '../config.json'
 
 export default {
     name: 'scraper',
@@ -8,7 +9,10 @@ export default {
     description: "Shows a list of all available scrapers or lets you subscribe to them via PM or server channel.",
     execute(message, args) {
 
-        switch (args[0].toLowerCase()) {
+        switch (args[0]?.toLowerCase()) {
+        case undefined:
+            yadBot.sendCommandErrorEmbed(message, `You need to provide additional arguments for this command.\n Use \`${config.prefix}help\` to get more information`)
+            break
         case "subscribe":
             let selectedScraper
             for (let i = 0; i < yadBot.scrapers.length; i++) {

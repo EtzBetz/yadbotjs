@@ -12,7 +12,7 @@ export default {
 
         switch (args[0]) {
         case undefined:
-            yadBot.sendCommandErrorEmbed(message, `You need to provide additional arguments for this command.\n Use ${config.prefix}help to get more information`)
+            yadBot.sendCommandErrorEmbed(message, `You need to provide additional arguments for this command.\n Use \`${config.prefix}help\` to get more information`)
             break
         case "status":
             let statusDescription = ``
