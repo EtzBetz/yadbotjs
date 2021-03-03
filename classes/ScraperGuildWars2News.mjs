@@ -60,7 +60,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
         // index 1 = dd     -> "06"
         // index 2 = MMMM   -> "Oktober"
         // index 3 = yyyy   -> "2020"
-        const regexCustomDate = /(\d{2}). ([a-zA-Z]+) (\d{4})/
+        const regexCustomDate = /(\d{2}). ([a-zA-ZöäüÖÄÜ]+) (\d{4})/
         // used to get the month number
         // then returns (0-11)+1
         const months = [
