@@ -51,7 +51,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
         // index 1 ->
         //      "Das Guild Wars 2 Team"
         //      "Evon Schlitzklinge"
-        const regexAuthor = /von (.+) am \d{2}. [a-zA-Z]+ \d{4}/
+        const regexAuthor = /von (.+) am \d{2}. [a-zA-ZöäüÖÄÜ]+ \d{4}/
 
         return regexAuthor.exec(sourceString)[1]
     }
