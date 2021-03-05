@@ -224,7 +224,7 @@ class ScraperBlackBoard extends WebsiteScraper {
             {
                 title: json.title !== undefined ? Discord.Util.escapeMarkdown(json.title) : 'Neuer Aushang',
                 description: paragraphString,
-                url: 'https://www.fh-muenster.de/eti/aktuell/aushang/index.php',
+                url: this.buildUrl(json),
                 footer: {
                     text: footerString,
                 },
@@ -236,6 +236,13 @@ class ScraperBlackBoard extends WebsiteScraper {
                 fields: fields,
             },
         )
+    }
+
+    buildUrl(json) {
+        let url = `https://www.fh-muenster.de/eti/aktuell/aushang/index.php`
+        url += `#:~:text=`
+        url += encodeURI(json.title)
+        return url
     }
 
     getSortingFunction() {
