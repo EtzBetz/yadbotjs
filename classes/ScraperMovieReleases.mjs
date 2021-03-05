@@ -31,10 +31,10 @@ class ScraperMovieReleases extends WebsiteScraper {
         const elements = []
 
         response.data.results.forEach( (movie) => {
-            let detailApiUrl = `https://api.themoviedb.org/3/movie/${movie.id}`
-            detailApiUrl += `?language=de-DE`
-            detailApiUrl += `&region=de`
-            detailApiUrl += `&api_key=${config.tmdb_api_key}`
+            // let detailApiUrl = `https://api.themoviedb.org/3/movie/${movie.id}`
+            // detailApiUrl += `?language=de-DE`
+            // detailApiUrl += `&region=de`
+            // detailApiUrl += `&api_key=${config.tmdb_api_key}`
             // let movieDetailsResponse = await super.requestWebsite(detailApiUrl)
             // const movieDetails = movieDetailsResponse.data
 
