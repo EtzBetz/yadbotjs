@@ -6,7 +6,8 @@ import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
 import scraperTeamspeakBadges from './ScraperTeamspeakBadges.mjs'
 import ScraperMovieReleases from './ScraperMovieReleases.mjs'
 import ScraperXRelReleases from './ScraperXRelReleases.mjs'
-import ScraperInterfaceInGame from './ScraperInterfaceInGame.mjs'
+import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.mjs'
+import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.mjs'
 import { log, debugLog } from '../index'
 import files from './Files.mjs'
 import activityTypes from '../constants/ActivityTypes.mjs'
@@ -47,7 +48,8 @@ class YadBot {
                 scraperTeamspeakBadges,
                 ScraperMovieReleases,
                 ScraperXRelReleases,
-                ScraperInterfaceInGame,
+                ScraperInterfaceInGameGames,
+                ScraperInterfaceInGameArticles
             ]
         })
 
