@@ -83,7 +83,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
         return new Discord.MessageEmbed(
             {
                 "title": "New Teamspeak Badge available!",
-                "description": "A new Badge was listed on the Forums.",
+                "description": "A new Badge was listed on the Forums.\n Unlock it [here](https://www.myteamspeak.com/userarea/badges/redeem) or in your Teamspeak application!",
                 "url": `${this.getScrapingUrl()}`,
                 "author": {
                     "name": "Teamspeak",
