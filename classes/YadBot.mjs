@@ -167,12 +167,8 @@ class YadBot {
         }))
     }
 
-    mirrorDirectMessageToAdmin(message) {
-        let owner = files.readJson(this.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
-        this.bot.users.fetch(owner)
-            .then(owner => {
-                if (this.bot.user === null) return
-                owner?.send(new Discord.MessageEmbed({
+    mirrorDirectMessageToOwner(message) {
+        this.sendMessageToOwner(new Discord.MessageEmbed({
                     title: `DM von User`,
                     description: `${message}`,
                     footer: {
@@ -182,6 +178,14 @@ class YadBot {
                     timestamp: message.createdTimestamp,
                     color: 0xff6f00,
                 }))
+    }
+
+    sendMessageToOwner(message) {
+        let owner = files.readJson(this.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
+        this.bot.users.fetch(owner)
+            .then(owner => {
+                if (this.bot.user === null) return
+                owner?.send(message)
                     .catch(e => console.dir(e))
             })
             .catch(e => console.dir(e))

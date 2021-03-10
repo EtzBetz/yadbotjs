@@ -9,7 +9,7 @@ export default (message) => {
     const botId = files.readJson(yadBot.getYadConfigPath(), 'bot', true, 'ENTER BOT ID HERE')
 
     if (message.author.bot) return
-    if (message.channel.type === "dm" && message.author.id !== ownerId) yadBot.mirrorDirectMessageToAdmin(message)
+    if (message.channel.type === "dm" && message.author.id !== ownerId) yadBot.mirrorDirectMessageToOwner(message)
 
     if (message.mentions.users.get(botId) !== undefined || message.mentions.members?.get(botId) !== undefined) {
         message.channel.send(new Discord.MessageEmbed({ title: `Hey!` })) // TODO: provide array of messages to randomly select from
