@@ -89,7 +89,12 @@ export class WebsiteScraper {
         this.log(`Fetching and parsing website...`)
         this.requestWebsite(this.getScrapingUrl())
             .then((response) => {
-                const content = this.parseWebsiteContentToJSON(response)
+                let content = []
+                try {
+                    content = this.parseWebsiteContentToJSON(response)
+                } catch (e) {
+                    yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                }
                 this.filterNewContent(content, (filteredContent) => {
                     this.log(`${filteredContent.length} entries are new.`)
                     if (yadBot.getBot().user === null) {
@@ -101,7 +106,11 @@ export class WebsiteScraper {
                     filteredContent = filteredContent.sort(this.getSortingFunction())
                     let embeds = []
                     filteredContent.forEach(content => {
-                        embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                        try {
+                            embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                        } catch (e) {
+                            yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                        }
                     })
                     if (embeds.length >= 1) {
                         this.sendEmbedMessages(embeds)
