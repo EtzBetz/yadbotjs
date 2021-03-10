@@ -1,8 +1,8 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import config from '../config.json'
 import Json from './Json.mjs'
+import yadBot from './YadBot.mjs'
 
 class ScraperXRelReleases extends WebsiteScraper {
 
@@ -21,7 +21,7 @@ class ScraperXRelReleases extends WebsiteScraper {
     parseWebsiteContentToJSON(response) {
         let elements = []
         let result = Json.parseXmlToJson(response.data)
-        result.releases.list[0].release?.forEach((release,index) => {
+        result.releases.list[0].release?.forEach((release, index) => {
             let entry = {}
 
             entry.title = release.ext_info[0].title[0]
@@ -33,11 +33,11 @@ class ScraperXRelReleases extends WebsiteScraper {
             entry.date = luxon.DateTime.fromSeconds(parseInt(release.time[0], 10)).setZone('Europe/Berlin').toISO()
             entry.size_raw = release.size[0].number[0]
             entry.size_unit = release.size[0].unit[0]
-            entry.language = release.flags[0].english?.[0] ? "en_US" : "de_DE"
+            entry.language = release.flags[0].english?.[0] ? 'en_US' : 'de_DE'
             // noinspection RedundantConditionalExpressionJS
             entry.fixed_release = release.flags[0].fix_rls?.[0] ? true : false
 
-            if (entry.release_type === "tv") {
+            if (entry.release_type === 'tv') {
                 entry.series_details = {}
 
                 entry.series_details.video = release.video_type[0]
@@ -69,31 +69,35 @@ class ScraperXRelReleases extends WebsiteScraper {
     getEmbed(content) {
         this.log(`Generating embed...`)
 
-        let typeString = ""
+        let typeString = ''
         switch (content.release_type) {
-        case "movie":
+        case 'movie':
             typeString = `Movie`
             break
-        case "tv":
+        case 'tv':
             typeString = `TV-Show`
             break
-        case "console":
+        case 'console':
             typeString = `Console-Game`
             break
-        case "software":
+        case 'software':
             typeString = `Software`
             break
-        case "game":
+        case 'game':
             typeString = `Game`
             break
         default:
+            yadBot.sendMessageToOwner(new Discord.MessageEmbed({
+                title: 'New release type in xREL Releases Scraper',
+                description: `New release type: \`${content.release_type}\``
+            }))
             typeString = `UNKNOWN (${content.release_type})`
             break
         }
 
-        let detailString = ""
+        let detailString = ''
         switch (content.release_type) {
-        case "tv":
+        case 'tv':
             if (content.series_details.single !== true) detailString = `Season ${content.series_details.season}, Episode ${content.series_details.episode}\n`
             break
         }
@@ -126,7 +130,7 @@ class ScraperXRelReleases extends WebsiteScraper {
                 {
                     'name': 'Video- & Audio-type',
                     'value': `${content.series_details.video}, ${content.series_details.audio}`,
-                }
+                },
             )
         }
 
@@ -134,7 +138,7 @@ class ScraperXRelReleases extends WebsiteScraper {
             {
                 'name': 'Download size',
                 'value': `${content.size_raw} ${content.size_unit}`,
-            }
+            },
         )
 
         if (content.fixed_release === true) {
@@ -142,7 +146,7 @@ class ScraperXRelReleases extends WebsiteScraper {
                 {
                     'name': 'Fixed release',
                     'value': `This release updates or fixes another release somehow, it is probably still independent.`,
-                }
+                },
             )
         }
 
