@@ -288,6 +288,41 @@ export class WebsiteScraper {
         })
     }
 
+    sendUnreliableEmbedToSubscribers() {
+        const updateEmbed = new Discord.MessageEmbed({
+            title: `Notice`,
+            description: `New data is available from this scraper, but due to changes on the received data, Yad can not process it without error.\nYou can visit the page yourself [here](${this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
+            color: 0xff6f00,
+        })
+
+        this.getSubGuildChannelIds().forEach(channelId => {
+            yadBot.getBot().channels.fetch(channelId)
+                .then(channel => {
+                    if (yadBot.getBot().user === null) return
+                    this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
+                    channel.send(updateEmbed)
+                        .catch(e => console.dir(e))
+                })
+                .catch((e) => {
+                    this.log(`Guild Channel '${channelId}' could not be found.`)
+                    console.dir(e)
+                })
+        })
+        this.getSubUserIds().forEach(userId => {
+            yadBot.getBot().users.fetch(userId)
+                .then(user => {
+                    if (yadBot.getBot().user === null) return
+                    this.log(`Sending embed(s) to ${user.username}`)
+                    user?.send(updateEmbed)
+                        .catch(e => console.dir(e))
+                })
+                .catch((e) => {
+                    this.log(`User '${userId}' could not be found.`)
+                    console.dir(e)
+                })
+        })
+    }
+
     filterEmbedLength(embed) {
         const TITLE_LIMIT = 256
         const DESCRIPTION_LIMIT = 2048

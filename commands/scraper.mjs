@@ -51,6 +51,8 @@ export default {
                 })
             )
             break
+        default:
+            yadBot.sendCommandErrorEmbed(message, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
         }
     }
 }
