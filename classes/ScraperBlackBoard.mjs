@@ -2,7 +2,7 @@ import jsdom from 'jsdom'
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import config from '../config.json'
+import yadBot from './YadBot.mjs'
 
 class ScraperBlackBoard extends WebsiteScraper {
 
@@ -45,10 +45,13 @@ class ScraperBlackBoard extends WebsiteScraper {
                         })
                         break
                     default:
-                        paragraph = `\n[ Unimplemented element <${entityParagraph.tagName.toLowerCase()}>, message admin ]\n`
+                        paragraph = `\n[ Unimplemented element <${entityParagraph.tagName.toLowerCase()}> ]\n`
                         console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
                         console.log(entityParagraph.tagName.toLowerCase())
                         console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
+                        yadBot.sendMessageToOwner(new Discord.MessageEmbed({
+                            description: `Unimplemented element <${entityParagraph.tagName.toLowerCase()}> in BlackBoard scraper!`
+                        }))
                     }
                     entityParagraph.querySelectorAll('.SP-encrypted-email').forEach((mailAddressElement, addressIndex) => {
                         if (mailAddressElement.querySelector('i') !== null) {
