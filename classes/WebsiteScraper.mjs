@@ -432,18 +432,22 @@ export class WebsiteScraper {
             }
         case 'text':
         case 'news':
-            let subChannels = files.readJson(this.getScraperConfigPath(), "sub_guild_channel_ids", false, [])
-            let indexResultGuild = subChannels.indexOf(message.channel.id)
-            if (indexResultGuild === -1) {
-                subChannels.push(message.channel.id)
+            if (message.member?.hasPermission(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+                let subChannels = files.readJson(this.getScraperConfigPath(), "sub_guild_channel_ids", false, [])
+                let indexResultGuild = subChannels.indexOf(message.channel.id)
+                if (indexResultGuild === -1) {
+                    subChannels.push(message.channel.id)
+                } else {
+                    subChannels.splice(indexResultGuild, 1)
+                }
+                files.writeJson(this.getScraperConfigPath(), "sub_guild_channel_ids", subChannels)
+                if (indexResultGuild === -1) {
+                    return { error: false, data: `This channel has been added to the subscribers list of scraper **${this.constructor.name}**.` }
+                } else {
+                    return { error: false, data: `This channel has been removed from the subscribers list of scraper **${this.constructor.name}**.` }
+                }
             } else {
-                subChannels.splice(indexResultGuild, 1)
-            }
-            files.writeJson(this.getScraperConfigPath(), "sub_guild_channel_ids", subChannels)
-            if (indexResultGuild === -1) {
-                return { error: false, data: `This channel has been added to the subscribers list of scraper **${this.constructor.name}**.` }
-            } else {
-                return { error: false, data: `This channel has been removed from the subscribers list of scraper **${this.constructor.name}**.` }
+                return { error: true, data: `You need admin permissions on this server to be able to manage subscriptions.` }
             }
         }
     }

@@ -16,7 +16,7 @@ export default {
         case "subscribe":
             let selectedScraper
             for (let i = 0; i < yadBot.scrapers.length; i++) {
-                console.log(`${yadBot.scrapers[i].constructor.name.toLowerCase()} =?= ${args[1].toLowerCase()}`)
+                // console.log(`${yadBot.scrapers[i].constructor.name.toLowerCase()} =?= ${args[1].toLowerCase()}`)
                 if (yadBot.scrapers[i].constructor.name.toLowerCase().includes(args[1].toLowerCase())) {
                     selectedScraper = yadBot.scrapers[i]
                     break
