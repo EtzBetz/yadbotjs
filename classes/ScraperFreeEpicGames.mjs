@@ -26,6 +26,7 @@ class ScraperFreeEpicGames extends WebsiteScraper{
             if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
                 entry.imageUrl = game.keyImages[0].url
             }
+            entry.imageUrl = encodeURI(entry.imageUrl)
 
             let slug
             const slashPosition = game.productSlug.toString().indexOf('/')
