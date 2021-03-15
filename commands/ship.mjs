@@ -16,7 +16,7 @@ export default {
             if (
                 message.mentions.users.size === 1 &&
                 yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]) ===
-                message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex])).id
+                message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))?.id
             ){
                 userToHandle = message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))
             }

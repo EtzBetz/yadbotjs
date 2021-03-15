@@ -83,6 +83,13 @@ class Files {
         file.save()
     }
 
+    clearJson(filePath) {
+        const file = editJsonFile(filePath)
+        file.empty((callback) => {
+            file.save()
+        })
+    }
+
     isObjectEmpty(object) {
         return Object.keys(object).length === 0 && object.constructor === Object
     }

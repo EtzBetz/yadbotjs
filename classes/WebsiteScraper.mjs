@@ -1,4 +1,5 @@
 import axios from 'axios'
+import crypto from 'crypto'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
 import { getLoggingTimestamp, log, debugLog, errorLog, red, reset } from '../index'
@@ -151,13 +152,26 @@ export class WebsiteScraper {
             const fileName = this.generateFileNameFromJson(newJson[i])
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
-            let readData = files.readCompleteJson(filePath)
-
-            if (Object.keys(readData).length === 0 && readData.constructor === Object) {
+            let readData = files.readJson(filePath, 'data', false, [])
+            if (readData.length === 0) {
                 console.log(fileName, 'does not exist, so it is new content.')
             }
 
-            if (JSON.stringify(readData) === JSON.stringify(newJson[i])) {
+            let latestData = readData[readData.length - 1]
+            if (latestData === undefined) latestData = []
+
+            // if (this.constructor.name === "ScraperFreeEpicGames") {
+            //     let hash1 = crypto.createHash('md5').update(JSON.stringify(latestData)).digest('hex');
+            //     let hash2 = crypto.createHash('md5').update(JSON.stringify(newJson[i])).digest('hex');
+            //     console.log("hash1:", hash1)
+            //     console.log("hash2:", hash2)
+            //     console.log("hash1:", JSON.stringify(latestData))
+            //     console.log("hash2:", JSON.stringify(newJson[i]))
+            //
+            // }
+
+            if (JSON.stringify(latestData) === JSON.stringify(newJson[i])) {
+
                 j++
 
                 if (j === (newJson.length)) {
@@ -166,8 +180,9 @@ export class WebsiteScraper {
             }
             else {
                 filteredJsonArray.push(newJson[i])
+                readData.push(newJson[i])
                 // write JSON string to file
-                files.writeJson(filePath, newJson[i])
+                files.writeJson(filePath, 'data', readData)
 
                 console.log(`JSON data is saved in ${this.generateFileNameFromJson(newJson[i])}.`)
                 j++
