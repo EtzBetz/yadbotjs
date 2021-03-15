@@ -158,7 +158,7 @@ export class WebsiteScraper {
             }
 
             let latestData = readData[readData.length - 1]
-            if (latestData === undefined) latestData = []
+            if (latestData === undefined) latestData = {}
 
             // if (this.constructor.name === "ScraperFreeEpicGames") {
             //     let hash1 = crypto.createHash('md5').update(JSON.stringify(latestData)).digest('hex');
