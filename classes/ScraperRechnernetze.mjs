@@ -8,10 +8,6 @@ class ScraperRechnernetze extends WebsiteScraper{
         super()
     }
 
-    getScrapingUrl() {
-        return 'https://www.fh-muenster.de/eti/labore_forschung/nw/rn.php'
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

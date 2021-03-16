@@ -9,10 +9,6 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
         super()
     }
 
-    getScrapingUrl() {
-        return 'https://interfaceingame.com/games/?sortby=recent_add'
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

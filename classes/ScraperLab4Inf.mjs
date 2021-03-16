@@ -8,10 +8,6 @@ class ScraperLab4Inf extends WebsiteScraper{
         super()
     }
 
-    getScrapingUrl() {
-        return 'http://www.lab4inf.fh-muenster.de/Lab4Inf/index.php/Content?subject=hoeh_prog'
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

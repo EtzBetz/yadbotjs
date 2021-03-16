@@ -10,10 +10,6 @@ class ScraperXRelReleases extends WebsiteScraper {
         super()
     }
 
-    getScrapingUrl() {
-        return `https://api.xrel.to/v2/release/latest.xml`
-    }
-
     parseWebsiteContentToJSON(response) {
         let elements = []
         let result = Json.parseXmlToJson(response.data)

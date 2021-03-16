@@ -10,10 +10,6 @@ class ScraperBlackBoard extends WebsiteScraper {
         super()
     }
 
-    getScrapingUrl() {
-        return 'https://www.fh-muenster.de/eti/aktuell/aushang/index.php'
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

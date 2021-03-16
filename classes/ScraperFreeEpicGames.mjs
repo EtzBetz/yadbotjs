@@ -8,10 +8,6 @@ class ScraperFreeEpicGames extends WebsiteScraper{
         super()
     }
 
-    getScrapingUrl() {
-        return 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
-    }
-
     parseWebsiteContentToJSON(response) {
         const elements = []
         response.data.data.Catalog?.searchStore?.elements?.forEach(game => {

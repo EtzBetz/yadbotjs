@@ -24,7 +24,12 @@ export class WebsiteScraper {
     }
 
     getScrapingUrl() {
-        return 'https://google.com'
+        return files.readJson(
+            this.getScraperConfigPath(),
+            'scraping_url',
+            true,
+            "ENTER SCRAPING URL HERE"
+        )
     }
 
     getScrapingInterval() {

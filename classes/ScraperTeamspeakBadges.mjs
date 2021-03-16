@@ -8,10 +8,6 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
         super()
     }
 
-    getScrapingUrl() {
-        return 'https://community.teamspeak.com/t/teamspeak-badge-list/358'
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

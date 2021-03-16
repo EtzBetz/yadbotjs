@@ -9,10 +9,6 @@ class ScraperGuildWars2News extends WebsiteScraper{
         super()
     }
 
-    getScrapingUrl() {
-        return 'https://www.guildwars2.com/de/news/'
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []
