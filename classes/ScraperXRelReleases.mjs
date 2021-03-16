@@ -6,10 +6,6 @@ import yadBot from './YadBot.mjs'
 
 class ScraperXRelReleases extends WebsiteScraper {
 
-    constructor() {
-        super()
-    }
-
     parseWebsiteContentToJSON(response) {
         let elements = []
         let result = Json.parseXmlToJson(response.data)

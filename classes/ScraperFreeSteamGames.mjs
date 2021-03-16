@@ -5,10 +5,6 @@ import files from './Files.mjs'
 
 class ScraperFreeSteamGames extends WebsiteScraper {
 
-    constructor() {
-        super()
-    }
-
     getScrapingUrl() {
         const apiKey = files.readJson(this.getScraperConfigPath(), 'steam_dev_api_key', true, 'ENTER STEAM DEV API KEY HERE')
 

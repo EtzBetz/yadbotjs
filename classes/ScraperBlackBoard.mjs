@@ -6,10 +6,6 @@ import yadBot from './YadBot.mjs'
 
 class ScraperBlackBoard extends WebsiteScraper {
 
-    constructor() {
-        super()
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

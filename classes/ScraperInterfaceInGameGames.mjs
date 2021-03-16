@@ -5,10 +5,6 @@ import luxon from 'luxon'
 
 class ScraperInterfaceInGameGames extends WebsiteScraper {
 
-    constructor() {
-        super()
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

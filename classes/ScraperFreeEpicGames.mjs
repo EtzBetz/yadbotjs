@@ -4,10 +4,6 @@ import { WebsiteScraper } from './WebsiteScraper'
 
 class ScraperFreeEpicGames extends WebsiteScraper{
 
-    constructor() {
-        super()
-    }
-
     parseWebsiteContentToJSON(response) {
         const elements = []
         response.data.data.Catalog?.searchStore?.elements?.forEach(game => {

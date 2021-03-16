@@ -5,10 +5,6 @@ import files from './Files.mjs'
 
 class ScraperMovieReleases extends WebsiteScraper {
 
-    constructor() {
-        super()
-    }
-
     getScrapingUrl() {
         const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
         const todayDate = luxon.DateTime.local().toFormat('yyyy-MM-dd')

@@ -4,10 +4,6 @@ import jsdom from 'jsdom'
 
 class ScraperRechnernetze extends WebsiteScraper{
 
-    constructor() {
-        super()
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []
