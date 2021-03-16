@@ -1,7 +1,6 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import config from '../config.json'
 
 class ScraperTeamspeakBadges extends WebsiteScraper{
 

@@ -1,7 +1,7 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import config from '../config.json'
+import files from './Files.mjs'
 
 class ScraperMovieReleases extends WebsiteScraper {
 
@@ -10,8 +10,9 @@ class ScraperMovieReleases extends WebsiteScraper {
     }
 
     getScrapingUrl() {
-        let todayDate = luxon.DateTime.local().toFormat('yyyy-MM-dd')
-        let pastDate = luxon.DateTime.local().minus({ weeks: 1 }).toFormat('yyyy-MM-dd')
+        const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
+        const todayDate = luxon.DateTime.local().toFormat('yyyy-MM-dd')
+        const pastDate = luxon.DateTime.local().minus({ weeks: 1 }).toFormat('yyyy-MM-dd')
         let url = `https://api.themoviedb.org/3/discover/movie`
         url += `?language=de-DE`
         url += `&region=de`
@@ -19,7 +20,7 @@ class ScraperMovieReleases extends WebsiteScraper {
         url += `&release_date.lte=${todayDate}`
         url += `&with_release_type=2|3`
         url += `&sort_by=release_date.asc`
-        url += `&api_key=${config.tmdb_api_key}`
+        url += `&api_key=${apiKey}`
         return url
     }
 

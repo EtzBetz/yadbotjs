@@ -1,6 +1,5 @@
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import config from '../config.json'
 import jsdom from 'jsdom'
 
 class ScraperRechnernetze extends WebsiteScraper{
