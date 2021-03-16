@@ -23,10 +23,6 @@ class ScraperMovieReleases extends WebsiteScraper {
         return url
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 12
-    }
-
     parseWebsiteContentToJSON(response) {
         const elements = []
 

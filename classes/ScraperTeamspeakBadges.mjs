@@ -13,10 +13,6 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
         return 'https://community.teamspeak.com/t/teamspeak-badge-list/358'
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 5
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

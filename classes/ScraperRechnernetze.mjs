@@ -13,10 +13,6 @@ class ScraperRechnernetze extends WebsiteScraper{
         return 'https://www.fh-muenster.de/eti/labore_forschung/nw/rn.php'
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 8
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

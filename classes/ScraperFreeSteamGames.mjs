@@ -15,10 +15,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return `https://api.steampowered.com/IStoreService/GetAppList/v1/?key=${apiKey}&if_modified_since=${this.getLastScrapingUnixTime()}`
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 11
-    }
-
     getLastScrapingUnixTime() {
         return files.readJson(this.getScraperConfigPath(), 'last_scraping_unix_time', false, Math.floor(luxon.DateTime.local().toSeconds()))
     }

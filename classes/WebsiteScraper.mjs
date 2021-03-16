@@ -28,7 +28,12 @@ export class WebsiteScraper {
     }
 
     getScrapingInterval() {
-        return 1000 * 60 * 5
+        return files.readJson(
+            this.getScraperConfigPath(),
+            'interval_milliseconds',
+            false,
+            600000
+        )
     }
 
     getSubUserIds() {

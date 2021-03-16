@@ -13,10 +13,6 @@ class ScraperLab4Inf extends WebsiteScraper{
         return 'http://www.lab4inf.fh-muenster.de/Lab4Inf/index.php/Content?subject=hoeh_prog'
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 7
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

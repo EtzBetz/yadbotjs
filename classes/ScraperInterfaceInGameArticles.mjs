@@ -12,10 +12,6 @@ class ScraperInterfaceInGameArticles extends WebsiteScraper {
         return 'https://interfaceingame.com/articles/?sortby=recent_add'
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 14
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

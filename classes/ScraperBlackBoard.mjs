@@ -14,10 +14,6 @@ class ScraperBlackBoard extends WebsiteScraper {
         return 'https://www.fh-muenster.de/eti/aktuell/aushang/index.php'
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 6
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

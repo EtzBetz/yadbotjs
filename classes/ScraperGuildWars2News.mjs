@@ -14,10 +14,6 @@ class ScraperGuildWars2News extends WebsiteScraper{
         return 'https://www.guildwars2.com/de/news/'
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 9
-    }
-
     parseWebsiteContentToJSON(response) {
         const page = new jsdom.JSDOM(response.data).window.document
         let elements = []

@@ -14,10 +14,6 @@ class ScraperXRelReleases extends WebsiteScraper {
         return `https://api.xrel.to/v2/release/latest.xml`
     }
 
-    getScrapingInterval() {
-        return 1000 * 60 * 13
-    }
-
     parseWebsiteContentToJSON(response) {
         let elements = []
         let result = Json.parseXmlToJson(response.data)
