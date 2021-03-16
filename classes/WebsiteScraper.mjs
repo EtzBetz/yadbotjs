@@ -86,13 +86,13 @@ export class WebsiteScraper {
         clearInterval(this.timer)
     }
 
-    timeIntervalBody() {
+    async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
         this.requestWebsite(this.getScrapingUrl())
-            .then((response) => {
+            .then( async (response) => {
                 let content = []
                 try {
-                    content = this.parseWebsiteContentToJSON(response)
+                    content = await this.parseWebsiteContentToJSON(response)
                 } catch (e) {
                     yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
                 }
