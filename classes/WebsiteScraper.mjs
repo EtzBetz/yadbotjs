@@ -28,7 +28,7 @@ export class WebsiteScraper {
             this.getScraperConfigPath(),
             'scraping_url',
             true,
-            "ENTER SCRAPING URL HERE"
+            'ENTER SCRAPING URL HERE',
         )
     }
 
@@ -37,7 +37,7 @@ export class WebsiteScraper {
             this.getScraperConfigPath(),
             'interval_milliseconds',
             false,
-            600000
+            600000,
         )
     }
 
@@ -47,8 +47,8 @@ export class WebsiteScraper {
             'sub_user_ids',
             false,
             [
-                files.readJson(yadBot.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
-            ]
+                files.readJson(yadBot.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE'),
+            ],
         )
     }
 
@@ -57,7 +57,7 @@ export class WebsiteScraper {
             this.getScraperConfigPath(),
             'sub_guild_channel_ids',
             false,
-            []
+            [],
         )
     }
 
@@ -76,7 +76,7 @@ export class WebsiteScraper {
     setup() {
         console.log(`${this.constructor.name}:\tSetting Up...`)
 
-        let scraperState = files.readJson(this.getScraperConfigPath(), "enabled", false,true)
+        let scraperState = files.readJson(this.getScraperConfigPath(), 'enabled', false, true)
         if (scraperState === true) {
             setTimeout(() => {
                 this.createTimerInterval()
@@ -99,7 +99,7 @@ export class WebsiteScraper {
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
         this.requestWebsite(this.getScrapingUrl())
-            .then( async (response) => {
+            .then(async (response) => {
                 let content = []
                 try {
                     content = await this.parseWebsiteContentToJSON(response)
@@ -187,8 +187,7 @@ export class WebsiteScraper {
                 if (j === (newJson.length)) {
                     callback(filteredJsonArray)
                 }
-            }
-            else {
+            } else {
                 filteredJsonArray.push(newJson[i])
                 readData.push(newJson[i])
                 // write JSON string to file
@@ -205,7 +204,7 @@ export class WebsiteScraper {
     }
 
     getGlobalScraperFolderPath() {
-        return "./scraperFiles"
+        return './scraperFiles'
     }
 
     getScraperFolderPath() {
@@ -226,8 +225,8 @@ export class WebsiteScraper {
     }
 
     sendEmbedMessages(embeds) {
-        let sendState = files.readJson(this.getScraperConfigPath(), "send_embeds", false, true)
-        let globalSendState = files.readJson(yadBot.getYadConfigPath(), "global_send_embeds", false, true)
+        let sendState = files.readJson(this.getScraperConfigPath(), 'send_embeds', false, true)
+        let globalSendState = files.readJson(yadBot.getYadConfigPath(), 'global_send_embeds', false, true)
         if (embeds.length >= 1 && sendState && globalSendState) {
             this.log(`Sending embed(s)...`)
             this.getSubGuildChannelIds().forEach(channelId => {
@@ -287,16 +286,13 @@ export class WebsiteScraper {
         if (jsonADate < jsonBDate) {
             // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
             return -1
-        }
-        else if (jsonADate > jsonBDate) {
+        } else if (jsonADate > jsonBDate) {
             // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
             return 1
-        }
-        else if (jsonB.title > jsonA.title) {
+        } else if (jsonB.title > jsonA.title) {
             // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
             return -1
-        }
-        else if (jsonA.title > jsonB.title) {
+        } else if (jsonA.title > jsonB.title) {
             // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
             return 1
         }
@@ -473,8 +469,7 @@ export class WebsiteScraper {
 
         if (typeof string === 'string') {
             return string.substring(0, (maxLength) - stringEnd.length) + stringEnd
-        }
-        else {
+        } else {
             this.log('string to cut is not a string:', typeof string)
             return string
         }
@@ -485,7 +480,7 @@ export class WebsiteScraper {
         case 'unknown':
             return { error: true, data: 'Message channel type was unknown.' }
         case 'dm':
-            let subUsers = files.readJson(this.getScraperConfigPath(), "sub_user_ids", false, [])
+            let subUsers = files.readJson(this.getScraperConfigPath(), 'sub_user_ids', false, [])
 
             let indexResult = subUsers.indexOf(message.author.id)
             if (indexResult === -1) {
@@ -493,30 +488,45 @@ export class WebsiteScraper {
             } else {
                 subUsers.splice(indexResult, 1)
             }
-            files.writeJson(this.getScraperConfigPath(), "sub_user_ids", subUsers)
+            files.writeJson(this.getScraperConfigPath(), 'sub_user_ids', subUsers)
             if (indexResult === -1) {
-                return { error: false, data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.` }
+                return {
+                    error: false,
+                    data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.`,
+                }
             } else {
-                return { error: false, data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.` }
+                return {
+                    error: false,
+                    data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.`,
+                }
             }
         case 'text':
         case 'news':
             if (message.member?.hasPermission(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-                let subChannels = files.readJson(this.getScraperConfigPath(), "sub_guild_channel_ids", false, [])
+                let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
                 let indexResultGuild = subChannels.indexOf(message.channel.id)
                 if (indexResultGuild === -1) {
                     subChannels.push(message.channel.id)
                 } else {
                     subChannels.splice(indexResultGuild, 1)
                 }
-                files.writeJson(this.getScraperConfigPath(), "sub_guild_channel_ids", subChannels)
+                files.writeJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', subChannels)
                 if (indexResultGuild === -1) {
-                    return { error: false, data: `This channel has been added to the subscribers list of scraper **${this.constructor.name}**.` }
+                    return {
+                        error: false,
+                        data: `This channel has been added to the subscribers list of scraper **${this.constructor.name}**.`,
+                    }
                 } else {
-                    return { error: false, data: `This channel has been removed from the subscribers list of scraper **${this.constructor.name}**.` }
+                    return {
+                        error: false,
+                        data: `This channel has been removed from the subscribers list of scraper **${this.constructor.name}**.`,
+                    }
                 }
             } else {
-                return { error: true, data: `You need admin permissions on this server to be able to manage subscriptions.` }
+                return {
+                    error: true,
+                    data: `You need admin permissions on this server to be able to manage subscriptions.`,
+                }
             }
         }
     }
