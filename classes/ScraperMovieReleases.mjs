@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 import files from './Files.mjs'
 
 class ScraperMovieReleases extends WebsiteScraper {
@@ -8,44 +8,47 @@ class ScraperMovieReleases extends WebsiteScraper {
     getScrapingUrl() {
         const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
         const todayDate = luxon.DateTime.local().toFormat('yyyy-MM-dd')
-        const pastDate = luxon.DateTime.local().minus({ weeks: 1 }).toFormat('yyyy-MM-dd')
+        const pastDate = luxon.DateTime.local().minus({weeks: 4}).toFormat('yyyy-MM-dd')
         let url = `https://api.themoviedb.org/3/discover/movie`
         url += `?language=de-DE`
         url += `&region=de`
         url += `&release_date.gte=${pastDate}`
         url += `&release_date.lte=${todayDate}`
-        url += `&with_release_type=2|3`
-        url += `&sort_by=release_date.asc`
+        url += `&with_release_type=3|4|5|6`
+        url += `&sort_by=release_date.desc`
         url += `&api_key=${apiKey}`
         return url
     }
 
-    parseWebsiteContentToJSON(response) {
+    async parseWebsiteContentToJSON(response) {
         const elements = []
+        const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
 
-        response.data.results.forEach( (movie) => {
-            // let detailApiUrl = `https://api.themoviedb.org/3/movie/${movie.id}`
-            // detailApiUrl += `?language=de-DE`
-            // detailApiUrl += `&region=de`
-            // detailApiUrl += `&api_key=${config.tmdb_api_key}`
-            // let movieDetailsResponse = await super.requestWebsite(detailApiUrl)
-            // const movieDetails = movieDetailsResponse.data
+        for (const movie of response.data.results) {
+            let detailApiUrl = `https://api.themoviedb.org/3/movie/${movie.id}`
+            detailApiUrl += `?language=de-DE`
+            detailApiUrl += `&region=de`
+            detailApiUrl += `&api_key=${apiKey}`
+            let movieDetailsResponse = await super.requestWebsite(detailApiUrl)
+            const movieDetails = movieDetailsResponse.data
+            console.log(movieDetails)
 
             let entry = {}
             entry.id = movie.id
             entry.title = movie.title
-            // entry.tagline = movieDetails.tagline
+            entry.tagline = movieDetails.tagline
             entry.description = movie.overview
-            // entry.url = movieDetails.homepage
-            entry.date = luxon.DateTime.fromFormat(movie.release_date, 'yyyy-MM-dd').setZone('Europe/Berlin').toISO()
+            entry.url = movieDetails.homepage
+            entry.date = luxon.DateTime.fromFormat(movie.release_date, 'yyyy-MM-dd').setZone('UTC+0').toISO()
             entry.poster = movie.poster_path
-            // entry.genres = movieDetails.genres
-            // entry.producers = movieDetails.production_companies
-            // entry.duration = movieDetails.runtime
-            // entry.budget = movieDetails.budget
+            entry.genres = movieDetails.genres
+            entry.producers = movieDetails.production_companies
+            entry.duration = movieDetails.runtime
+            entry.budget = movieDetails.budget
+            entry.imdbId = movieDetails.imdb_id
 
-            elements.push(entry)
-        })
+            if (entry.duration >= 60) elements.push(entry)
+        }
 
         this.log(`${elements.length} entries found...`)
         return elements
@@ -60,46 +63,74 @@ class ScraperMovieReleases extends WebsiteScraper {
     getEmbed(content) {
         this.log(`Generating embed...`)
 
-        return new Discord.MessageEmbed(
+        let embed = new Discord.MessageEmbed(
             {
                 'title': content.title,
-                'description': this.generateDescriptionString(content.tagline, content.description),
+                'description': this.generateDescriptionString(content.tagline, content.description, content.imdbId, content.id),
                 'url': content.url,
                 'timestamp': luxon.DateTime.fromISO(content.date).toFormat('yyyy-MM-dd'),
                 'thumbnail': {
                     'url': `https://image.tmdb.org/t/p/w500${content.poster}`,
                 },
-                'fields': [
-                    // {
-                    //     'name': 'Genres',
-                    //     'value': this.generateGenreString(content.genres),
-                    //     'inline': true,
-                    // },
-                    // {
-                    //     'name': 'Produzenten',
-                    //     'value': this.generateProducerString(content.genres),
-                    //     'inline': true,
-                    // },
-                    // {
-                    //     'name': 'Dauer',
-                    //     'value': this.generateDurationString(content.duration),
-                    //     'inline': true,
-                    // },
-                    // {
-                    //     'name': 'Budget',
-                    //     'value': this.generateBudgetString(content.budget),
-                    //     'inline': true,
-                    // },
-                ],
+                'fields': [],
             },
         )
+
+        if (content.genres?.length > 0) {
+            embed.fields.push(
+                {
+                    'name': 'Genres',
+                    'value': this.generateGenreString(content.genres),
+                    'inline': false,
+                }
+            )
+        }
+
+        if (content.producers.length > 0) {
+            embed.fields.push(
+                {
+                    'name': 'Produzenten',
+                    'value': this.generateProducerString(content.producers),
+                    'inline': false,
+                },
+            )
+        }
+
+        if (content.duration !== undefined && content.duration > 0) {
+            embed.fields.push(
+                {
+                    'name': 'Dauer',
+                    'value': this.generateDurationString(content.duration),
+                    'inline': false,
+                },
+            )
+        } else {
+            embed.fields.push(
+                {
+                    'name': 'Dauer',
+                    'value': "???",
+                    'inline': false,
+                },
+            )
+        }
+
+        if (content.budget !== undefined && content.budget > 0) {
+            embed.fields.push(
+                {
+                    'name': 'Budget',
+                    'value': this.generateBudgetString(content.budget),
+                    'inline': false,
+                },
+            )
+        }
+
+        return embed
     }
 
-    generateDescriptionString(tagline, description) {
+    generateDescriptionString(tagline, description, imdbId, tmdbId) {
         if (tagline !== undefined && tagline !== '') {
-            return `**${tagline}**\n\n${description}`
-        }
-        else {
+            return `**${tagline}**\n\n${description}\n\n[IMDb Link](https://www.imdb.com/title/${imdbId}/)\n[TMDB Link](https://www.themoviedb.org/movie/${tmdbId})`
+        } else {
             return description
         }
     }
@@ -130,7 +161,33 @@ class ScraperMovieReleases extends WebsiteScraper {
         let minutes = duration % 60
         let hours = (duration - minutes) / 60
 
-        return `${hours} Stunden, ${minutes} Minuten`
+        let hourString = ""
+        let minuteString = ""
+
+        switch (hours) {
+            case 0:
+                hourString = ""
+                break
+            case 1:
+                hourString = `${hours} Stunde`
+                break
+            default:
+                hourString = `${hours} Stunden`
+        }
+
+        switch (minutes) {
+            case 0:
+                minuteString = ""
+                break
+            case 1:
+                minuteString = `${minutes} Minute`
+                break
+            default:
+                minuteString = `${minutes} Minuten`
+        }
+
+        if (hours > 0 && minutes > 0) return `${hourString}, ${minuteString}`
+        else return `${hourString}${minuteString}`
     }
 
     generateBudgetString(budget) {
