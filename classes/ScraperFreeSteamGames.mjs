@@ -28,11 +28,11 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         const elements = []
         this.log(`${response.data.response?.apps?.length || 0} entries found...`)
         // console.log(response.data.response)
-        if (JSON.stringify(response.data.response) !== "{}") {
+        if (JSON.stringify(response.data.response) !== '{}') {
             for (const game of response.data?.response?.apps) {
                 let entry = {}
                 if (game.price_change_number !== 0) {
-                    console.log(`priceChangeNumber is != 0 for '${game.name}'`)
+                    this.debugLog(`priceChangeNumber is != 0 for '${game.name}'`)
 
                     // call super method here because method in this class also refreshes last scraping timestamp
                     let detailResponse = await super.requestWebsite(`https://store.steampowered.com/api/appdetails/?appids=${game.appid}&cc=de&l=german`)
@@ -44,7 +44,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                             detailData.is_free === true ||
                             detailData.price_overview.discount_percent !== 0
                         ) {
-                            console.log("game is discounted/free in some way")
+                            this.debugLog('game is discounted/free in some way')
 
                             if (detailData.price_overview?.final === 0) {
                                 entry.discountType = 'gift'
@@ -62,11 +62,13 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                             entry.publishers = detailData.publishers
                             entry.date = game.last_modified
 
-                            const originalPrice = detailData.price_overview.initial.toString().padStart(3, '0')
-                            const decimalPosition = originalPrice.length - 2
-                            const priceEuro = originalPrice.substring(0, decimalPosition)
-                            const priceDecimal = originalPrice.substring(originalPrice.length - 2)
-                            entry.originalPrice = `${priceEuro},${priceDecimal}€`
+                            const originalPrice = detailData.price_overview?.initial?.toString().padStart(3, '0')
+                            if (originalPrice !== undefined) {
+                                const decimalPosition = originalPrice.length - 2
+                                const priceEuro = originalPrice.substring(0, decimalPosition)
+                                const priceDecimal = originalPrice.substring(originalPrice.length - 2)
+                                entry.originalPrice = `${priceEuro},${priceDecimal}€`
+                            }
                             console.log(entry)
                             elements.push(entry)
                         }
@@ -76,7 +78,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 }
             }
         }
-        console.log(elements.length)
+        this.log(`${elements.length} entries found...`)
         return elements
     }
 
@@ -89,7 +91,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     getEmbed(content) {
         this.log(`Generating embed...`)
 
-        let descriptionText = ""
+        let descriptionText = ''
 
         switch (content.discountType) {
         case 'discounted':
@@ -113,15 +115,19 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                     'url': 'https://store.steampowered.com/',
                     'icon_url': 'https://etzbetz.io/stuff/yad/images/logo_steam.png',
                 },
-                'fields': [
-                    {
-                        'name': 'Originalpreis',
-                        'value': `~~${content.originalPrice}~~`,
-                        'inline': true,
-                    },
-                ],
+                'fields': [],
             },
         )
+
+        if (content.originalPrice !== undefined) {
+            embed.fields.push(
+                {
+                    'name': 'Originalpreis',
+                    'value': `~~${content.originalPrice}~~`,
+                    'inline': true,
+                },
+            )
+        }
 
         if (content.imageUrl !== undefined) {
             embed.image = {
