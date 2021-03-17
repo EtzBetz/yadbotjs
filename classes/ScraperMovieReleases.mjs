@@ -31,7 +31,7 @@ class ScraperMovieReleases extends WebsiteScraper {
             detailApiUrl += `&api_key=${apiKey}`
             let movieDetailsResponse = await super.requestWebsite(detailApiUrl)
             const movieDetails = movieDetailsResponse.data
-            console.log(movieDetails)
+            // console.log(movieDetails)
 
             let entry = {}
             entry.id = movie.id
