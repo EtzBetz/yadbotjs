@@ -68,7 +68,7 @@ class ScraperMovieReleases extends WebsiteScraper {
                 'title': content.title,
                 'description': this.generateDescriptionString(content.tagline, content.description, content.imdbId, content.id),
                 'url': content.url,
-                'timestamp': luxon.DateTime.fromISO(content.date).toFormat('yyyy-MM-dd'),
+                'timestamp': content.date,
                 'thumbnail': {
                     'url': `https://image.tmdb.org/t/p/w500${content.poster}`,
                 },
