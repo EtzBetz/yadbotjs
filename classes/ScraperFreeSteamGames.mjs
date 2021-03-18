@@ -42,7 +42,10 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                         if (
                             detailData.price_overview?.final === 0 ||
                             detailData.is_free === true ||
-                            detailData.price_overview.discount_percent !== 0
+                            (
+                                detailData.price_overview?.discount_percent !== undefined &&
+                                detailData.price_overview?.discount_percent !== 0
+                            )
                         ) {
                             this.debugLog('game is discounted/free in some way')
 
@@ -50,9 +53,9 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                                 entry.discountType = 'gift'
                             } else if (detailData.is_free === true) {
                                 entry.discountType = 'free'
-                            } else if (detailData.price_overview.discount_percent !== 0) {
+                            } else if (detailData.price_overview?.discount_percent !== 0) {
                                 entry.discountType = 'discounted'
-                                entry.discountAmount = detailData.price_overview.discount_percent
+                                entry.discountAmount = detailData.price_overview?.discount_percent
                             }
 
                             entry.id = game.appid
@@ -151,7 +154,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             embed.fields.push(
                 {
                     'name': 'Erscheinungsdatum',
-                    'value': luxon.DateTime.fromISO(content.date).toFormat('d. LLLL yyyy', { locale: "de" }),
+                    'value': luxon.DateTime.fromISO(content.date).toFormat('d. LLLL yyyy', {locale: "de"}),
                     'inline': true,
                 },
             )
@@ -185,20 +188,21 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 return monthAlias === month
             })
             if (monthNumber === -1) {
-                yadBot.sendMessageToOwner(`Date '${dateString}' with month '${month}' failed in getReleaseDate() [2]`)
+                yadBot.sendMessageToOwner(`Date '${dateString}' with month '${month}' failed in getReleaseDate() [1]`)
+                return dateString
             }
             day = day.padStart(2, '0')
-            month = (monthNumber+1).toString().padStart(2, '0')
+            month = (monthNumber + 1).toString().padStart(2, '0')
         } else {
             dateRegexResult = steamDateRegexType2.exec(dateString)
+
+            if (dateRegexResult === null) {
+                yadBot.sendMessageToOwner(`Date '${dateString}' failed in getReleaseDate() [2]`)
+                return dateString
+            }
             day = dateRegexResult[1]
             month = dateRegexResult[2]
             year = dateRegexResult[3]
-
-            if (dateRegexResult === null) {
-                yadBot.sendMessageToOwner(`Date '${dateString}' failed in getReleaseDate() [1]`)
-                return
-            }
         }
         // console.log(luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO())
         return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO()
