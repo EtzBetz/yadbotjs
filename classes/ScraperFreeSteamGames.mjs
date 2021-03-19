@@ -33,7 +33,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             for (const game of response.data?.response?.apps) {
                 let entry = {}
                 if (game.price_change_number !== 0) {
-                    this.debugLog(`priceChangeNumber is != 0 for '${game.name}'`)
+                    // this.debugLog(`priceChangeNumber is != 0 for '${game.name}'`)
 
                     // call super method here because method in this class also refreshes last scraping timestamp
                     let detailResponse = await super.requestWebsite(`https://store.steampowered.com/api/appdetails/?appids=${game.appid}&cc=de&l=german`)
@@ -44,16 +44,16 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                             detailData.is_free === true ||
                             (
                                 detailData.price_overview?.discount_percent !== undefined &&
-                                detailData.price_overview?.discount_percent !== 0
+                                detailData.price_overview?.discount_percent >= 90
                             )
                         ) {
-                            this.debugLog('game is discounted/free in some way')
+                            // this.debugLog('game is discounted/free in some way')
 
                             if (detailData.price_overview?.final === 0) {
                                 entry.discountType = 'gift'
                             } else if (detailData.is_free === true) {
                                 entry.discountType = 'free'
-                            } else if (detailData.price_overview?.discount_percent !== 0) {
+                            } else if (detailData.price_overview?.discount_percent >= 90) {
                                 entry.discountType = 'discounted'
                                 entry.discountAmount = detailData.price_overview?.discount_percent
                             }
@@ -63,7 +63,12 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                             entry.imageUrl = detailData.header_image.substring(0, detailData.header_image.indexOf("?") !== -1 ? detailData.header_image.indexOf("?") : detailData.header_image.length)
                             entry.developers = detailData.developers
                             entry.publishers = detailData.publishers
-                            entry.date = this.getReleaseDate(detailData.release_date?.date)
+
+                            if (detailData.release_date?.coming_soon) {
+                                entry.dateRaw = detailData.release_date?.date
+                            } else {
+                                entry.date = this.parseReleaseDate(detailData.release_date?.date)
+                            }
 
                             const originalPrice = detailData.price_overview?.initial?.toString().padStart(3, '0')
                             if (originalPrice !== undefined) {
@@ -94,7 +99,12 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     }
 
     generateFileNameFromJson(json) {
-        let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
+        let dateString
+        if (json.date !== undefined) {
+            dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
+        } else {
+            dateString = json.dateRaw
+        }
         let fileName = `${dateString}-${this.generateSlugFromString(json.title)}`
         return this.generateSlugFromString(fileName) + '.json'
     }
@@ -160,6 +170,16 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             )
         }
 
+        if (content.dateRaw !== undefined) {
+            embed.fields.push(
+                {
+                    'name': 'Erscheinungsdatum',
+                    'value': content.dateRaw,
+                    'inline': true,
+                },
+            )
+        }
+
         if (content.imageUrl !== undefined) {
             embed.image = {
                 url: content.imageUrl,
@@ -172,40 +192,36 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return this.sortJsonByIsoDateAndTitleProperty
     }
 
-    getReleaseDate(dateString) {
-        let steamDateRegexType1 = /(\d+). ([a-zA-ZöÖäÄüÜ]{3,}).? (\d{4})/
-        let steamDateRegexType2 = /(\d{2})\/(\d{2})\/(\d{4})/
+    parseReleaseDate(dateString) {
+        let steamDateRegex = /(\d+). ([a-zA-ZöÖäÄüÜ]{3,}).? (\d{4})/
         let monthAliases = ["Jan", "Feb", "März", "Apr", "Mai", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dez"]
 
-        let dateRegexResult = steamDateRegexType1.exec(dateString)
-        let day, month, year
-        if (dateRegexResult !== null) {
-            day = dateRegexResult[1]
-            month = dateRegexResult[2]
-            year = dateRegexResult[3]
+        let dateRegexResult = steamDateRegex.exec(dateString)
 
-            let monthNumber = monthAliases.findIndex((monthAlias) => {
-                return monthAlias === month
-            })
-            if (monthNumber === -1) {
-                yadBot.sendMessageToOwner(`Date '${dateString}' with month '${month}' failed in getReleaseDate() [1]`)
-                return dateString
-            }
-            day = day.padStart(2, '0')
-            month = (monthNumber + 1).toString().padStart(2, '0')
-        } else {
-            dateRegexResult = steamDateRegexType2.exec(dateString)
+        if (dateRegexResult === null) {
+            yadBot.sendMessageToOwner(`Date '${dateString}' failed in parseReleaseDate() [1]`)
+            return
+        }
+        let day = dateRegexResult[1]
+        let month = dateRegexResult[2]
+        let year = dateRegexResult[3]
 
-            if (dateRegexResult === null) {
-                yadBot.sendMessageToOwner(`Date '${dateString}' failed in getReleaseDate() [2]`)
-                return dateString
-            }
-            day = dateRegexResult[1]
-            month = dateRegexResult[2]
-            year = dateRegexResult[3]
+        let monthNumber = monthAliases.findIndex((monthAlias) => {
+            return monthAlias === month
+        })
+        if (monthNumber === -1) {
+            yadBot.sendMessageToOwner(`Date '${dateString}' with month '${month}' failed in parseReleaseDate() [2]`)
+            return
         }
         // console.log(luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO())
-        return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO()
+        const isoDate = luxon.DateTime.fromFormat(`${day}.${monthNumber+1}.${year}`, 'd.M.yyyy')
+
+        if (isoDate === null || !isoDate.isValid) {
+            yadBot.sendMessageToOwner(`Date '${dateString}' with '${day}.${monthNumber+1}.${year}' is invalid in parseReleaseDate() [3]`)
+            return
+        }
+
+        return isoDate.setZone('UTC+0').toISO()
     }
 }
 
