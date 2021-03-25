@@ -41,7 +41,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                         const detailData = detailResponse.data[game.appid.toString()].data
                         if (
                             detailData.price_overview?.final === 0 ||
-                            detailData.is_free === true ||
                             (
                                 detailData.price_overview?.discount_percent !== undefined &&
                                 detailData.price_overview?.discount_percent >= 90
@@ -49,7 +48,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                         ) {
                             // this.debugLog('game is discounted/free in some way')
 
-                            if (detailData.price_overview?.final === 0) {
+                            if (detailData.price_overview?.final === 0 || detailData.price_overview?.discount_percent === 100) {
                                 entry.discountType = 'gift'
                             } else if (detailData.is_free === true) {
                                 entry.discountType = 'free'
@@ -89,7 +88,8 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                             elements.push(entry)
                         }
                     } else {
-                        yadBot.sendMessageToOwner(`Detailed request was unsuccessful for ID ${game.appid}`)
+                        // in all tested cases the games were not available with the default store link as well.
+                        // yadBot.sendMessageToOwner(`Detailed request was unsuccessful for ID ${game.appid}\nLink: https://store.steampowered.com/app/${game.appid}`)
                     }
                 }
             }
@@ -122,7 +122,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 descriptionText = `Free to play im Steam Store.`
                 break
             case 'gift':
-                descriptionText = `Aktuell kostenlos im Steam Store.`
+                descriptionText = `Aktuell **kostenlos** im Steam Store.`
                 break
         }
 
@@ -140,7 +140,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             },
         )
 
-        if (content.finalPrice !== undefined) {
+        if (content.finalPrice !== undefined && content.discountType !== "gift") {
             embed.fields.push(
                 {
                     'name': 'Rabattpreis',
