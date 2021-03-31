@@ -104,7 +104,7 @@ export default {
                 return
             }
 
-            const embed = sendingScraper.filterEmbedLength(sendingScraper.getEmbed(jsonData))
+            const embed = sendingScraper.filterEmbedLength(sendingScraper.getEmbed(jsonData.data[jsonData.data.length-1]))
 
             // todo: add argument 'all', send to all subscribers then
             yadBot.getBot().channels.fetch(args[3])
