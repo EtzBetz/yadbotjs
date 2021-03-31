@@ -236,7 +236,11 @@ export class WebsiteScraper {
                         this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
                         embeds.forEach(embed => {
                             channel.send(embed)
-                                .catch(e => console.dir(e))
+                                .catch(e => {
+                                    this.log(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                                    this.sendMissingAccessToGuildAdmins(channel.guild.id)
+                                    console.dir(e)
+                                })
                         })
                     })
                     .catch((e) => {
@@ -251,7 +255,10 @@ export class WebsiteScraper {
                         this.log(`Sending embed(s) to ${user.username}`)
                         embeds.forEach(embed => {
                             user?.send(embed)
-                                .catch(e => console.dir(e))
+                                .catch(e => {
+                                    this.log(`error with user ${user.id}`)
+                                    console.dir(e)
+                                })
                         })
                     })
                     .catch((e) => {
@@ -307,6 +314,24 @@ export class WebsiteScraper {
             description: `Yad has been updated, some embeds will eventually be resent!`,
             color: 0xff6f00,
         })
+    }
+
+    sendMissingAccessToGuildAdmins(guildId) {
+        const noticeEmbed = new Discord.MessageEmbed({
+            title: `Notice`,
+            description: `New data is available from ${this.constructor.name}, but I can't send it to your specified channel. Eventually I have been kicked or I do not have permissions to send in that channel?`,
+            color: 0xff6f00,
+        })
+
+        yadBot.getBot().guilds.fetch(guildId)
+            .then((guild) => {
+                guild.owner?.send(noticeEmbed)
+            })
+            .catch(e => {
+                this.errorLog("Could not message the guild's scraper channel and not the owner of that guild!")
+                yadBot.sendMessageToOwner(`Could not message the guild's scraper channel and not the owner of that guild!`)
+                console.dir(e)
+            })
     }
 
     sendUnreliableEmbedToSubscribers() {

@@ -112,7 +112,11 @@ export default {
                     if (yadBot.getBot().user === null) return
                     sendingScraper.log(`Sending embed(s) to ${channel.guild?.name}:${channel.name}`)
                     channel.send(embed)
-                        .catch(e => console.dir(e))
+                        .catch(e => {
+                            sendingScraper.errorLog(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                            sendingScraper.sendMissingAccessToGuildAdmins(channel.guild.id)
+                            console.dir(e)
+                        })
                 })
                 .catch((e) => {
                     console.log(e)
