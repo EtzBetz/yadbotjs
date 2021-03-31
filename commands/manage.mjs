@@ -110,16 +110,14 @@ export default {
             yadBot.getBot().channels.fetch(args[3])
                 .then(channel => {
                     if (yadBot.getBot().user === null) return
-                    sendingScraper.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
+                    sendingScraper.log(`Sending embed(s) to ${channel.guild?.name}:${channel.name}`)
                     channel.send(embed)
                         .catch(e => console.dir(e))
                 })
                 .catch((e) => {
                     console.log(e)
                     yadBot.sendCommandErrorEmbed(message, `The given channel id does not exist or can not be accessed by Yad.`)
-                    return
                 })
-
 
             break
         default:
