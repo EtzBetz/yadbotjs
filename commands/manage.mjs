@@ -114,6 +114,7 @@ export default {
                     channel.send(embed)
                         .catch(e => {
                             sendingScraper.errorLog(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                            yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
                             sendingScraper.sendMissingAccessToGuildAdmins(channel.guild.id)
                             console.dir(e)
                         })

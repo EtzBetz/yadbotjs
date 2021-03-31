@@ -238,6 +238,7 @@ export class WebsiteScraper {
                             channel.send(embed)
                                 .catch(e => {
                                     this.log(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                                    yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
                                     this.sendMissingAccessToGuildAdmins(channel.guild.id)
                                     console.dir(e)
                                 })
