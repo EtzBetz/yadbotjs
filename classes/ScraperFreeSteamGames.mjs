@@ -20,9 +20,9 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         files.writeJson(this.getScraperConfigPath(), 'last_scraping_unix_time', Math.floor(luxon.DateTime.local().toSeconds()))
     }
 
-    requestWebsite(url) {
+    async requestWebsite(url) {
         this.refreshLastScrapingUnixTime()
-        return super.requestWebsite(url)
+        return await super.requestWebsite(url)
     }
 
     async parseWebsiteContentToJSON(response) {
@@ -34,7 +34,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 let entry = {}
                 if (game.price_change_number !== 0) {
                     // this.debugLog(`priceChangeNumber is != 0 for '${game.name}'`)
-
                     // call super method here because method in this class also refreshes last scraping timestamp
                     let detailResponse = await super.requestWebsite(`https://store.steampowered.com/api/appdetails/?appids=${game.appid}&cc=de&l=german`)
                     if (detailResponse.data[game.appid.toString()].success === true) {
@@ -47,7 +46,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                             )
                         ) {
                             // this.debugLog('game is discounted/free in some way')
-
                             if (detailData.price_overview?.final === 0 || detailData.price_overview?.discount_percent === 100) {
                                 entry.discountType = 'gift'
                             } else if (detailData.is_free === true) {

@@ -1,6 +1,10 @@
 import yadBot from './classes/YadBot.mjs'
 import luxon from 'luxon'
 import config from './config.json'
+import axios from 'axios';
+import rax from 'retry-axios'
+
+rax.attach()
 
 export const reset = "\x1b[0m"
 export const bright = "\x1b[1m"

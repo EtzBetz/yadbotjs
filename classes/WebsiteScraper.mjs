@@ -1,8 +1,9 @@
+import * as rax from 'retry-axios'
 import axios from 'axios'
 import crypto from 'crypto'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
-import { getLoggingTimestamp, log, debugLog, errorLog, red, reset } from '../index'
+import {debugLog, errorLog, log, red, reset} from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import files from './Files.mjs'
@@ -87,7 +88,12 @@ export class WebsiteScraper {
     createTimerInterval() {
         this.timeIntervalBody()
         this.timer = setInterval(() => {
-            this.timeIntervalBody()
+            try {
+                this.timeIntervalBody()
+            } catch (e) {
+                console.log(e)
+                yadBot.sendMessageToOwner(e)
+            }
         }, this.getScrapingInterval())
     }
 
@@ -98,45 +104,47 @@ export class WebsiteScraper {
 
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
-        this.requestWebsite(this.getScrapingUrl())
-            .then(async (response) => {
-                let content = []
-                try {
-                    content = await this.parseWebsiteContentToJSON(response)
-                } catch (e) {
-                    yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
-                }
-                this.filterNewContent(content, (filteredContent) => {
-                    this.log(`${filteredContent.length} entries are new.`)
-                    if (yadBot.getBot().user === null) {
-                        this.log('Bot is not yet online, not sending messages..')
-                        while (yadBot.getBot().user === null) {
-                        }
-                        this.log('Bot is now online! Sending messages..')
+        let response = await this.requestWebsite(this.getScrapingUrl())
+            let content = []
+            try {
+                content = await this.parseWebsiteContentToJSON(response)
+            } catch (e) {
+                yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+            }
+            this.filterNewContent(content, (filteredContent) => {
+                this.log(`${filteredContent.length} entries are new.`)
+                if (yadBot.getBot().user === null) {
+                    this.log('Bot is not yet online, not sending messages..')
+                    while (yadBot.getBot().user === null) {
                     }
-                    filteredContent = filteredContent.sort(this.getSortingFunction())
-                    let embeds = []
-                    filteredContent.forEach(content => {
-                        try {
-                            embeds.push(this.filterEmbedLength(this.getEmbed(content)))
-                        } catch (e) {
-                            yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
-                        }
-                    })
-                    if (embeds.length >= 1) {
-                        this.sendEmbedMessages(embeds)
+                    this.log('Bot is now online! Sending messages..')
+                }
+                filteredContent = filteredContent.sort(this.getSortingFunction())
+                let embeds = []
+                filteredContent.forEach(content => {
+                    try {
+                        embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                    } catch (e) {
+                        yadBot.sendMessageToOwner(`Error in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
                     }
                 })
+                if (embeds.length >= 1) {
+                    this.sendEmbedMessages(embeds)
+                }
             })
-            .catch((error) => console.dir(error))
     }
 
-    requestWebsite(url) {
-        return axios({
+    async requestWebsite(url) {
+        return await axios({
             method: 'get',
             url: url,
-            headers: { 'User-Agent': this.getUserAgent() },
+            headers: {'User-Agent': this.getUserAgent()},
             responseType: this.getExpectedResponseType(),
+            raxConfig: {
+                retry: 5,
+                noResponseRetries: 5,
+                retryDelay: 100,
+            }
         })
     }
 
@@ -183,7 +191,6 @@ export class WebsiteScraper {
             if (JSON.stringify(latestData) === JSON.stringify(newJson[i])) {
 
                 j++
-
                 if (j === (newJson.length)) {
                     callback(filteredJsonArray)
                 }

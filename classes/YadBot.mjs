@@ -9,7 +9,7 @@ import ScraperMovieReleases from './ScraperMovieReleases.mjs'
 import ScraperXRelReleases from './ScraperXRelReleases.mjs'
 import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.mjs'
 import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.mjs'
-import { log, debugLog } from '../index'
+import {log, debugLog} from '../index'
 import files from './Files.mjs'
 import activityTypes from '../constants/ActivityTypes.mjs'
 
@@ -33,7 +33,7 @@ class YadBot {
             if (customActivityState) {
                 let customActivityType = files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, activityTypes.PLAYING)
                 let customActivityText = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
-                this.bot.user.setActivity(customActivityText, { type: customActivityType })
+                this.bot.user.setActivity(customActivityText, {type: customActivityType})
             }
             log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
             this.bot.guilds.cache.forEach(guild => {
@@ -171,15 +171,15 @@ class YadBot {
 
     mirrorDirectMessageToOwner(message) {
         this.sendMessageToOwner(new Discord.MessageEmbed({
-                    title: `DM von User`,
-                    description: `${message}`,
-                    footer: {
-                        text: `${message.author.username}.${message.author.discriminator} (ID: ${message.author.id})`,
-                        icon_url: message.author.avatarURL({ dynamic: true }),
-                    },
-                    timestamp: message.createdTimestamp,
-                    color: 0xff6f00,
-                }))
+            title: `DM von User`,
+            description: `${message}`,
+            footer: {
+                text: `${message.author.username}.${message.author.discriminator} (ID: ${message.author.id})`,
+                icon_url: message.author.avatarURL({dynamic: true}),
+            },
+            timestamp: message.createdTimestamp,
+            color: 0xff6f00,
+        }))
     }
 
     sendMessageToOwner(message) {
