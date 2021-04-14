@@ -61,7 +61,7 @@ export default {
 
         message.channel.send(new Discord.MessageEmbed({
             title: "Future Corona Time",
-            description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all adult germans.\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${firstVaccinated.toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}`
+            description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining unvaccinated adult germans.\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${firstVaccinated.toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}`
         }))
     },
     tsvJSON(tsv) {
