@@ -15,7 +15,7 @@ export default {
 
         let dashboardData = await axios({
             method: 'get',
-            url: "https://impfdashboard.de/data/germany_vaccinations_timeseries_v2.83a27545.tsv",
+            url: "https://impfdashboard.de/static/data/germany_vaccinations_timeseries_v2.tsv",
             headers: {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'},
             responseType: 'text/html',
             raxConfig: {
