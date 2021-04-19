@@ -9,9 +9,11 @@ import ScraperMovieReleases from './ScraperMovieReleases.mjs'
 import ScraperXRelReleases from './ScraperXRelReleases.mjs'
 import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.mjs'
 import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.mjs'
+import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.mjs'
 import {log, debugLog} from '../index'
 import files from './Files.mjs'
 import activityTypes from '../constants/ActivityTypes.mjs'
+import * as diff from 'diff';
 
 class YadBot {
 
@@ -51,7 +53,8 @@ class YadBot {
                 ScraperMovieReleases,
                 ScraperXRelReleases,
                 ScraperInterfaceInGameGames,
-                ScraperInterfaceInGameArticles
+                ScraperInterfaceInGameArticles,
+                ScraperTSBThreadWatch
             ]
         })
 
@@ -191,6 +194,104 @@ class YadBot {
                     .catch(e => console.dir(e))
             })
             .catch(e => console.dir(e))
+    }
+
+    getDiffEmbedFromEmbeds(oldEmbed, newEmbed) {
+        let embed = new Discord.MessageEmbed(
+            {
+                author: {
+                    name: this.getDiffString(oldEmbed.author?.name, newEmbed.author?.name),
+                },
+                title: this.getDiffString(oldEmbed.title, newEmbed.title),
+                description: this.getDiffString(oldEmbed.description, newEmbed.description),
+                footer: {
+                    text: this.getDiffString(oldEmbed.footer?.text, newEmbed.footer?.text)
+                },
+                thumbnail: {},
+                image: {},
+                fields: []
+            })
+
+        if (newEmbed.author?.url !== undefined) {
+            embed.author.url = newEmbed.author.url
+        } else if (oldEmbed.author?.url !== undefined) {
+            embed.author.url = oldEmbed.author.url
+        }
+
+        if (newEmbed.author?.icon_url !== undefined) {
+            embed.author.icon_url = newEmbed.author.icon_url
+        } else if (oldEmbed.author?.icon_url !== undefined) {
+            embed.author.icon_url = oldEmbed.author.icon_url
+        }
+
+        if (newEmbed.url !== undefined) {
+            embed.url = newEmbed.url
+        } else if (oldEmbed.url !== undefined) {
+            embed.url = oldEmbed.url
+        }
+
+        if (newEmbed.color !== undefined) {
+            embed.color = newEmbed.color
+        } else if (oldEmbed.color !== undefined) {
+            embed.color = oldEmbed.color
+        }
+
+        if (newEmbed.timestamp !== undefined) {
+            embed.timestamp = newEmbed.timestamp
+        } else if (oldEmbed.timestamp !== undefined) {
+            embed.timestamp = oldEmbed.timestamp
+        }
+
+        if (newEmbed.footer?.icon_url !== undefined) {
+            embed.footer.icon_url = newEmbed.footer.icon_url
+        } else if (oldEmbed.footer?.icon_url !== undefined) {
+            embed.footer.icon_url = oldEmbed.footer.icon_url
+        }
+
+        if (newEmbed.thumbnail?.url !== undefined) {
+            embed.thumbnail.url = newEmbed.thumbnail.url
+        } else if (oldEmbed.thumbnail?.url !== undefined) {
+            embed.thumbnail.url = oldEmbed.thumbnail.url
+        }
+
+        if (newEmbed.image?.url !== undefined) {
+            embed.image.url = newEmbed.image.url
+        } else if (oldEmbed.image?.url !== undefined) {
+            embed.image.url = oldEmbed.image.url
+        }
+
+        for (let i = 0; i < 26; i++) {
+            embed.fields.push({
+                name: this.getDiffString(oldEmbed.fields[i]?.name, newEmbed.fields[i]?.name),
+                value: this.getDiffString(oldEmbed.fields[i]?.value, newEmbed.fields[i]?.value),
+                inline: (oldEmbed.fields[i]?.inline && newEmbed.fields[i]?.inline) || newEmbed.fields[i]?.inline
+            })
+        }
+
+        for (let i = 25; i > 0; i--) {
+            if (embed.fields[i] !== undefined) {
+                if (embed.fields[i].name === "" || embed.fields[i].value === "") {
+                    embed.fields.splice(i, 1)
+                }
+            }
+        }
+
+        return embed
+    }
+
+    getDiffString(oldString, newString) {
+        if (oldString === undefined && newString !== undefined) return newString
+        else if (newString === undefined && oldString !== undefined) return oldString
+        else if (newString === undefined && oldString === undefined) return ""
+
+        const diffResult = diff.diffWords(oldString, newString)
+        let diffString = ""
+        diffResult.forEach(diffPart => {
+            if (diffPart.added) diffString += `**${Discord.Util.escapeMarkdown(diffPart.value)}**`
+            else if (diffPart.removed) diffString += `~~${Discord.Util.escapeMarkdown(diffPart.value)}~~`
+            else diffString += `${Discord.Util.escapeMarkdown(diffPart.value)}`
+        })
+        return diffString
     }
 }
 

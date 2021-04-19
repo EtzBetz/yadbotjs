@@ -1,13 +1,11 @@
 import * as rax from 'retry-axios'
 import axios from 'axios'
-import crypto from 'crypto'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot'
 import {debugLog, errorLog, log, red, reset} from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import files from './Files.mjs'
-import scraper from '../commands/scraper.mjs'
 
 export class WebsiteScraper {
 
@@ -199,6 +197,17 @@ export class WebsiteScraper {
                 readData.push(newJson[i])
                 // write JSON string to file
                 files.writeJson(filePath, 'data', readData)
+
+                // try {
+                //     if (JSON.stringify(latestData) !== "{}") {
+                //         let oldEmbed = this.getEmbed(latestData)
+                //         let newEmbed = this.getEmbed(newJson[i])
+                //         let diffEmbed = yadBot.getDiffEmbedFromEmbeds(oldEmbed, newEmbed)
+                //         // yadBot.sendMessageToOwner(diffEmbed)
+                //     }
+                // } catch (e) {
+                //     console.error(e)
+                // }
 
                 console.log(`JSON data is saved in ${this.generateFileNameFromJson(newJson[i])}.`)
                 j++
@@ -566,12 +575,13 @@ export class WebsiteScraper {
 
     generateSlugFromString(originalString) {
         const regexDisallowedChars = /([^a-zA-Z0-9])+/gm
+
+        // todo: will only recognize text greater than 3 letters! find other regex!
         const regexSequenceFilter = /[^a-zA-Z0-9]*([a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9])[^a-zA-Z0-9]*/gm
         const regexAE = /[ä]/g
         const regexOE = /[ö]/g
         const regexUE = /[ü]/g
         const regexMultipleHyphens = /--+/g
-
 
         let replaced = originalString.toLowerCase()
         replaced = replaced.replace(regexAE, 'ae')
