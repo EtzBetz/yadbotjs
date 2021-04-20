@@ -10,6 +10,7 @@ import ScraperXRelReleases from './ScraperXRelReleases.mjs'
 import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.mjs'
 import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.mjs'
 import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.mjs'
+import ScraperCanIUseNews from './ScraperCanIUseNews.mjs'
 import {log, debugLog} from '../index'
 import files from './Files.mjs'
 import activityTypes from '../constants/ActivityTypes.mjs'
@@ -54,7 +55,8 @@ class YadBot {
                 ScraperXRelReleases,
                 ScraperInterfaceInGameGames,
                 ScraperInterfaceInGameArticles,
-                ScraperTSBThreadWatch
+                ScraperTSBThreadWatch,
+                ScraperCanIUseNews
             ]
         })
 
