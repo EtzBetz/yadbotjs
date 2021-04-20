@@ -46,7 +46,7 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
                 entry.author = element.querySelector("div.crawler-post-meta > span.creator").textContent.trim()
                 entry.date = element.querySelector("div.crawler-post-meta > span.crawler-post-infos > time").getAttribute('datetime').trim()
 
-                console.log(entry)
+                // console.log(entry)
                 elements.push(entry)
             }
         })
