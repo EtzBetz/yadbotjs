@@ -90,9 +90,7 @@ class ScraperCanIUseNews extends WebsiteScraper{
             const separationRegex = /([^,]+)/g
 
             let separationResult = [...content.featIds.matchAll(separationRegex)]
-            console.log(separationResult)
             separationResult.forEach((result, index) => {
-                console.log("debug1:", result[1])
                 features.push(result[1])
             })
 
