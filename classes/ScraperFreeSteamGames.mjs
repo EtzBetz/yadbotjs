@@ -41,24 +41,22 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                         if (
                             detailData.price_overview?.final === 0
                                 ||
-                            detailData.is_free === true
-                                // ||
-                            // (
-                            //     detailData.price_overview?.discount_percent !== undefined &&
-                            //     detailData.price_overview?.discount_percent >= 90
-                            // )
+                            (
+                                detailData.price_overview?.discount_percent !== undefined &&
+                                detailData.price_overview?.discount_percent === 100
+                            )
+                            // ||
+                            // detailData.is_free === true
                         ) {
                             // this.debugLog('game is discounted/free in some way')
                             if (detailData.price_overview?.final === 0 || detailData.price_overview?.discount_percent === 100) {
                                 entry.discountType = 'gift'
-                            }
-                            else if (detailData.is_free === true) {
+                            } else if (detailData.is_free === true) {
                                 entry.discountType = 'free'
+                            } else if (detailData.price_overview?.discount_percent >= 90) {
+                                entry.discountType = 'discounted'
+                                entry.discountAmount = detailData.price_overview?.discount_percent
                             }
-                            // else if (detailData.price_overview?.discount_percent >= 90) {
-                            //     entry.discountType = 'discounted'
-                            //     entry.discountAmount = detailData.price_overview?.discount_percent
-                            // }
 
                             entry.id = game.appid
                             entry.title = detailData.name
