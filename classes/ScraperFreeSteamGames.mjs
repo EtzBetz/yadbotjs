@@ -13,11 +13,11 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     }
 
     getLastScrapingUnixTime() {
-        return files.readJson(this.getScraperConfigPath(), 'last_scraping_unix_time', false, Math.floor(luxon.DateTime.local().toSeconds()))
+        return files.readJson(this.getScraperConfigPath(), 'last_scraping_unix_time', false, Math.floor(luxon.DateTime.local().minus({minutes: 30}).toSeconds()))
     }
 
     refreshLastScrapingUnixTime() {
-        files.writeJson(this.getScraperConfigPath(), 'last_scraping_unix_time', Math.floor(luxon.DateTime.local().toSeconds()))
+        files.writeJson(this.getScraperConfigPath(), 'last_scraping_unix_time', Math.floor(luxon.DateTime.local().minus({minutes: 30}).toSeconds()))
     }
 
     async requestWebsite(url) {
@@ -39,11 +39,14 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                     if (detailResponse.data[game.appid.toString()].success === true) {
                         const detailData = detailResponse.data[game.appid.toString()].data
                         if (
-                            detailData.price_overview?.final === 0 ||
-                            (
-                                detailData.price_overview?.discount_percent !== undefined &&
-                                detailData.price_overview?.discount_percent >= 90
-                            )
+                            detailData.price_overview?.final === 0
+                            //     ||
+                            // detailData.is_free === true
+                                // ||
+                            // (
+                            //     detailData.price_overview?.discount_percent !== undefined &&
+                            //     detailData.price_overview?.discount_percent >= 90
+                            // )
                         ) {
                             // this.debugLog('game is discounted/free in some way')
                             if (detailData.price_overview?.final === 0 || detailData.price_overview?.discount_percent === 100) {
