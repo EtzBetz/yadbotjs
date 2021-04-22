@@ -107,7 +107,7 @@ export class WebsiteScraper {
             try {
                 content = await this.parseWebsiteContentToJSON(response)
             } catch (e) {
-                yadBot.sendMessageToOwner(`Error 1 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                yadBot.sendMessageToOwner(`Error 1 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
             }
             this.filterNewContent(content, (filteredContent) => {
                 this.log(`${filteredContent.length} entries are new.`)
@@ -123,7 +123,7 @@ export class WebsiteScraper {
                     try {
                         embeds.push(this.filterEmbedLength(this.getEmbed(content)))
                     } catch (e) {
-                        yadBot.sendMessageToOwner(`Error 2 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                        yadBot.sendMessageToOwner(`Error 2 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
                     }
                 })
                 if (embeds.length >= 1) {
