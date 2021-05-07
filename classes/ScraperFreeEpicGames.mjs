@@ -1,8 +1,8 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 
-class ScraperFreeEpicGames extends WebsiteScraper{
+class ScraperFreeEpicGames extends WebsiteScraper {
 
     parseWebsiteContentToJSON(response) {
         const elements = []
@@ -122,18 +122,21 @@ class ScraperFreeEpicGames extends WebsiteScraper{
                         "name": "Enddatum",
                         "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
                         "inline": true
-                    },
-                    {
-                        "name": "Unterstützte Betriebssysteme",
-                        "value": osString,
-                        "inline": true
                     }
                 ]
             }
         )
 
+        if (osString !== "") {
+            embed.fields.push({
+                "name": "Unterstützte Betriebssysteme",
+                "value": osString,
+                "inline": true
+            })
+        }
+
         if (content.imageUrl !== undefined) {
-            embed.image =  {
+            embed.image = {
                 url: content.imageUrl
             }
         }
