@@ -116,7 +116,7 @@ class YadBot {
     }
 
     async bindCommands() {
-        let testChannel = files.readJson(this.getYadConfigPath(), 'test_server', true, 'ENTER TEST SERVER ID HERE')
+        let testServer = files.readJson(this.getYadConfigPath(), 'test_server', true, 'ENTER TEST SERVER ID HERE')
 
         this.commandFiles = fs.readdirSync(`./slashcommands/`).filter(file => file.endsWith('.mjs'))
         this.bot.commands.clear()
@@ -133,7 +133,7 @@ class YadBot {
             this.bot.application.commands.set(commandsDataArr)
                 .then((commandResult) => {})
         } else {
-            this.bot.guilds.cache.get(testChannel)?.commands.set(commandsDataArr)
+            this.bot.guilds.cache.get(testServer)?.commands.set(commandsDataArr)
                 .then((commandResult) => {})
         }
     }
