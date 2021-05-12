@@ -6,6 +6,7 @@ import {debugLog, errorLog, log, red, reset} from '../index'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import files from './Files.mjs'
+import EmbedColors from '../constants/EmbedColors.mjs';
 
 export class WebsiteScraper {
 
@@ -292,7 +293,7 @@ export class WebsiteScraper {
         return new Discord.MessageEmbed({
             title: 'Preview Embed',
             description: `Website title: "${content.title}"`,
-            color: 0xeb6734,
+            color: EmbedColors.GREEN,
             url: this.getScrapingUrl(),
         })
     }
@@ -328,8 +329,7 @@ export class WebsiteScraper {
         this.log(`Generating Update-embed...`)
         return new Discord.MessageEmbed({
             title: `Update`,
-            description: `Yad has been updated, some embeds will eventually be resent!`,
-            color: 0xff6f00,
+            description: `Yad has been updated, some embeds will eventually be resent!`
         })
     }
 
@@ -337,7 +337,7 @@ export class WebsiteScraper {
         const noticeEmbed = new Discord.MessageEmbed({
             title: `Notice`,
             description: `New data is available from ${this.constructor.name}, but I can't send it to your specified channel. Eventually I have been kicked or I do not have permissions to send in that channel?`,
-            color: 0xff6f00,
+            color: EmbedColors.ORANGE,
         })
 
         yadBot.getBot().guilds.fetch(guildId)
@@ -355,7 +355,7 @@ export class WebsiteScraper {
         const updateEmbed = new Discord.MessageEmbed({
             title: `Notice`,
             description: `New data is available from this scraper, but due to changes on the received data, Yad can not process it without error.\nYou can visit the page yourself [here](${this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
-            color: 0xff6f00,
+            color: EmbedColors.ORANGE,
         })
 
         this.getSubGuildChannelIds().forEach(channelId => {
@@ -517,16 +517,16 @@ export class WebsiteScraper {
         }
     }
 
-    subscribe(message) {
-        switch (message.channel.type) {
+    subscribe(interaction) {
+        switch (interaction.channel.type) {
         case 'unknown':
             return { error: true, data: 'Message channel type was unknown.' }
         case 'dm':
             let subUsers = files.readJson(this.getScraperConfigPath(), 'sub_user_ids', false, [])
 
-            let indexResult = subUsers.indexOf(message.author.id)
+            let indexResult = subUsers.indexOf(interaction.user.id)
             if (indexResult === -1) {
-                subUsers.push(message.author.id)
+                subUsers.push(interaction.user.id)
             } else {
                 subUsers.splice(indexResult, 1)
             }
@@ -544,11 +544,11 @@ export class WebsiteScraper {
             }
         case 'text':
         case 'news':
-            if (message.member?.hasPermission(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+            if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
-                let indexResultGuild = subChannels.indexOf(message.channel.id)
+                let indexResultGuild = subChannels.indexOf(interaction.channel.id)
                 if (indexResultGuild === -1) {
-                    subChannels.push(message.channel.id)
+                    subChannels.push(interaction.channel.id)
                 } else {
                     subChannels.splice(indexResultGuild, 1)
                 }
@@ -556,12 +556,12 @@ export class WebsiteScraper {
                 if (indexResultGuild === -1) {
                     return {
                         error: false,
-                        data: `This channel has been added to the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `This channel has been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 } else {
                     return {
                         error: false,
-                        data: `This channel has been removed from the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `This channel has been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 }
             } else {

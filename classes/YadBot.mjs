@@ -15,19 +15,51 @@ import {log, debugLog} from '../index'
 import files from './Files.mjs'
 import activityTypes from '../constants/ActivityTypes.mjs'
 import * as diff from 'diff';
+import EmbedColors from '../constants/EmbedColors.mjs';
 
 class YadBot {
 
     constructor() {
-        this.bot = new Discord.Client()
+        this.bot = new Discord.Client({
+            intents: [
+                'GUILDS',
+                'GUILD_MEMBERS',
+                'GUILD_BANS',
+                'GUILD_EMOJIS',
+                'GUILD_INTEGRATIONS',
+                'GUILD_WEBHOOKS',
+                'GUILD_INVITES',
+                'GUILD_VOICE_STATES',
+                'GUILD_PRESENCES',
+                'GUILD_MESSAGES',
+                'GUILD_MESSAGE_REACTIONS',
+                'GUILD_MESSAGE_TYPING',
+                'DIRECT_MESSAGE_REACTIONS',
+                'DIRECT_MESSAGE_TYPING'
+            ]
+        })
 
         this.bot.commands = new Discord.Collection()
         this.commandFiles = []
         this.eventFiles = []
         this.scrapers = []
 
-        this.bot.once('ready', () => {
-            this.bindCommands()
+        this.bot.once('ready', async () => {
+            // todo: build in waiting for the main bot to come online (interval in scrapers?)
+            this.scrapers = [
+                scraperBlackBoard,
+                scraperFreeEpicGames,
+                scraperFreeSteamGames,
+                scraperGuildWars2News,
+                scraperTeamspeakBadges,
+                ScraperMovieReleases,
+                ScraperXRelReleases,
+                ScraperInterfaceInGameGames,
+                ScraperInterfaceInGameArticles,
+                ScraperTSBThreadWatch,
+                ScraperCanIUseNews
+            ]
+            await this.bindCommands()
             this.bindEvents()
             log(`-------------------------------`)
             log('I\'m online! Setting presence...')
@@ -44,20 +76,6 @@ class YadBot {
             })
             log(`-------------------------------`)
 
-            // todo: build in waiting for the main bot to come online (interval in scrapers?)
-            this.scrapers = [
-                scraperBlackBoard,
-                scraperFreeEpicGames,
-                scraperFreeSteamGames,
-                scraperGuildWars2News,
-                scraperTeamspeakBadges,
-                ScraperMovieReleases,
-                ScraperXRelReleases,
-                ScraperInterfaceInGameGames,
-                ScraperInterfaceInGameArticles,
-                ScraperTSBThreadWatch,
-                ScraperCanIUseNews
-            ]
         })
 
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
@@ -84,15 +102,39 @@ class YadBot {
         process.exit(0)
     }
 
-    bindCommands() {
-        this.commandFiles = fs.readdirSync(`./commands/`).filter(file => file.endsWith('.mjs'))
+    getScraperChoiceData() {
+        let data = []
+
+        this.scrapers.forEach((scraper) => {
+            data.push({
+                name: scraper.constructor.name,
+                value: scraper.constructor.name
+            })
+        })
+
+        return data
+    }
+
+    async bindCommands() {
+        let testChannel = files.readJson(this.getYadConfigPath(), 'test_server', true, 'ENTER TEST SERVER ID HERE')
+
+        this.commandFiles = fs.readdirSync(`./slashcommands/`).filter(file => file.endsWith('.mjs'))
         this.bot.commands.clear()
+        let commandsDataArr = []
+
         for (const file of this.commandFiles) {
-            import(`./../commands/${file}`)
-                .then((command) => {
-                    this.bot.commands.set(command.default.name, command.default)
-                })
-                .catch(e => console.dir(e))
+            let command = await import(`./../slashcommands/${file}`)
+            let commandData = command.default.getData()
+            await this.bot.commands.set(commandData.name, command.default)
+            commandsDataArr.push(commandData)
+
+        }
+        if (files.readJson(this.getYadConfigPath(), 'prod', false, false)) {
+            this.bot.commands.set(commandsDataArr)
+                .then((commandResult) => {})
+        } else {
+            this.bot.guilds.cache.get(testChannel)?.commands.set(commandsDataArr)
+                .then((commandResult) => {})
         }
     }
 
@@ -138,6 +180,10 @@ class YadBot {
         return this.isUserIdAdmin(message.author.id)
     }
 
+    isInteractionAuthorAdmin(interaction) {
+        return this.isUserIdAdmin(interaction.user.id)
+    }
+
     isUserIdOwner(userId) {
         let owner = files.readJson(this.getYadConfigPath(), 'owner', true, 'ENTER OWNER ID HERE')
         return (userId === owner)
@@ -149,6 +195,10 @@ class YadBot {
 
     isMessageAuthorOwner(message) {
         return this.isUserIdOwner(message.author.id)
+    }
+
+    isInteractionAuthorOwner(interaction) {
+        return this.isUserIdOwner(interaction.user.id)
     }
 
     getBot() {
@@ -163,15 +213,18 @@ class YadBot {
         return false
     }
 
-    sendCommandErrorEmbed(originMessage, errorMessage) {
+    sendCommandErrorEmbed(originInteraction, errorMessage) {
         if (!errorMessage.endsWith('.') && !errorMessage.endsWith('!')) {
             errorMessage += '.'
         }
-        originMessage.channel.send(new Discord.MessageEmbed({
-            title: `Error while executing command`,
-            description: `${errorMessage}`,
-            color: 0xF44336,
-        }))
+        originInteraction.reply({
+            embeds: [{
+                title: `Error while executing command`,
+                description: `${errorMessage}`,
+                color: EmbedColors.ORANGE,
+            }],
+            ephemeral: true
+        })
     }
 
     mirrorDirectMessageToOwner(message) {
@@ -183,7 +236,6 @@ class YadBot {
                 icon_url: message.author.avatarURL({dynamic: true}),
             },
             timestamp: message.createdTimestamp,
-            color: 0xff6f00,
         }))
     }
 

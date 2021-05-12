@@ -3,12 +3,16 @@ import axios from 'axios'
 import luxon from 'luxon'
 
 export default {
-    name: 'coronatime',
     enabled: true,
-    description: "Given on numbers I will calculate an approximate length of corona time in Germany (in weeks).",
-    async execute(message, args) {
-        let citizens = 83000000  // fix
-        let children = 13700000  // fix
+    getData() {
+        return {
+            name: 'coronatime',
+            description: 'Given on numbers I will calculate an approximate length of corona time in Germany.'
+        }
+    },
+    async execute(interaction) {
+        let citizens = 83000000  // static
+        let children = 13700000  // static
         let fullyVaccinated = 0
         let firstVaccinated = 0
         let dailyAverageVaccinations = 0
@@ -83,10 +87,12 @@ export default {
                         "th"
         const datePartialString5 = expectedDatePartial.toFormat("yyyy")
 
-        message.channel.send(new Discord.MessageEmbed({
-            title: "Future Corona Time",
-            description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining unvaccinated german adults.\nBased on this calculation, that will currently result in **${dateString1}${dateString4} ${dateString5}**.\n\nThe target goal of vaccinating 70% of all german adults could take **~${currentWeekResultPartial} weeks**.\nThis would result in the calculated date **${datePartialString1}${datePartialString4} ${datePartialString5}.**\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${firstVaccinated.toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}\n\n**Please take this data with a grain of salt!** It is only calculated to have a very rough understanding of how long it **could** take until we have our pre-covid lives back again. To get a better understanding of the current situation, **visit official sources** like [Impfdashboard.de](https://impfdashboard.de/) or others.`
-        }))
+        interaction.reply({
+            embeds: [{
+                title: "Future Corona Time",
+                description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining unvaccinated german adults.\nBased on this calculation, that will currently result in **${dateString1}${dateString4} ${dateString5}**.\n\nThe target goal of vaccinating 70% of all german adults could take **~${currentWeekResultPartial} weeks**.\nThis would result in the calculated date **${datePartialString1}${datePartialString4} ${datePartialString5}.**\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${firstVaccinated.toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}\n\n**Please take this data with a grain of salt!** It is only calculated to have a very rough understanding of how long it **could** take until we have our pre-covid lives back again. To get a better understanding of the current situation, **visit official sources** like [Impfdashboard.de](https://impfdashboard.de/) or others.`
+            }]
+        })
     },
     tsvJSON(tsv) {
         const lines = tsv.split('\n');
