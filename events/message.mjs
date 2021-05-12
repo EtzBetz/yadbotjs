@@ -12,7 +12,18 @@ export default (message) => {
     if (message.channel.type === "dm" && message.author.id !== ownerId) yadBot.mirrorDirectMessageToOwner(message)
 
     if (message.mentions.users.get(botId) !== undefined || message.mentions.members?.get(botId) !== undefined) {
-        message.channel.send(new Discord.MessageEmbed({ title: `Hey!` })) // TODO: provide array of messages to randomly select from
+        if (message.channel.type !== 'dm' && message.channel.type !== 'unknown') {
+            if (message.reference?.messageID !== undefined) {
+                message.fetchReference()
+                    .then(referenceMessage => {
+                        if (referenceMessage.author.id !== botId) {
+                            message.channel.send(new Discord.MessageEmbed({title: `Hey!`})) // TODO: provide array of messages to randomly select from
+                        }
+                    })
+            } else {
+                message.channel.send(new Discord.MessageEmbed({title: `Hey!`})) // TODO: provide array of messages to randomly select from
+            }
+        }
     }
 
     if (!message.content.startsWith(prefix)) return
