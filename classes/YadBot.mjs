@@ -130,7 +130,7 @@ class YadBot {
 
         }
         if (files.readJson(this.getYadConfigPath(), 'prod', false, false)) {
-            this.bot.commands.set(commandsDataArr)
+            this.bot.application.commands.set(commandsDataArr)
                 .then((commandResult) => {})
         } else {
             this.bot.guilds.cache.get(testChannel)?.commands.set(commandsDataArr)
