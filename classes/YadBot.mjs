@@ -216,14 +216,25 @@ class YadBot {
         if (!errorMessage.endsWith('.') && !errorMessage.endsWith('!')) {
             errorMessage += '.'
         }
-        originInteraction.reply({
-            embeds: [{
-                title: `Error while executing command`,
-                description: `${errorMessage}`,
-                color: EmbedColors.ORANGE,
-            }],
-            ephemeral: true
-        })
+
+        if (originInteraction.deferred) {
+            originInteraction.editReply({
+                embeds: [{
+                    title: `Error while executing command`,
+                    description: `${errorMessage}`,
+                    color: EmbedColors.ORANGE,
+                }]
+            })
+        } else {
+            originInteraction.reply({
+                embeds: [{
+                    title: `Error while executing command`,
+                    description: `${errorMessage}`,
+                    color: EmbedColors.ORANGE,
+                }],
+                ephemeral: true
+            })
+        }
     }
 
     mirrorDirectMessageToOwner(message) {
