@@ -14,6 +14,11 @@ export default {
             description: "Commands related to Guild Wars 2",
             options: [
                 {
+                    name: "raidprogress",
+                    description: "Shows your raid boss kill progress for the current week.",
+                    type: 'SUB_COMMAND'
+                },
+                {
                     name: "apikey",
                     description: "Add your personal GW2-API-Key to the bot, so that it can show you details from your account",
                     type: 'SUB_COMMAND',
@@ -23,11 +28,6 @@ export default {
                         type: "STRING",
                         required: true
                     }]
-                },
-                {
-                    name: "raidprogress",
-                    description: "Shows your raid boss kill progress for the current week.",
-                    type: 'SUB_COMMAND'
                 }
             ]
         }
