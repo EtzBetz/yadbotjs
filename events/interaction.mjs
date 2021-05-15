@@ -3,9 +3,13 @@ import yadBot from './../classes/YadBot'
 
 export default (interaction) => {
     if (!interaction.isCommand()) return;
-    // interaction.defer(true);
 
     const command = yadBot.getBot().commands.get(interaction.commandName)
+
+    if(!yadBot.isInteractionAuthorOwner(interaction)) {
+        yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interaction.channel.name}'.`)
+    }
+
     if (command === undefined) {
         yadBot.sendCommandErrorEmbed(interaction, 'Some error seems to have occurred. Looks like this command is registered, but I don\'t know what to respond.')
         return

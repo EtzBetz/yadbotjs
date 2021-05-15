@@ -30,7 +30,7 @@ export default (message) => {
 
     message.reply(new Discord.MessageEmbed({
         title: `I leveled up to slash commands!`,
-        description: 'My commands are now available with the `/`-prefix.\nJust start typing `/` and get a list of suggestions from Discord, which will show you commands you can use. It even has parameter suggestions built in!\nMost commands used with the old prefix have been carried over already.\n\n**Have fun!**'
+        description: 'My commands are now available with the `/`-prefix.\nJust start typing `/` and get a list of suggestions from Discord, which will show you all commands you can use. It even has parameter suggestions built in (yay!).\nMost commands used with the old prefix have been ported over already.\n\n**Have fun!**'
     }))
 
 }
