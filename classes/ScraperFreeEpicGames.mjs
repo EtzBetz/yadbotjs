@@ -1,6 +1,7 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
+import yadBot from './YadBot.mjs';
 
 class ScraperFreeEpicGames extends WebsiteScraper {
 
@@ -40,10 +41,15 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
             const originalPrice = game.price?.totalPrice?.originalPrice?.toString().padStart(3, '0')
             const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
-            const decimalPosition = originalPrice.length - (decimalCount || 2)
-            const priceEuro = originalPrice.substring(0, decimalPosition)
-            const priceDecimal = originalPrice.substring(originalPrice.length - decimalCount)
-            entry.originalPrice = `${priceEuro},${priceDecimal}€`
+            const decimalPosition = originalPrice?.length - (decimalCount || 2)
+            const priceEuro = originalPrice?.substring(0, decimalPosition)
+            const priceDecimal = originalPrice?.substring(originalPrice?.length - decimalCount)
+            if (priceEuro !== undefined && priceDecimal !== undefined) {
+                entry.originalPrice = `${priceEuro},${priceDecimal}€`
+            } else {
+                yadBot.sendMessageToOwner("epic games weirdness debug")
+                yadBot.sendMessageToOwner(response.data)
+            }
 
             let promotions = []
             if (game.promotions?.promotionalOffers[0]?.promotionalOffers !== undefined) {
@@ -107,25 +113,33 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                     "url": "https://www.epicgames.com/store/de/free-games",
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_epic_games.png"
                 },
-                "fields": [
-                    {
-                        "name": "Originalpreis",
-                        "value": `~~${content.originalPrice}~~`,
-                        "inline": true
-                    },
-                    {
-                        "name": "Startdatum",
-                        "value": `${startDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
-                        "inline": true
-                    },
-                    {
-                        "name": "Enddatum",
-                        "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
-                        "inline": true
-                    }
-                ]
+                "fields": []
             }
         )
+
+        if (content.originalPrice !== undefined) {
+            embed.fields.push({
+                "name": "Originalpreis",
+                "value": `~~${content.originalPrice}~~`,
+                "inline": true
+            })
+        }
+
+        if (startDate !== undefined) {
+            embed.fields.push({
+                "name": "Startdatum",
+                "value": `${startDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "inline": true
+            })
+        }
+
+        if (endDate !== undefined) {
+            embed.fields.push({
+                "name": "Enddatum",
+                "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "inline": true
+            })
+        }
 
         if (osString !== "") {
             embed.fields.push({
