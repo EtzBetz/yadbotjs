@@ -3,6 +3,7 @@ import Discord from 'discord.js'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
 import scraperFreeSteamGames from './ScraperFreeSteamGames.mjs'
+import scraperFreeUbisoftGames from './ScraperFreeUbisoftGames.mjs'
 import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
 import scraperTeamspeakBadges from './ScraperTeamspeakBadges.mjs'
 import ScraperMovieReleases from './ScraperMovieReleases.mjs'
@@ -50,6 +51,7 @@ class YadBot {
                 scraperBlackBoard,
                 scraperFreeEpicGames,
                 scraperFreeSteamGames,
+                scraperFreeUbisoftGames,
                 scraperGuildWars2News,
                 scraperTeamspeakBadges,
                 ScraperMovieReleases,

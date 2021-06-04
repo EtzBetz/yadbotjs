@@ -1,0 +1,215 @@
+import luxon from 'luxon'
+import * as Discord from 'discord.js'
+import {WebsiteScraper} from './WebsiteScraper'
+import files from './Files.mjs';
+import axios from 'axios';
+import yadBot from './YadBot.mjs';
+
+class ScraperFreeUbisoftGames extends WebsiteScraper {
+
+    async getScrapingUrl() {
+        let response = await this.requestWebsite("https://free.ubisoft.com/configuration.js")
+
+        let data = response.data
+        data = data.replace(/(\r\n|\n|\r|\t)/gm, "")
+
+        let config = await this.getObjectFromRelaxedKey(data, 'var config')
+        let feed = await this.getObjectFromRelaxedKey(config, 'feedUrl:')
+
+        let appId = await this.getStringFromRelaxedKey(config, 'appId:')
+        files.writeJson(this.getScraperConfigPath(), 'latest_app_id', appId)
+
+        return await this.getStringFromRelaxedKey(feed, 'prod:')
+    }
+
+    async getStringFromRelaxedKey(searchInString, searchForString) {
+        let indexStart = searchInString.search(searchForString)
+
+        let openingQuote = 0
+        for (let i = indexStart + searchForString.length; i <= searchInString.length; i++) {
+            let curChar = searchInString[i]
+            if (curChar === '\'' || curChar === '\"') {
+                openingQuote = i
+                break
+            }
+        }
+
+        let closingQuote = 0
+        for (let i = openingQuote + 1; i <= searchInString.length; i++) {
+            let curChar = searchInString[i]
+            if ((curChar === '\'' || curChar === '\"') && searchInString[i - 1] !== '\\') {
+                closingQuote = i
+                break
+            }
+        }
+
+        // console.log(openingQuote)
+        // console.log(searchInString[openingQuote])
+        // console.log(closingQuote)
+        // console.log(searchInString[closingQuote])
+        // console.log(searchInString.substring(openingQuote, closingQuote + 1))
+
+        return searchInString.substring(openingQuote + 1, closingQuote)
+    }
+
+    async getObjectFromRelaxedKey(searchInString, searchForString) {
+        let indexStart = searchInString.search(searchForString)
+
+        let indexOpeningBracket = 0
+        let indexClosingBracket = 0
+        for (let i = indexStart + searchForString.length; i <= searchInString.length; i++) {
+            let curChar = searchInString[i]
+            if (curChar === '{') {
+                indexOpeningBracket = i
+                break
+            }
+        }
+
+        let curBracket = 1
+        for (let i = indexOpeningBracket + 1; i <= searchInString.length; i++) {
+            let curChar = searchInString[i]
+            if (curChar === '{') {
+                curBracket++
+            } else if (curChar === '}') {
+                curBracket--
+                if (curBracket === 0) {
+                    indexClosingBracket = i
+                    break
+                }
+            }
+        }
+
+        // console.log(indexOpeningBracket)
+        // console.log(searchInString[indexOpeningBracket])
+        // console.log(indexClosingBracket)
+        // console.log(searchInString[indexClosingBracket])
+        // console.log(searchInString.substring(indexOpeningBracket, indexClosingBracket + 1))
+
+        return searchInString.substring(indexOpeningBracket, indexClosingBracket + 1)
+    }
+
+    async requestWebsite(url) {
+        return await axios({
+            method: 'get',
+            url: url,
+            headers: {
+                'User-Agent': this.getUserAgent(),
+                'ubi-appid': files.readJson(this.getScraperConfigPath(), 'latest_app_id', false, "314d4fef-e568-454a-ae06-43e3bece12a6"),
+                'ubi-localecode': 'en-US'
+            },
+            responseType: this.getExpectedResponseType(),
+            raxConfig: {
+                retry: 5,
+                noResponseRetries: 5,
+                retryDelay: 100,
+            }
+        })
+    }
+
+    parseWebsiteContentToJSON(response) {
+        const elements = []
+        response.data.news.forEach(game => {
+            switch (game.placement) {
+                case "freeevents":
+                case "":
+                    break
+                default:
+                    yadBot.sendMessageToOwner("new `placement` type in ubisoft scraper->", game.placement)
+                    yadBot.sendMessageToOwner(JSON.stringify(game))
+            }
+            switch (game.type) {
+                case "freegame":
+                case "gametrial":
+                case "":
+                    break
+                default:
+                    yadBot.sendMessageToOwner("new `type` type in ubisoft scraper->", game.type)
+                    yadBot.sendMessageToOwner(JSON.stringify(game))
+            }
+
+            let entry = {}
+            if (game.placement === "freeevents" && game.type === "freegame") {
+                entry.title = game.title
+                entry.image = game.mediaURL
+
+                if (game.links !== undefined) {
+                    entry.url = game.links.find((linkObject) => {
+                        return linkObject.type === "External"
+                    }).param
+                }
+
+                if (game.publicationDate !== undefined && game.publicationDate !== null) {
+                    entry.startDate = luxon.DateTime.fromISO(game.publicationDate).setZone('Europe/Berlin').toISO()
+                }
+                if (game.expirationDate !== undefined && game.expirationDate !== null) {
+                    entry.endDate = luxon.DateTime.fromFormat(game.expirationDate, 'yyyy-MM-ddTHH:mm:ss').toISO()
+                }
+
+                elements.push(entry)
+            }
+
+        })
+        this.log(`${elements.length} entries found...`)
+        return elements
+    }
+
+    generateFileNameFromJson(json) {
+        let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd')
+        let fileName = `${dateString}-${json.title}`
+        return this.generateSlugFromString(fileName) + ".json"
+    }
+
+    getEmbed(content) {
+        this.log(`Generating embed...`)
+
+        let descriptionString, startDate, endDate
+
+        if (content.endDate !== undefined) {
+            endDate = luxon.DateTime.fromISO(content.endDate)
+            descriptionString = `Bis zum ${endDate.toFormat("dd.MM.")} kostenlos im Ubisoft Store.`
+        } else {
+            descriptionString = `Aktuell **kostenlos** im Ubisoft Store.`
+        }
+
+        let embed = new Discord.MessageEmbed(
+            {
+                "title": content.title,
+                "description": descriptionString,
+                "url": content.url,
+                "image": {
+                    "url": content.image
+                },
+                "author": {
+                    "name": "Ubisoft Store",
+                    "url": "https://free.ubisoft.com/",
+                    "icon_url": "https://etzbetz.io/stuff/yad/images/logo_ubisoft_store.png"
+                },
+                "fields": []
+            }
+        )
+
+        if (content.startDate !== undefined) {
+            embed.fields.push({
+                "name": "Startdatum",
+                "value": `${luxon.DateTime.fromISO(content.startDate).toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "inline": true
+            })
+        }
+
+        if (content.endDate !== undefined) {
+            embed.fields.push({
+                "name": "Enddatum",
+                "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "inline": true
+            })
+        }
+
+        return embed
+    }
+
+    getSortingFunction() {
+        return this.sortJsonByIsoDateAndTitleProperty
+    }
+}
+
+export default new ScraperFreeUbisoftGames()

@@ -23,7 +23,7 @@ export class WebsiteScraper {
         return 'text/html'
     }
 
-    getScrapingUrl() {
+    async getScrapingUrl() {
         return files.readJson(
             this.getScraperConfigPath(),
             'scraping_url',
@@ -103,7 +103,7 @@ export class WebsiteScraper {
 
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
-        let response = await this.requestWebsite(this.getScrapingUrl())
+        let response = await this.requestWebsite(await this.getScrapingUrl())
             let content = []
             try {
                 content = await this.parseWebsiteContentToJSON(response)
