@@ -89,11 +89,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         startDate = luxon.DateTime.fromISO(content.startDate)
         endDate = luxon.DateTime.fromISO(content.endDate)
 
-        if (startDate.diffNow() < 0) {
-            descriptionString = `Bis zum ${endDate.day}.${endDate.month}. kostenlos im Epic Games Store.`
-        } else {
-            descriptionString = `Ab dem ${startDate.day}.${startDate.month}. kostenlos im Epic Games Store.`
-        }
+        descriptionString = `Free in Epic Games Store until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}.`
 
         let osString = ""
 
@@ -107,10 +103,10 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             {
                 "title": content.title,
                 "description": descriptionString,
-                "url": `https://www.epicgames.com/store/de/product/${content.slug}/home`,
+                "url": `https://www.epicgames.com/store/us/p/${content.slug}`,
                 "author": {
                     "name": "Epic Games Store",
-                    "url": "https://www.epicgames.com/store/de/free-games",
+                    "url": "https://www.epicgames.com/store/us/free-games",
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_epic_games.png"
                 },
                 "fields": []
@@ -119,7 +115,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
         if (content.originalPrice !== undefined) {
             embed.fields.push({
-                "name": "Originalpreis",
+                "name": "Original Price",
                 "value": `~~${content.originalPrice}~~`,
                 "inline": true
             })
@@ -127,23 +123,23 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
         if (startDate !== undefined) {
             embed.fields.push({
-                "name": "Startdatum",
-                "value": `${startDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "name": "Start Date",
+                "value": `${startDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(startDate.toFormat("d"), 10))}, ${startDate.toFormat('HH:mm')}`,
                 "inline": true
             })
         }
 
         if (endDate !== undefined) {
             embed.fields.push({
-                "name": "Enddatum",
-                "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "name": "End Date",
+                "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')}`,
                 "inline": true
             })
         }
 
         if (osString !== "") {
             embed.fields.push({
-                "name": "Unterstützte Betriebssysteme",
+                "name": "Supported OSs",
                 "value": osString,
                 "inline": true
             })
@@ -158,7 +154,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         if (content.developer !== undefined) {
             embed.fields.push(
                 {
-                    "name": "Entwickler",
+                    "name": "Developer",
                     "value": `${content.developer}`,
                     "inline": true
                 }

@@ -166,9 +166,9 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
 
         if (content.endDate !== undefined) {
             endDate = luxon.DateTime.fromISO(content.endDate)
-            descriptionString = `Bis zum ${endDate.toFormat("dd.MM.")} kostenlos im Ubisoft Store.`
+            descriptionString = `**Free** until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))} in Ubisoft Store.`
         } else {
-            descriptionString = `Aktuell **kostenlos** im Ubisoft Store.`
+            descriptionString = `Currently **free** in Ubisoft Store.`
         }
 
         let embed = new Discord.MessageEmbed(
@@ -190,16 +190,22 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
 
         if (content.startDate !== undefined) {
             embed.fields.push({
-                "name": "Startdatum",
-                "value": `${luxon.DateTime.fromISO(content.startDate).toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "name": "Start Date",
+                "value": `${luxon.DateTime.fromISO(content.startDate).toFormat('MMMM')} ${yadBot.ordinal(parseInt(luxon.DateTime.fromISO(content.startDate).toFormat("d"), 10))}, ${luxon.DateTime.fromISO(content.startDate).toFormat('yyyy, HH:mm')}`,
                 "inline": true
             })
         }
 
         if (content.endDate !== undefined) {
             embed.fields.push({
-                "name": "Enddatum",
-                "value": `${endDate.toFormat('dd.MM.yyyy HH:mm')} Uhr`,
+                "name": "End Date",
+                "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')}`,
+                "inline": true
+            })
+        } else {
+            embed.fields.push({
+                "name": "End Date",
+                "value": `Unknown`,
                 "inline": true
             })
         }

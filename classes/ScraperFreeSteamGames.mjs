@@ -35,7 +35,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 if (game.price_change_number !== 0) {
                     // this.debugLog(`priceChangeNumber is != 0 for '${game.name}'`)
                     // call super method here because method in this class also refreshes last scraping timestamp
-                    let detailResponse = await super.requestWebsite(`https://store.steampowered.com/api/appdetails/?appids=${game.appid}&cc=de&l=german`)
+                    let detailResponse = await super.requestWebsite(`https://store.steampowered.com/api/appdetails/?appids=${game.appid}&cc=us&l=english`)
                     if (detailResponse.data[game.appid.toString()].success === true) {
                         const detailData = detailResponse.data[game.appid.toString()].data
                         if (
@@ -117,13 +117,13 @@ class ScraperFreeSteamGames extends WebsiteScraper {
 
         switch (content.discountType) {
             case 'discounted':
-                descriptionText = `Um ${content.discountAmount}% reduziert.`
+                descriptionText = `Discounted by ${content.discountAmount}%.`
                 break
             case 'free':
-                descriptionText = `Free to play im Steam Store.`
+                descriptionText = `Free to play in Steam Store.`
                 break
             case 'gift':
-                descriptionText = `Aktuell **kostenlos** im Steam Store.`
+                descriptionText = `Currently **free** in Steam Store.`
                 break
         }
 
@@ -144,7 +144,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         if (content.finalPrice !== undefined && content.discountType !== "gift") {
             embed.fields.push(
                 {
-                    'name': 'Rabattpreis',
+                    'name': 'Discounted Price',
                     'value': `**${content.finalPrice}**`,
                     'inline': true,
                 },
@@ -154,7 +154,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         if (content.originalPrice !== undefined) {
             embed.fields.push(
                 {
-                    'name': 'Originalpreis',
+                    'name': 'Original Price',
                     'value': `~~${content.originalPrice}~~`,
                     'inline': true,
                 },
@@ -164,7 +164,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         if (content.date !== undefined) {
             embed.fields.push(
                 {
-                    'name': 'Erscheinungsdatum',
+                    'name': 'Release Date',
                     'value': luxon.DateTime.fromISO(content.date).toFormat('d. LLLL yyyy', {locale: "de"}),
                     'inline': true,
                 },
@@ -174,7 +174,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         if (content.dateRaw !== undefined) {
             embed.fields.push(
                 {
-                    'name': 'Erscheinungsdatum',
+                    'name': 'Release Date',
                     'value': content.dateRaw,
                     'inline': true,
                 },
@@ -195,7 +195,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
 
     parseReleaseDate(dateString) {
         let steamDateRegex = /(\d+). ([a-zA-ZöÖäÄüÜ]{3,}).? (\d{4})/
-        let monthAliases = ["Jan", "Feb", "März", "Apr", "Mai", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dez"]
+        let monthAliases = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         let dateRegexResult = steamDateRegex.exec(dateString)
 
