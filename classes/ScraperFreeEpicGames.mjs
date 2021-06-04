@@ -48,7 +48,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 entry.originalPrice = `${priceEuro},${priceDecimal}€`
             } else {
                 yadBot.sendMessageToOwner("epic games weirdness debug")
-                yadBot.sendMessageToOwner(response.data)
+                yadBot.sendMessageToOwner(JSON.stringify(response.data))
             }
 
             let promotions = []
