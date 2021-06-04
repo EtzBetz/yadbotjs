@@ -1,5 +1,5 @@
 import fs from 'fs'
-import Discord from 'discord.js'
+import Discord from 'discord.js/src/index.js'
 import scraperBlackBoard from './ScraperBlackBoard.mjs'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
 import scraperFreeSteamGames from './ScraperFreeSteamGames.mjs'

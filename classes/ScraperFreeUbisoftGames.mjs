@@ -3,7 +3,7 @@ import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
 import files from './Files.mjs';
 import axios from 'axios';
-import yadBot from './YadBot.mjs';
+import yadBot from './YadBot.js';
 
 class ScraperFreeUbisoftGames extends WebsiteScraper {
 

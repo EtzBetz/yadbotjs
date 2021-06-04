@@ -1,5 +1,5 @@
 import Discord from "discord.js"
-import yadBot from './../classes/YadBot'
+import yadBot from '../classes/YadBot.js'
 import config from '../config.json'
 import EmbedColors from '../constants/EmbedColors.mjs';
 

@@ -1,4 +1,4 @@
-import yadBot from './../classes/YadBot'
+import yadBot from '../classes/YadBot.js'
 import Discord from "discord.js"
 
 export default {

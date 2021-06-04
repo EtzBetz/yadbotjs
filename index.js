@@ -1,4 +1,4 @@
-import yadBot from './classes/YadBot.mjs'
+import yadBot from './classes/YadBot.js'
 import luxon from 'luxon'
 import config from './config.json'
 import axios from 'axios';

@@ -1,6 +1,6 @@
 import Discord from "discord.js"
-import yadBot from './../classes/YadBot'
-import { log } from '../index'
+import yadBot from '../classes/YadBot.js'
+import { log } from '../index.js'
 import files from '../classes/Files.mjs'
 
 export default (message) => {

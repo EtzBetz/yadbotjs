@@ -1,4 +1,4 @@
-import yadBot from './../classes/YadBot'
+import yadBot from '../classes/YadBot.js'
 import Discord from "discord.js"
 import editJsonFile from "edit-json-file"
 import config from '../config.json'

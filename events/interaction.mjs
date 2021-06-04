@@ -1,5 +1,5 @@
 import Discord from "discord.js"
-import yadBot from './../classes/YadBot'
+import yadBot from '../classes/YadBot.js'
 
 export default (interaction) => {
     if (!interaction.isCommand()) return;

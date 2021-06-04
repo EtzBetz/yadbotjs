@@ -2,7 +2,7 @@ import jsdom from 'jsdom'
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import yadBot from './YadBot.mjs'
+import yadBot from './YadBot.js'
 
 class ScraperBlackBoard extends WebsiteScraper {
 
