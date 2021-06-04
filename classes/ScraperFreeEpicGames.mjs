@@ -89,7 +89,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         startDate = luxon.DateTime.fromISO(content.startDate)
         endDate = luxon.DateTime.fromISO(content.endDate)
 
-        descriptionString = `Free in Epic Games Store until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}.`
+        descriptionString = `**Free** in Epic Games Store until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}.`
 
         let osString = ""
 
