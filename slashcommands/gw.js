@@ -33,57 +33,71 @@ export default {
         }
     },
     async execute(interaction) {
-        switch (interaction.options[0].name.toLowerCase()) {
-            case "apikey":
-                let key = interaction.options[0].options[0].value
-                files.writeJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, key)
-                interaction.reply({
+        if (interaction.options.get('apikey') !== undefined) {
+            let key = interaction.options.get('apikey').options.get('api-key').value
+            files.writeJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, key)
+            interaction.reply({
+                embeds: [{
+                    title: "API-Key saved",
+                    description: `Congratulations!\nYour API-Key has been saved and you can now use the other \`/${this.getData().name}\` commands, if you set the permissions of your given key correctly.\nIn case you want to revoke your submitted key, just visit your [ArenaNet Account Page](https://account.arena.net/applications) and delete the key from your key-list. I will not be able to get any information through that key after you deleted it.`,
+                    color: EmbedColors.GREEN
+                }],
+                ephemeral: true
+            })
+        }
+        else if (interaction.options.get('raidprogress') !== undefined) {
+            interaction.defer()
+            let apikey = files.readJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, false, false)
+            if (apikey === false) {
+                interaction.editReply({
                     embeds: [{
-                        title: "API-Key saved",
-                        description: `Congratulations!\nYour API-Key has been saved and you can now use the other \`/${this.getData().name}\` commands, if you set the permissions of your given key correctly.\nIn case you want to revoke your submitted key, just visit your [ArenaNet Account Page](https://account.arena.net/applications) and delete the key from your key-list. I will not be able to get any information through that key after you deleted it.`,
-                        color: EmbedColors.GREEN
+                        title: "No API-Key saved",
+                        description: `You have not yet given me an API-Key.\nTo help you out and display information about your account here, I need to get an API-Key with your help.\nVisit your [ArenaNet Account Page](https://account.arena.net/applications), create a new API-Key with a descriptive name (e.g.\"Discord Yad Bot API-Key\") and give it at least \`progression\` permissions (required for **this** command).`,
+                        color: EmbedColors.RED
                     }],
-                    ephemeral: true
+                    ephemeral: false
                 })
-                break
-            case "raidprogress":
-                interaction.defer()
-                let apikey = files.readJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, false, false)
-                if (apikey === false) {
-                    interaction.editReply({
-                        embeds: [{
-                            title: "No API-Key saved",
-                            description: `You have not yet given me an API-Key.\nTo help you out and display information about your account here, I need to get an API-Key with your help.\nVisit your [ArenaNet Account Page](https://account.arena.net/applications), create a new API-Key with a descriptive name (e.g.\"Discord Yad Bot API-Key\") and give it at least \`progression\` permissions (required for **this** command).`,
-                            color: EmbedColors.RED
-                        }],
-                        ephemeral: false
-                    })
-                    return
+                return
+            }
+
+            let progressResponse = await axios({
+                method: 'get',
+                url: 'https://api.guildwars2.com/v2/account/raids',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36',
+                    'Authorization': `Bearer ${apikey}`
+                },
+                responseType: 'text/json',
+                raxConfig: {
+                    retry: 5,
+                    noResponseRetries: 5,
+                    retryDelay: 100,
                 }
+            })
 
-                let progressResponse = await axios({
-                    method: 'get',
-                    url: 'https://api.guildwars2.com/v2/account/raids',
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36',
-                        'Authorization': `Bearer ${apikey}`
-                    },
-                    responseType: 'text/json',
-                    raxConfig: {
-                        retry: 5,
-                        noResponseRetries: 5,
-                        retryDelay: 100,
-                    }
-                })
+            let progressEmbed = {
+                title: "Your raid progress for this week",
+                fields: []
+            }
 
-                let progressEmbed = {
-                    title: "Your raid progress for this week",
-                    fields: []
+            let contentResponse = await axios({
+                method: 'get',
+                url: 'https://api.guildwars2.com/v2/raids',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
+                },
+                responseType: 'text/json',
+                raxConfig: {
+                    retry: 5,
+                    noResponseRetries: 5,
+                    retryDelay: 100,
                 }
+            })
 
-                let contentResponse = await axios({
+            for (const raid of contentResponse.data) {
+                let raidResponse = await axios({
                     method: 'get',
-                    url: 'https://api.guildwars2.com/v2/raids',
+                    url: `https://api.guildwars2.com/v2/raids/${raid}`,
                     headers: {
                         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
                     },
@@ -95,58 +109,33 @@ export default {
                     }
                 })
 
-                for (const raid of contentResponse.data) {
-                    let raidResponse = await axios({
-                        method: 'get',
-                        url: `https://api.guildwars2.com/v2/raids/${raid}`,
-                        headers: {
-                            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
-                        },
-                        responseType: 'text/json',
-                        raxConfig: {
-                            retry: 5,
-                            noResponseRetries: 5,
-                            retryDelay: 100,
-                        }
-                    })
-
-                    for (const wing of raidResponse.data.wings) {
-                        let data = {
-                            name: this.translateSlug(wing.id),
-                            value: "",
-                            inline: true
-                        }
-
-                        wing.events.forEach((event) => {
-                            data.value += `> `
-                            if (progressResponse.data.includes(event.id)) {
-                                data.value += `||`
-                            }
-                            data.value += `${this.translateSlug(event.id)}`
-                            if (progressResponse.data.includes(event.id)) {
-                                data.value += `||`
-                            }
-                            data.value += `\n`
-                        })
-                        progressEmbed.fields.push(data)
+                for (const wing of raidResponse.data.wings) {
+                    let data = {
+                        name: this.translateSlug(wing.id),
+                        value: "",
+                        inline: true
                     }
+
+                    wing.events.forEach((event) => {
+                        data.value += `> `
+                        if (progressResponse.data.includes(event.id)) {
+                            data.value += `||`
+                        }
+                        data.value += `${this.translateSlug(event.id)}`
+                        if (progressResponse.data.includes(event.id)) {
+                            data.value += `||`
+                        }
+                        data.value += `\n`
+                    })
+                    progressEmbed.fields.push(data)
                 }
+            }
 
-                interaction.editReply({
-                    embeds: [progressEmbed],
-                    ephemeral: false
-                })
-                break
+            interaction.editReply({
+                embeds: [progressEmbed],
+                ephemeral: false
+            })
         }
-
-
-        // todo: get users api key
-
-        // todo: ask for key if not available
-
-        // todo: request to gw2 api for progress
-
-        // todo: list rendering
 
         // todo: eventually save last request date in api key file as well, if new week since then, display note about reset?
     },

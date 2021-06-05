@@ -15,7 +15,7 @@ export default {
         }
     },
     execute(interaction) {
-        let text = interaction.options[0].value
+        let text = interaction.options.get('input').value
         let formattedText = ""
         let uppercase = false
         for (let i = 0; i < text.length; i++) {

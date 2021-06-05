@@ -91,129 +91,122 @@ export default {
         }
     },
     execute(interaction) {
-        switch (interaction.options[0].name.toLowerCase()) {
-            case 'status':
-                let statusDescription = ``
+        if (interaction.options.get('status') !== undefined) {
+            let statusDescription = ``
 
-                yadBot.scrapers.forEach((scraper) => {
-                    statusDescription += '\n\n'
-                    if (scraper.timer !== null) {
-                        if (!scraper.timer._destroyed) {
-                            statusDescription += '🟩'
-                        } else {
-                            statusDescription += '🟥'
-                        }
+            yadBot.scrapers.forEach((scraper) => {
+                statusDescription += '\n\n'
+                if (scraper.timer !== null) {
+                    if (!scraper.timer._destroyed) {
+                        statusDescription += '🟩'
                     } else {
                         statusDescription += '🟥'
                     }
-                    statusDescription += `  ${scraper.constructor.name}`
-                })
-
-                interaction.reply({
-                    embeds: [{
-                        'title': 'Scraper Statuses',
-                        'description': `Here is a list of all scrapers and their statuses:${statusDescription}`,
-                    }],
-                    ephemeral: true
-                })
-                break
-            case 'toggle':
-
-                const scraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options[0].options[0].value.toLowerCase()))
-                const turnOnScraper = interaction.options[0].options[1].value === 1
-
-                if (scraper === undefined) {
-                    yadBot.sendCommandErrorEmbed(interaction, `The selected scraper could not be found.`)
-                    return
-                }
-
-                let alreadyInDesiredState = false
-                let scraperWasActive = !scraper.timer._destroyed
-                if (turnOnScraper && !scraperWasActive) {
-                    scraper.createTimerInterval()
-                } else if (!turnOnScraper && scraperWasActive) {
-                    scraper.destroyTimerInterval()
                 } else {
-                    alreadyInDesiredState = true
+                    statusDescription += '🟥'
                 }
+                statusDescription += `  ${scraper.constructor.name}`
+            })
 
-                if (alreadyInDesiredState) {
-                    interaction.reply({
-                        embeds: [{
-                            title: scraperWasActive ? 'Already online' : 'Already offline',
-                            description: `${scraper.constructor.name} is already ${scraperWasActive ? 'active' : 'inactive'}.`,
-                            color: EmbedColors.ORANGE,
-                        }],
-                        ephemeral: true
-                    })
-                } else {
-                    interaction.reply({
-                        embeds: [{
-                            title: scraperWasActive ? `Turned off` : `Turned on`,
-                            description: `${scraper.constructor.name} has been toggled ${scraperWasActive ? `inactive` : `active`}.`,
-                            color: scraperWasActive ? EmbedColors.RED : EmbedColors.GREEN,
-                        }],
-                        ephemeral: true
-                    })
-                }
-                break
-            case 'notify':
-                const targetScraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options[0].options[0].value.toLowerCase()))
+            interaction.reply({
+                embeds: [{
+                    'title': 'Scraper Statuses',
+                    'description': `Here is a list of all scrapers and their statuses:${statusDescription}`,
+                }],
+                ephemeral: true
+            })
+        } else if (interaction.options.get('toggle') !== undefined) {
+            const scraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options.get('toggle').options.get('scraper-name').value.toLowerCase()))
+            const turnOnScraper = interaction.options.get('toggle').options.get('status').value === 1
 
-                if (targetScraper === undefined) {
-                    yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
-                    return
-                }
-                targetScraper.sendUnreliableEmbedToSubscribers()
+            if (scraper === undefined) {
+                yadBot.sendCommandErrorEmbed(interaction, `The selected scraper could not be found.`)
+                return
+            }
 
+            let alreadyInDesiredState = false
+            let scraperWasActive = !scraper.timer._destroyed
+            if (turnOnScraper && !scraperWasActive) {
+                scraper.createTimerInterval()
+            } else if (!turnOnScraper && scraperWasActive) {
+                scraper.destroyTimerInterval()
+            } else {
+                alreadyInDesiredState = true
+            }
+
+            if (alreadyInDesiredState) {
                 interaction.reply({
                     embeds: [{
-                        title: `Subscribers have been notified`,
-                        description: `Subscribers of scraper ${targetScraper.constructor.name} have been notified about it being unreliable currently.`,
-                        color: EmbedColors.GREEN,
+                        title: scraperWasActive ? 'Already online' : 'Already offline',
+                        description: `${scraper.constructor.name} is already ${scraperWasActive ? 'active' : 'inactive'}.`,
+                        color: EmbedColors.ORANGE,
                     }],
                     ephemeral: true
                 })
-                break
-            case 'send':
-                const sendingScraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options[0].options[0].value.toLowerCase()))
-
-                if (sendingScraper === undefined) {
-                    yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
-                    return
-                }
-
-                // todo: create method to check file existence, otherwise admins can spam-create empty files
-                const jsonData = files.readCompleteJson(`${sendingScraper.getScraperEmbedPath()}/${interaction.options[0].options[1].value}`)
-                if (JSON.stringify(jsonData) === JSON.stringify({})) {
-                    yadBot.sendCommandErrorEmbed(interaction, `The given file could not be found`)
-                    return
-                }
-
-                const embed = sendingScraper.filterEmbedLength(sendingScraper.getEmbed(jsonData.data[jsonData.data.length - 1]))
-
-                // todo: add argument 'all', send to all subscribers then
-                sendingScraper.log(`Sending embed(s) to ${interaction.options[0].options[2].channel.guild?.name}:${interaction.options[0].options[2].channel.name}`)
-                interaction.options[0].options[2].channel.send(embed)
-                    .catch(e => {
-                        sendingScraper.errorLog(`error with guild ${interaction.options[0].options[2].channel?.guild?.id} channel ${interaction.options[0].options[2].channel?.id}`)
-                        yadBot.sendMessageToOwner(`error with guild ${interaction.options[0].options[2].channel?.guild?.id} channel ${interaction.options[0].options[2].channel?.id}`)
-                        sendingScraper.sendMissingAccessToGuildAdmins(interaction.options[0].options[2].channel.guild.id)
-                        console.dir(e)
-                    })
-
+            } else {
                 interaction.reply({
                     embeds: [{
-                        title: `Embed has been sent`,
-                        description: `The embed has been sent to the specified channel ${interaction.options[0].options[2].channel.toString()}.`,
-                        color: EmbedColors.GREEN,
+                        title: scraperWasActive ? `Turned off` : `Turned on`,
+                        description: `${scraper.constructor.name} has been toggled ${scraperWasActive ? `inactive` : `active`}.`,
+                        color: scraperWasActive ? EmbedColors.RED : EmbedColors.GREEN,
                     }],
                     ephemeral: true
                 })
+            }
+        } else if (interaction.options.get('notify') !== undefined) {
+            const targetScraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options.get('notify').options.get('scraper-name').value.toLowerCase()))
 
-                break
-            default:
+            if (targetScraper === undefined) {
                 yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
+                return
+            }
+            targetScraper.sendUnreliableEmbedToSubscribers()
+
+            interaction.reply({
+                embeds: [{
+                    title: `Subscribers have been notified`,
+                    description: `Subscribers of scraper ${targetScraper.constructor.name} have been notified about it being unreliable currently.`,
+                    color: EmbedColors.GREEN,
+                }],
+                ephemeral: true
+            })
+        } else if (interaction.options.get('send') !== undefined) {
+            const sendingScraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options.get('send').options.get('scraper-name').value.toLowerCase()))
+
+            if (sendingScraper === undefined) {
+                yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
+                return
+            }
+
+            // todo: create method to check file existence, otherwise admins can spam-create empty files
+            const jsonData = files.readCompleteJson(`${sendingScraper.getScraperEmbedPath()}/${interaction.options.get('send').options.get('file-name').value}`)
+            if (JSON.stringify(jsonData) === JSON.stringify({})) {
+                yadBot.sendCommandErrorEmbed(interaction, `The given file could not be found`)
+                return
+            }
+
+            const embed = sendingScraper.filterEmbedLength(sendingScraper.getEmbed(jsonData.data[jsonData.data.length - 1]))
+
+            // todo: add argument 'all', send to all subscribers then
+            sendingScraper.log(`Sending embed(s) to ${interaction.options.get('send').options.get('target-channel').channel.guild?.name}:${interaction.options.get('send').options.get('target-channel').channel.name}`)
+            interaction.options.get('send').options.get('target-channel').channel.send(embed)
+                .catch(e => {
+                    sendingScraper.errorLog(`error with guild ${interaction.options.get('send').options.get('target-channel').channel?.guild?.id} channel ${interaction.options.get('send').options.get('target-channel').channel?.id}`)
+                    yadBot.sendMessageToOwner(`error with guild ${interaction.options.get('send').options.get('target-channel').channel?.guild?.id} channel ${interaction.options.get('send').options.get('target-channel').channel?.id}`)
+                    sendingScraper.sendMissingAccessToGuildAdmins(interaction.options.get('send').options.get('target-channel').channel.guild.id)
+                    console.dir(e)
+                })
+
+            interaction.reply({
+                embeds: [{
+                    title: `Embed has been sent`,
+                    description: `The embed has been sent to the specified channel ${interaction.options.get('send').options.get('target-channel').channel.toString()}.`,
+                    color: EmbedColors.GREEN,
+                }],
+                ephemeral: true
+            })
+        } else {
+            yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
         }
     },
 }

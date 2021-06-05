@@ -54,54 +54,50 @@ export default {
         let notesString = ""
         let notes = undefined
 
-        switch (interaction.options[0].name.toLowerCase()) {
-            case "list":
-                notes = files.readJson(
-                    `./notes/notes.json`,
-                    interaction.user.id,
-                    false,
-                    []
-                )
+        if (interaction.options.get('list') !== undefined) {
+            notes = files.readJson(
+                `./notes/notes.json`,
+                interaction.user.id,
+                false,
+                []
+            )
 
-                notes.forEach((noteEntry, index) => {
-                    notesString += ` \`${(index + 1)}:\` ${noteEntry}\n`
-                })
-                if (notesString === "") notesString = "Deine Notizliste ist leer."
+            notes.forEach((noteEntry, index) => {
+                notesString += ` \`${(index + 1)}:\` ${noteEntry}\n`
+            })
+            if (notesString === "") notesString = "Deine Notizliste ist leer."
 
-                this.embedNotes(interaction, interaction, notesString, 0)
-                break
-            case "add":
-                notes = files.readJson(`./notes/notes.json`, interaction.user.id, false, [])
-                notes.push(interaction.options[0].options[0].value)
-                files.writeJson(`./notes/notes.json`, interaction.user.id, notes)
+            this.embedNotes(interaction, interaction, notesString, 0)
+        } else if (interaction.options.get('add') !== undefined) {
+            notes = files.readJson(`./notes/notes.json`, interaction.user.id, false, [])
+            notes.push(interaction.options.get('add').options.get('note').value)
+            files.writeJson(`./notes/notes.json`, interaction.user.id, notes)
 
-                notes.forEach((entry, index) => {
-                    notesString += ` \`${(index + 1)}:\` ${index + 1 === notes.length ? "**" : ""}${entry}${index + 1 === notes.length ? "**" : ""}\n`
-                })
-                this.embedNotes(interaction, interaction, notesString, 1)
-                break
-            case "remove":
-                notes = files.readJson(`./notes/notes.json`, interaction.user.id, false, [])
+            notes.forEach((entry, index) => {
+                notesString += ` \`${(index + 1)}:\` ${index + 1 === notes.length ? "**" : ""}${entry}${index + 1 === notes.length ? "**" : ""}\n`
+            })
+            this.embedNotes(interaction, interaction, notesString, 1)
+        } else if (interaction.options.get('remove') !== undefined) {
+            notes = files.readJson(`./notes/notes.json`, interaction.user.id, false, [])
 
-                let indexToRemove = interaction.options[0].options[0].value
-                if (notes.length < indexToRemove) {
-                    this.embedErrorInvalidRemoveIndex(interaction, interaction)
-                    return
-                }
+            let indexToRemove = interaction.options.get('remove').options.get('note-number').value
+            if (notes.length < indexToRemove) {
+                this.embedErrorInvalidRemoveIndex(interaction, interaction)
+                return
+            }
 
-                let oldNotes = JSON.stringify(notes) // stringify to copy by value
-                notes.splice(interaction.options[0].options[0].value - 1, 1)
-                files.writeJson(`./notes/notes.json`, interaction.user.id, notes)
+            let oldNotes = JSON.stringify(notes) // stringify to copy by value
+            notes.splice(interaction.options.get('remove').options.get('note-number').value - 1, 1)
+            files.writeJson(`./notes/notes.json`, interaction.user.id, notes)
 
-                notesString = ""
-                JSON.parse(oldNotes).forEach((entry, index) => {
-                    notesString += ` \`${(index + 1)}:\` ${index + 1 === interaction.options[0].options[0].value ? "**~~" : ""}${entry}${index + 1 === interaction.options[0].options[0].value ? "~~**" : ""}\n`
-                })
-                if (notesString === "") notesString = "Deine Notizliste ist leer."
+            notesString = ""
+            JSON.parse(oldNotes).forEach((entry, index) => {
+                notesString += ` \`${(index + 1)}:\` ${index + 1 === interaction.options.get('remove').options.get('note-number').value ? "**~~" : ""}${entry}${index + 1 === interaction.options.get('remove').options.get('note-number').value ? "~~**" : ""}\n`
+            })
+            if (notesString === "") notesString = "Deine Notizliste ist leer."
 
-                this.embedNotes(interaction, interaction, notesString, 2)
+            this.embedNotes(interaction, interaction, notesString, 2)
 
-                break
         }
     },
     embedNotes(interaction, args, notesString, embedType) {
@@ -127,10 +123,12 @@ export default {
             }],
             ephemeral: true
         })
-    },
+    }
+    ,
     embedErrorInvalidArguments(message, args) {
         yadBot.sendCommandErrorEmbed(message, `Invalid arguments were given.\n Use \`${config.prefix}help\` for more information`)
-    },
+    }
+    ,
     embedErrorInvalidRemoveIndex(message, args) {
         yadBot.sendCommandErrorEmbed(message, `Invalid index to remove was given.`)
     }

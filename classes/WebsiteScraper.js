@@ -104,33 +104,33 @@ export class WebsiteScraper {
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
         let response = await this.requestWebsite(await this.getScrapingUrl())
-            let content = []
-            try {
-                content = await this.parseWebsiteContentToJSON(response)
-            } catch (e) {
-                yadBot.sendMessageToOwner(`Error 1 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
-            }
-            this.filterNewContent(content, (filteredContent) => {
-                this.log(`${filteredContent.length} entries are new.`)
-                if (yadBot.getBot().user === null) {
-                    this.log('Bot is not yet online, not sending messages..')
-                    while (yadBot.getBot().user === null) {
-                    }
-                    this.log('Bot is now online! Sending messages..')
+        let content = []
+        try {
+            content = await this.parseWebsiteContentToJSON(response)
+        } catch (e) {
+            yadBot.sendMessageToOwner(`Error 1 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
+        }
+        this.filterNewContent(content, (filteredContent) => {
+            this.log(`${filteredContent.length} entries are new.`)
+            if (yadBot.getBot().user === null) {
+                this.log('Bot is not yet online, not sending messages..')
+                while (yadBot.getBot().user === null) {
                 }
-                filteredContent = filteredContent.sort(this.getSortingFunction())
-                let embeds = []
-                filteredContent.forEach(content => {
-                    try {
-                        embeds.push(this.filterEmbedLength(this.getEmbed(content)))
-                    } catch (e) {
-                        yadBot.sendMessageToOwner(`Error 2 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
-                    }
-                })
-                if (embeds.length >= 1) {
-                    this.sendEmbedMessages(embeds)
+                this.log('Bot is now online! Sending messages..')
+            }
+            filteredContent = filteredContent.sort(this.getSortingFunction())
+            let embeds = []
+            filteredContent.forEach(content => {
+                try {
+                    embeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                } catch (e) {
+                    yadBot.sendMessageToOwner(`Error 2 in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
                 }
             })
+            if (embeds.length >= 1) {
+                this.sendEmbedMessages(embeds)
+            }
+        })
     }
 
     async requestWebsite(url) {
@@ -299,7 +299,7 @@ export class WebsiteScraper {
     }
 
     getSortingFunction() {
-        return function(jsonA, jsonB) {
+        return function (jsonA, jsonB) {
             return 0
         }
     }
@@ -351,10 +351,10 @@ export class WebsiteScraper {
             })
     }
 
-    sendUnreliableEmbedToSubscribers() {
+    async sendUnreliableEmbedToSubscribers() {
         const updateEmbed = new Discord.MessageEmbed({
             title: `Notice`,
-            description: `New data is available from this scraper, but due to changes on the received data, Yad can not process it without error.\nYou can visit the page yourself [here](${this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
+            description: `New data is available from this scraper, but due to changes on the received data, Yad can not process it without error.\nYou can visit the page yourself [here](${await this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
             color: EmbedColors.ORANGE,
         })
 
@@ -519,57 +519,57 @@ export class WebsiteScraper {
 
     subscribe(interaction) {
         switch (interaction.channel.type) {
-        case 'unknown':
-            return { error: true, data: 'Message channel type was unknown.' }
-        case 'dm':
-            let subUsers = files.readJson(this.getScraperConfigPath(), 'sub_user_ids', false, [])
+            case 'unknown':
+                return {error: true, data: 'Message channel type was unknown.'}
+            case 'dm':
+                let subUsers = files.readJson(this.getScraperConfigPath(), 'sub_user_ids', false, [])
 
-            let indexResult = subUsers.indexOf(interaction.user.id)
-            if (indexResult === -1) {
-                subUsers.push(interaction.user.id)
-            } else {
-                subUsers.splice(indexResult, 1)
-            }
-            files.writeJson(this.getScraperConfigPath(), 'sub_user_ids', subUsers)
-            if (indexResult === -1) {
-                return {
-                    error: false,
-                    data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.`,
-                }
-            } else {
-                return {
-                    error: false,
-                    data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.`,
-                }
-            }
-        case 'text':
-        case 'news':
-            if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-                let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
-                let indexResultGuild = subChannels.indexOf(interaction.channel.id)
-                if (indexResultGuild === -1) {
-                    subChannels.push(interaction.channel.id)
+                let indexResult = subUsers.indexOf(interaction.user.id)
+                if (indexResult === -1) {
+                    subUsers.push(interaction.user.id)
                 } else {
-                    subChannels.splice(indexResultGuild, 1)
+                    subUsers.splice(indexResult, 1)
                 }
-                files.writeJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', subChannels)
-                if (indexResultGuild === -1) {
+                files.writeJson(this.getScraperConfigPath(), 'sub_user_ids', subUsers)
+                if (indexResult === -1) {
                     return {
                         error: false,
-                        data: `This channel has been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 } else {
                     return {
                         error: false,
-                        data: `This channel has been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 }
-            } else {
-                return {
-                    error: true,
-                    data: `You need admin permissions on this server to be able to manage subscriptions.`,
+            case 'text':
+            case 'news':
+                if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+                    let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
+                    let indexResultGuild = subChannels.indexOf(interaction.channel.id)
+                    if (indexResultGuild === -1) {
+                        subChannels.push(interaction.channel.id)
+                    } else {
+                        subChannels.splice(indexResultGuild, 1)
+                    }
+                    files.writeJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', subChannels)
+                    if (indexResultGuild === -1) {
+                        return {
+                            error: false,
+                            data: `This channel has been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
+                        }
+                    } else {
+                        return {
+                            error: false,
+                            data: `This channel has been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
+                        }
+                    }
+                } else {
+                    return {
+                        error: true,
+                        data: `You need admin permissions on this server to be able to manage subscriptions.`,
+                    }
                 }
-            }
         }
     }
 

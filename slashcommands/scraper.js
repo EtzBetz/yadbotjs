@@ -32,50 +32,47 @@ export default {
         }
     },
     execute(interaction) {
-        switch (interaction.options[0].name.toLowerCase()) {
-            case "subscribe":
-                let selectedScraper
-                for (let i = 0; i < yadBot.scrapers.length; i++) {
-                    // console.log(`${yadBot.scrapers[i].constructor.name.toLowerCase()} =?= ${args[1].toLowerCase()}`)
-                    if (yadBot.scrapers[i].constructor.name.toLowerCase().includes(interaction.options[0].options[0].value.toLowerCase())) {
-                        selectedScraper = yadBot.scrapers[i]
-                        break
-                    }
-                }
-                if (selectedScraper === undefined) {
-                    yadBot.sendCommandErrorEmbed(interaction, `No scraper has been found for '${interaction.options[0].options[0].value.toLowerCase()}'`)
+        if (interaction.options.get('subscribe') !== undefined) {
+            let selectedScraper
+            for (let i = 0; i < yadBot.scrapers.length; i++) {
+                // console.log(`${yadBot.scrapers[i].constructor.name.toLowerCase()} =?= ${args[1].toLowerCase()}`)
+                if (yadBot.scrapers[i].constructor.name.toLowerCase().includes(interaction.options.get('subscribe').options.get('scraper-name').value.toLowerCase())) {
+                    selectedScraper = yadBot.scrapers[i]
                     break
                 }
-                let result = selectedScraper.subscribe(interaction)
-                if (result.error) {
-                    yadBot.sendCommandErrorEmbed(interaction, result.data)
-                } else {
-                    interaction.reply({
-                        embeds: [{
-                            title: "Scraper subscription toggled",
-                            description: result.data,
-                            color: EmbedColors.GREEN
-                        }],
-                        ephemeral: false
-                    })
-                }
-                break
-            case "list":
-                let statusDescription = "**Here is a list of all currently available scrapers:**\n"
-                yadBot.scrapers.forEach((scraper) => {
-                    statusDescription += `\n- ${scraper.constructor.name}`
-                })
-
+            }
+            if (selectedScraper === undefined) {
+                yadBot.sendCommandErrorEmbed(interaction, `No scraper has been found for '${interaction.options.get('subscribe').options.get('scraper-name').value.toLowerCase()}'`)
+                return
+            }
+            let result = selectedScraper.subscribe(interaction)
+            if (result.error) {
+                yadBot.sendCommandErrorEmbed(interaction, result.data)
+            } else {
                 interaction.reply({
                     embeds: [{
-                        title: "Scraper List",
-                        description: statusDescription
+                        title: "Scraper subscription toggled",
+                        description: result.data,
+                        color: EmbedColors.GREEN
                     }],
-                    ephemeral: true
+                    ephemeral: false
                 })
-                break
-            default:
-                yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
+            }
+        } else if (interaction.options.get('list') !== undefined) {
+            let statusDescription = "**Here is a list of all currently available scrapers:**\n"
+            yadBot.scrapers.forEach((scraper) => {
+                statusDescription += `\n- ${scraper.constructor.name}`
+            })
+
+            interaction.reply({
+                embeds: [{
+                    title: "Scraper List",
+                    description: statusDescription
+                }],
+                ephemeral: true
+            })
+        } else {
+            yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.\n Use \`${config.prefix}help\` to get more information`)
         }
     }
 }
