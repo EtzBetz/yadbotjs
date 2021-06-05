@@ -1,7 +1,7 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import { WebsiteScraper } from './WebsiteScraper'
-import Json from './Json.mjs'
+import Json from './Json.js'
 import yadBot from './YadBot.js'
 
 class ScraperXRelReleases extends WebsiteScraper {

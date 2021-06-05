@@ -1,8 +1,8 @@
 import Discord from "discord.js"
 import yadBot from '../classes/YadBot.js'
 import config from '../config.json'
-import EmbedColors from '../constants/EmbedColors.mjs';
-import files from '../classes/Files.mjs';
+import EmbedColors from '../constants/EmbedColors.js';
+import files from '../classes/Files.js';
 import axios from 'axios';
 
 export default {

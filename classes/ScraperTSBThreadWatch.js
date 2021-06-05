@@ -2,7 +2,7 @@ import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
 import yadBot from './YadBot.js';
-import files from './Files.mjs';
+import files from './Files.js';
 
 class ScraperTSBThreadWatch extends WebsiteScraper {
 

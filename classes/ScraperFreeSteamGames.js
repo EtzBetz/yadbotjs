@@ -1,7 +1,7 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
-import files from './Files.mjs'
+import files from './Files.js'
 import yadBot from './YadBot.js';
 
 class ScraperFreeSteamGames extends WebsiteScraper {

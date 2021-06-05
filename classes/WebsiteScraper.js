@@ -5,8 +5,8 @@ import yadBot from './YadBot.js'
 import {debugLog, errorLog, log, red, reset} from '../index.js'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
-import files from './Files.mjs'
-import EmbedColors from '../constants/EmbedColors.mjs';
+import files from './Files.js'
+import EmbedColors from '../constants/EmbedColors.js';
 
 export class WebsiteScraper {
 

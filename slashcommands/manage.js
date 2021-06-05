@@ -1,8 +1,8 @@
 import yadBot from '../classes/YadBot.js'
 import config from '../config.json'
 import Discord from 'discord.js'
-import files from '../classes/Files.mjs'
-import EmbedColors from '../constants/EmbedColors.mjs';
+import files from '../classes/Files.js'
+import EmbedColors from '../constants/EmbedColors.js';
 
 export default {
     enabled: true,

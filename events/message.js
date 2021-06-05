@@ -1,7 +1,7 @@
 import Discord from "discord.js"
 import yadBot from '../classes/YadBot.js'
 import { log } from '../index.js'
-import files from '../classes/Files.mjs'
+import files from '../classes/Files.js'
 
 export default (message) => {
     const prefix = files.readJson(yadBot.getYadConfigPath(), 'prefix', false, '!')
