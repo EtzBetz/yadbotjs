@@ -107,12 +107,22 @@ export class WebsiteScraper {
         intervalInformation.url = await this.getScrapingUrl()
         intervalInformation.response = await this.requestWebsite(intervalInformation.url)
         try {
-            intervalInformation.content = await this.parseWebsiteContentToJSON(intervalInformation.response)
+            let jsonContents = await this.parseWebsiteContentToJSON(intervalInformation.response)
+            intervalInformation.content = []
+            for (let jsonContent of jsonContents) {
+                intervalInformation.content.push({
+                    json: jsonContent
+                })
+            }
         } catch (e) {
             yadBot.sendMessageToOwner(`Error 1 while parsing response to JSON in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
         }
-        intervalInformation.filteredContent = this.filterNewContent(intervalInformation.content)
-        this.log(`${intervalInformation.filteredContent.length} entries are new.`)
+        intervalInformation.content = this.filterNewContent(intervalInformation.content)
+        let newContentCount = 0
+        for (let entry of intervalInformation.content) {
+            if (entry.newData === true) newContentCount++
+        }
+        this.log(`${newContentCount} entries are new.`)
         if (yadBot.getBot().user === null) {
             this.log('Bot is not yet online, not sending messages..')
             // todo: the loop is never ending, fix somehow.
@@ -120,17 +130,18 @@ export class WebsiteScraper {
             }
             this.log('Bot is now online! Sending messages..')
         }
-        intervalInformation.filteredContent = intervalInformation.filteredContent.sort(this.getSortingFunction())
-        intervalInformation.renderedEmbeds = []
-        intervalInformation.filteredContent.forEach(content => {
+        intervalInformation.content = intervalInformation.content.sort(this.getSortingFunction())
+        intervalInformation.content.forEach(content => {
             try {
-                intervalInformation.renderedEmbeds.push(this.filterEmbedLength(this.getEmbed(content)))
+                if (content.newData === true) {
+                    content.rendered = (this.filterEmbedLength(this.getEmbed(content.json)))
+                }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
             }
         })
-        if (intervalInformation.renderedEmbeds.length >= 1) {
-            this.sendEmbedMessages(intervalInformation.renderedEmbeds)
+        if (newContentCount >= 1) {
+            this.sendEmbedMessages(intervalInformation)
         }
 
     }
@@ -165,9 +176,8 @@ export class WebsiteScraper {
     }
 
     filterNewContent(newJson) {
-        let filteredJsonArray = []
-        for (let json of newJson) {
-            const fileName = this.generateFileNameFromJson(json)
+        for (let contentIndex in newJson) {
+            const fileName = this.generateFileNameFromJson(newJson[contentIndex].json)
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
             let readData = files.readJson(filePath, 'data', false, [])
@@ -178,16 +188,16 @@ export class WebsiteScraper {
             let latestData = readData[readData.length - 1]
             if (latestData === undefined) latestData = {}
 
-            if (JSON.stringify(latestData) !== JSON.stringify(json)) {
-                filteredJsonArray.push(json)
-                readData.push(json)
-                // write JSON string to file
+            if (JSON.stringify(latestData) !== JSON.stringify(newJson[contentIndex].json)) {
+                newJson[contentIndex].newData = true
+                readData.push(newJson[contentIndex].json)
                 files.writeJson(filePath, 'data', readData)
-
-                console.log(`JSON data is saved in ${this.generateFileNameFromJson(json)}.`)
+                console.log(`JSON data is saved in ${this.generateFileNameFromJson(newJson[contentIndex].json)}.`)
+            } else {
+                newJson[contentIndex].newData = false
             }
         }
-        return filteredJsonArray
+        return newJson
     }
 
     getGlobalScraperFolderPath() {
@@ -211,24 +221,43 @@ export class WebsiteScraper {
         return this.generateSlugFromString(fileName) + '.json'
     }
 
-    sendEmbedMessages(embeds) {
+    async sendEmbedMessages(intervalInformation) {
         let sendState = files.readJson(this.getScraperConfigPath(), 'send_embeds', false, true)
         let globalSendState = files.readJson(yadBot.getYadConfigPath(), 'global_send_embeds', false, true)
-        if (embeds.length >= 1 && sendState && globalSendState) {
+        let newContentCount = 0
+        for (let entry of intervalInformation.content) {
+            if (entry.newData === true) newContentCount++
+        }
+        if (newContentCount >= 1 && sendState && globalSendState) {
             this.log(`Sending embed(s)...`)
             this.getSubGuildChannelIds().forEach(channelId => {
                 yadBot.getBot().channels.fetch(channelId)
                     .then(channel => {
                         if (yadBot.getBot().user === null) return
                         this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
-                        embeds.forEach(embed => {
-                            channel.send(embed)
-                                .catch(e => {
-                                    this.log(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
-                                    yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
-                                    this.sendMissingAccessToGuildAdmins(channel.guild.id)
-                                    console.dir(e)
-                                })
+                        intervalInformation.content.forEach(async (contentEntry) => {
+                            if (contentEntry.newData === true) {
+                                let sentMessage = await channel.send(contentEntry.rendered)
+                                    .catch(e => {
+                                        this.log(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                                        yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                                        this.sendMissingAccessToGuildAdmins(channel.guild.id)
+                                        console.dir(e)
+                                    })
+                                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
+                                let sentChannels = files.readJson(
+                                    filePath,
+                                    'sent_channels',
+                                    false,
+                                    {
+                                        guild_message_ids: [],
+                                        user_message_ids: [],
+                                    }
+                                )
+                                sentChannels.guild_message_ids.push(sentMessage.id)
+                                files.writeJson(filePath, 'sent_channels', sentChannels)
+                            }
                         })
                     })
                     .catch((e) => {
@@ -236,17 +265,32 @@ export class WebsiteScraper {
                         console.dir(e)
                     })
             })
-            this.getSubUserIds().forEach(userId => {
+            this.getSubUserIds().forEach((userId) => {
                 yadBot.getBot().users.fetch(userId)
                     .then(user => {
                         if (yadBot.getBot().user === null) return
                         this.log(`Sending embed(s) to ${user.username}`)
-                        embeds.forEach(embed => {
-                            user?.send(embed)
-                                .catch(e => {
-                                    this.log(`error with user ${user.id}`)
-                                    console.dir(e)
-                                })
+                        intervalInformation.content.forEach(async (contentEntry, index) => {
+                            if (contentEntry.newData === true) {
+                                let sentMessage = await user?.send(contentEntry.rendered)
+                                    .catch(e => {
+                                        this.log(`error with user ${user.id}`)
+                                        console.dir(e)
+                                    })
+                                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
+                                let sentChannels = files.readJson(
+                                    filePath,
+                                    'sent_channels',
+                                    false,
+                                    {
+                                        guild_message_ids: [],
+                                        user_message_ids: [],
+                                    }
+                                )
+                                sentChannels.user_message_ids.push(sentMessage.id)
+                                files.writeJson(filePath, 'sent_channels', sentChannels)
+                            }
                         })
                     })
                     .catch((e) => {
@@ -255,7 +299,6 @@ export class WebsiteScraper {
                     })
             })
         }
-
     }
 
     getEmbed(content) {
@@ -274,24 +317,24 @@ export class WebsiteScraper {
         }
     }
 
-    sortJsonByIsoDateAndTitleProperty(jsonA, jsonB) {
-        const jsonADate = parseInt(luxon.DateTime.fromISO(jsonA.date).toFormat('yyyyMMddHHmmss'), 10)
-        const jsonBDate = parseInt(luxon.DateTime.fromISO(jsonB.date).toFormat('yyyyMMddHHmmss'), 10)
+    sortJsonByIsoDateAndTitleProperty(contentA, contentB) {
+        const jsonADate = parseInt(luxon.DateTime.fromISO(contentA.json.date).toFormat('yyyyMMddHHmmss'), 10)
+        const jsonBDate = parseInt(luxon.DateTime.fromISO(contentB.json.date).toFormat('yyyyMMddHHmmss'), 10)
 
         if (jsonADate < jsonBDate) {
-            // console.log(`jsonB is newer: ${jsonBDate} > ${jsonADate}`)
+            // console.log(`contentB is newer: ${jsonBDate} > ${jsonADate}`)
             return -1
         } else if (jsonADate > jsonBDate) {
-            // console.log(`jsonA is newer: ${jsonADate} > ${jsonBDate}`)
+            // console.log(`contentA is newer: ${jsonADate} > ${jsonBDate}`)
             return 1
-        } else if (jsonB.title > jsonA.title) {
-            // console.log(`jsonB is newer: ${jsonB.title} > ${jsonA.title}`)
+        } else if (contentB.json.title > contentA.json.title) {
+            // console.log(`contentB is newer: ${contentB.json.title} > ${contentA.json.title}`)
             return -1
-        } else if (jsonA.title > jsonB.title) {
-            // console.log(`jsonA is newer: ${jsonA.title} > ${jsonB.title}`)
+        } else if (contentA.json.title > contentB.json.title) {
+            // console.log(`contentA is newer: ${contentA.json.title} > ${contentB.json.title}`)
             return 1
         }
-        // console.log(`sorting: ${jsonADate} === ${jsonBDate} && ${jsonA.title} === ${jsonB.title}`)
+        // console.log(`sorting: ${jsonADate} === ${jsonBDate} && ${contentA.json.title} === ${contentB.json.title}`)
         return 0
     }
 
