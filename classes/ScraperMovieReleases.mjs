@@ -20,11 +20,11 @@ class ScraperMovieReleases extends WebsiteScraper {
         return url
     }
 
-    async parseWebsiteContentToJSON(response) {
+    async parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
         const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
 
-        for (const movie of response.data.results) {
+        for (const movie of scrapeInfo.response.data.results) {
             let detailApiUrl = `https://api.themoviedb.org/3/movie/${movie.id}`
             detailApiUrl += `?language=de-DE`
             detailApiUrl += `&region=de`

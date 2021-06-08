@@ -7,7 +7,7 @@ import yadBot from './YadBot.mjs';
 
 class ScraperFreeUbisoftGames extends WebsiteScraper {
 
-    async getScrapingUrl() {
+    async getScrapingUrl(scrapeInfo) {
         let response = await this.requestWebsite("https://free.ubisoft.com/configuration.js")
 
         let data = response.data
@@ -106,9 +106,9 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         })
     }
 
-    parseWebsiteContentToJSON(response) {
+    parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        response.data.news.forEach(game => {
+        scrapeInfo.response.data.news.forEach(game => {
             switch (game.placement) {
                 case "freeevents":
                 case "":

@@ -6,9 +6,9 @@ import yadBot from './YadBot.mjs'
 
 class ScraperXRelReleases extends WebsiteScraper {
 
-    parseWebsiteContentToJSON(response) {
+    parseWebsiteContentToJSON(scrapeInfo) {
         let elements = []
-        let result = Json.parseXmlToJson(response.data)
+        let result = Json.parseXmlToJson(scrapeInfo.response.data)
         result.releases.list[0].release?.forEach((release, index) => {
             let entry = {}
 

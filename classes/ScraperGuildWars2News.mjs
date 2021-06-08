@@ -5,8 +5,8 @@ import luxon from 'luxon'
 
 class ScraperGuildWars2News extends WebsiteScraper{
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("ul.blogroll > li.blog-post")
         this.log(`${entities.length} entries found...`)

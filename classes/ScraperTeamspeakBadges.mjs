@@ -4,8 +4,8 @@ import { WebsiteScraper } from './WebsiteScraper'
 
 class ScraperTeamspeakBadges extends WebsiteScraper{
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("#main-outlet > div:nth-child(2) > div.post > p")
         this.log(`${entities.length} entries found...`)

@@ -5,9 +5,9 @@ import yadBot from './YadBot.mjs';
 
 class ScraperFreeEpicGames extends WebsiteScraper {
 
-    parseWebsiteContentToJSON(response) {
+    parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
+        scrapeInfo.response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
             let entry = {}
             entry.title = game.title
             entry.imageUrl = game.keyImages?.find(image => image.type === "DieselStoreFrontWide")?.url
@@ -61,7 +61,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
             let freePromotion = promotions.find(
                 promotion => promotion.discountSetting?.discountPercentage?.toString() === "0" ||
-                             promotion.discountSetting?.discountPercentage?.toString() === "100"
+                    promotion.discountSetting?.discountPercentage?.toString() === "100"
             )
 
             if (freePromotion !== undefined) {

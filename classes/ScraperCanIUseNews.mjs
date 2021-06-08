@@ -58,9 +58,9 @@ class ScraperCanIUseNews extends WebsiteScraper{
         return descriptionString
     }
 
-    parseWebsiteContentToJSON(response) {
+    parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        response.data.forEach(newsArticle => {
+        scrapeInfo.response.data.forEach(newsArticle => {
             let entry = {}
             entry.title = newsArticle.title
             entry.description = this.filterDescription(newsArticle.description)

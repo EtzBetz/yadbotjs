@@ -23,7 +23,7 @@ export class WebsiteScraper {
         return 'text/html'
     }
 
-    async getScrapingUrl() {
+    async getScrapingUrl(scrapeInfo) {
         return files.readJson(
             this.getScraperConfigPath(),
             'scraping_url',
@@ -103,23 +103,23 @@ export class WebsiteScraper {
 
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
-        let intervalInformation = {}
-        intervalInformation.url = await this.getScrapingUrl()
-        intervalInformation.response = await this.requestWebsite(intervalInformation.url)
+        let scrapeInfo = {}
+        scrapeInfo.url = await this.getScrapingUrl(scrapeInfo)
+        scrapeInfo.response = await this.requestWebsite(scrapeInfo.url)
         try {
-            let jsonContents = await this.parseWebsiteContentToJSON(intervalInformation.response)
-            intervalInformation.content = []
+            let jsonContents = await this.parseWebsiteContentToJSON(scrapeInfo)
+            scrapeInfo.content = []
             for (let jsonContent of jsonContents) {
-                intervalInformation.content.push({
+                scrapeInfo.content.push({
                     json: jsonContent
                 })
             }
         } catch (e) {
             yadBot.sendMessageToOwner(`Error 1 while parsing response to JSON in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
         }
-        intervalInformation.content = this.filterNewContent(intervalInformation.content)
+        scrapeInfo.content = this.filterNewContent(scrapeInfo)
         let newContentCount = 0
-        for (let entry of intervalInformation.content) {
+        for (let entry of scrapeInfo.content) {
             if (entry.newData === true) newContentCount++
         }
         this.log(`${newContentCount} entries are new.`)
@@ -130,8 +130,8 @@ export class WebsiteScraper {
             }
             this.log('Bot is now online! Sending messages..')
         }
-        intervalInformation.content = intervalInformation.content.sort(this.getSortingFunction())
-        intervalInformation.content.forEach(content => {
+        scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction())
+        scrapeInfo.content.forEach(content => {
             try {
                 if (content.newData === true) {
                     content.rendered = (this.filterEmbedLength(this.getEmbed(content.json)))
@@ -141,7 +141,7 @@ export class WebsiteScraper {
             }
         })
         if (newContentCount >= 1) {
-            this.sendEmbedMessages(intervalInformation)
+            await this.sendEmbedMessages(scrapeInfo)
         }
 
     }
@@ -160,8 +160,8 @@ export class WebsiteScraper {
         })
     }
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll('title')
         this.log(`${entities.length} entries found...`)
@@ -175,9 +175,9 @@ export class WebsiteScraper {
         return elements
     }
 
-    filterNewContent(newJson) {
-        for (let contentIndex in newJson) {
-            const fileName = this.generateFileNameFromJson(newJson[contentIndex].json)
+    filterNewContent(scrapeInfo) {
+        for (let contentIndex in scrapeInfo.content) {
+            const fileName = this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
             let readData = files.readJson(filePath, 'data', false, [])
@@ -188,16 +188,16 @@ export class WebsiteScraper {
             let latestData = readData[readData.length - 1]
             if (latestData === undefined) latestData = {}
 
-            if (JSON.stringify(latestData) !== JSON.stringify(newJson[contentIndex].json)) {
-                newJson[contentIndex].newData = true
-                readData.push(newJson[contentIndex].json)
+            if (JSON.stringify(latestData) !== JSON.stringify(scrapeInfo.content[contentIndex].json)) {
+                scrapeInfo.content[contentIndex].newData = true
+                readData.push(scrapeInfo.content[contentIndex].json)
                 files.writeJson(filePath, 'data', readData)
-                console.log(`JSON data is saved in ${this.generateFileNameFromJson(newJson[contentIndex].json)}.`)
+                console.log(`JSON data is saved in ${this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)}.`)
             } else {
-                newJson[contentIndex].newData = false
+                scrapeInfo.content[contentIndex].newData = false
             }
         }
-        return newJson
+        return scrapeInfo.content
     }
 
     getGlobalScraperFolderPath() {

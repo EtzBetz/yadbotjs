@@ -4,8 +4,8 @@ import jsdom from 'jsdom'
 
 class ScraperRechnernetze extends WebsiteScraper{
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("#content > div.clearfix > div > ul.verteiler > li > a")
         this.log(`${entities.length} entries found...`)
@@ -25,7 +25,6 @@ class ScraperRechnernetze extends WebsiteScraper{
             }
 
             elements.push(entry)
-
         })
 
         return elements
