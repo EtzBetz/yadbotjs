@@ -106,18 +106,18 @@ export class WebsiteScraper {
         let scrapeInfo = {}
         scrapeInfo.url = await this.getScrapingUrl(scrapeInfo)
         scrapeInfo.response = await this.requestWebsite(scrapeInfo.url)
+        scrapeInfo.content = []
         try {
             let jsonContents = await this.parseWebsiteContentToJSON(scrapeInfo)
-            scrapeInfo.content = []
             for (let jsonContent of jsonContents) {
                 scrapeInfo.content.push({
                     json: jsonContent
                 })
             }
         } catch (e) {
-            yadBot.sendMessageToOwner(`Error 1 while parsing response to JSON in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
+            yadBot.sendMessageToOwner(`Error 1 while parsing response to JSON in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
         }
-        scrapeInfo.content = this.filterNewContent(scrapeInfo)
+        this.filterNewContent(scrapeInfo)
         let newContentCount = 0
         for (let entry of scrapeInfo.content) {
             if (entry.newData === true) newContentCount++
@@ -131,13 +131,14 @@ export class WebsiteScraper {
             this.log('Bot is now online! Sending messages..')
         }
         scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction())
+        if (newContentCount >= 1) this.log(`Generating ${newContentCount} embed(s)...`)
         scrapeInfo.content.forEach(content => {
             try {
                 if (content.newData === true) {
                     content.rendered = (this.filterEmbedLength(this.getEmbed(content.json)))
                 }
             } catch (e) {
-                yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in Scraper "${this.constructor.name}"!\n\`\`\`text\n${e}\`\`\`\n\`\`\`text\n${e.stack}\`\`\``)
+                yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
             }
         })
         if (newContentCount >= 1) {
@@ -177,6 +178,7 @@ export class WebsiteScraper {
 
     filterNewContent(scrapeInfo) {
         for (let contentIndex in scrapeInfo.content) {
+            if (!scrapeInfo.content.hasOwnProperty(contentIndex)) continue
             const fileName = this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
@@ -197,7 +199,6 @@ export class WebsiteScraper {
                 scrapeInfo.content[contentIndex].newData = false
             }
         }
-        return scrapeInfo.content
     }
 
     getGlobalScraperFolderPath() {
@@ -228,81 +229,63 @@ export class WebsiteScraper {
         for (let entry of intervalInformation.content) {
             if (entry.newData === true) newContentCount++
         }
-        if (newContentCount >= 1 && sendState && globalSendState) {
-            this.log(`Sending embed(s)...`)
-            this.getSubGuildChannelIds().forEach(channelId => {
-                yadBot.getBot().channels.fetch(channelId)
-                    .then(channel => {
-                        if (yadBot.getBot().user === null) return
-                        this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
-                        intervalInformation.content.forEach(async (contentEntry) => {
-                            if (contentEntry.newData === true) {
-                                let sentMessage = await channel.send(contentEntry.rendered)
-                                    .catch(e => {
-                                        this.log(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
-                                        yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
-                                        this.sendMissingAccessToGuildAdmins(channel.guild.id)
-                                        console.dir(e)
-                                    })
-                                const fileName = this.generateFileNameFromJson(contentEntry.json)
-                                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
-                                let sentChannels = files.readJson(
-                                    filePath,
-                                    'sent_channels',
-                                    false,
-                                    {
-                                        guild_message_ids: [],
-                                        user_message_ids: [],
-                                    }
-                                )
-                                sentChannels.guild_message_ids.push(sentMessage.id)
-                                files.writeJson(filePath, 'sent_channels', sentChannels)
-                            }
-                        })
-                    })
-                    .catch((e) => {
-                        this.log(`Guild Channel '${channelId}' could not be found.`)
+        if (newContentCount === 0 || !sendState || !globalSendState) return
+        this.log(`Sending ${newContentCount} embed(s)...`)
+        for (let channelId of this.getSubGuildChannelIds()) {
+            let channel = await yadBot.getBot().channels.fetch(channelId)
+                .catch((e) => console.dir(e))
+            if (yadBot.getBot().user === null) return
+            this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
+            for (let contentEntry of intervalInformation.content) {
+                if (contentEntry.newData !== true) return
+                let sentMessage = await channel.send(contentEntry.rendered)
+                    .catch(e => {
+                        yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
+                        this.sendMissingAccessToGuildAdmins(channel.guild.id)
                         console.dir(e)
                     })
-            })
-            this.getSubUserIds().forEach((userId) => {
-                yadBot.getBot().users.fetch(userId)
-                    .then(user => {
-                        if (yadBot.getBot().user === null) return
-                        this.log(`Sending embed(s) to ${user.username}`)
-                        intervalInformation.content.forEach(async (contentEntry, index) => {
-                            if (contentEntry.newData === true) {
-                                let sentMessage = await user?.send(contentEntry.rendered)
-                                    .catch(e => {
-                                        this.log(`error with user ${user.id}`)
-                                        console.dir(e)
-                                    })
-                                const fileName = this.generateFileNameFromJson(contentEntry.json)
-                                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
-                                let sentChannels = files.readJson(
-                                    filePath,
-                                    'sent_channels',
-                                    false,
-                                    {
-                                        guild_message_ids: [],
-                                        user_message_ids: [],
-                                    }
-                                )
-                                sentChannels.user_message_ids.push(sentMessage.id)
-                                files.writeJson(filePath, 'sent_channels', sentChannels)
-                            }
-                        })
-                    })
-                    .catch((e) => {
-                        this.log(`User '${userId}' could not be found.`)
-                        console.dir(e)
-                    })
-            })
+                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
+                let sentChannels = files.readJson(
+                    filePath,
+                    'sent_channels',
+                    false,
+                    {
+                        guild_message_ids: [],
+                        user_message_ids: [],
+                    }
+                )
+                sentChannels.guild_message_ids.push(sentMessage.id)
+                files.writeJson(filePath, 'sent_channels', sentChannels)
+            }
+        }
+        for (let userId of this.getSubUserIds()) {
+            let user = await yadBot.getBot().users.fetch(userId)
+                .catch((e) => console.dir(e))
+            if (yadBot.getBot().user === null) return
+            this.log(`Sending embed(s) to ${user.username}`)
+            for (let contentEntry of intervalInformation.content) {
+                if (contentEntry.newData !== true) return
+                let sentMessage = await user?.send(contentEntry.rendered)
+                    .catch(e => console.dir(e))
+                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
+                let sentChannels = files.readJson(
+                    filePath,
+                    'sent_channels',
+                    false,
+                    {
+                        guild_message_ids: [],
+                        user_message_ids: [],
+                    }
+                )
+                sentChannels.user_message_ids.push(sentMessage.id)
+                files.writeJson(filePath, 'sent_channels', sentChannels)
+            }
         }
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
         return new Discord.MessageEmbed({
             title: 'Preview Embed',
             description: `Website title: "${content.title}"`,
