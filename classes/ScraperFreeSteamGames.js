@@ -194,7 +194,8 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     }
 
     parseReleaseDate(dateString) {
-        let steamDateRegex = /(\d+). ([a-zA-ZöÖäÄüÜ]{3,}).? (\d{4})/
+        // Apr 21, 2020
+        let steamDateRegex = /([a-zA-ZöÖäÄüÜ]{3,}).? (\d+), (\d{4})/
         let monthAliases = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         let dateRegexResult = steamDateRegex.exec(dateString)
@@ -203,8 +204,8 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             yadBot.sendMessageToOwner(`Date '${dateString}' failed in parseReleaseDate() [1]`)
             return
         }
-        let day = dateRegexResult[1]
-        let month = dateRegexResult[2]
+        let month = dateRegexResult[1]
+        let day = dateRegexResult[2]
         let year = dateRegexResult[3]
 
         let monthNumber = monthAliases.findIndex((monthAlias) => {
