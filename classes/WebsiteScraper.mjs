@@ -178,8 +178,7 @@ export class WebsiteScraper {
             let latestData = readData[readData.length - 1]
             if (latestData === undefined) latestData = {}
 
-            if (JSON.stringify(latestData) === JSON.stringify(json)) {
-            } else {
+            if (JSON.stringify(latestData) !== JSON.stringify(json)) {
                 filteredJsonArray.push(json)
                 readData.push(json)
                 // write JSON string to file
