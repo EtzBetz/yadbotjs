@@ -9,7 +9,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("ul.blogroll > li.blog-post")
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((element, index) => {
             const title = element.querySelector("h3.blog-title > a[title]")?.textContent.trim()
@@ -17,7 +17,6 @@ class ScraperGuildWars2News extends WebsiteScraper{
             const description = element.querySelector("div.text > p:not(.more)")?.textContent.trim()
             const isoDate = this.parseGermanDateToISO(element.querySelector("div.meta > p.blog-attribution")?.textContent.trim())
             const author = this.parseAuthorGerman(element.querySelector("div.meta > p.blog-attribution")?.textContent.trim())
-
             let entry = {
                 title: title,
                 url: url,
@@ -25,9 +24,6 @@ class ScraperGuildWars2News extends WebsiteScraper{
                 author: author,
                 date: isoDate
             }
-
-            // console.log(entry)
-
             elements.push(entry)
         })
 
@@ -89,8 +85,6 @@ class ScraperGuildWars2News extends WebsiteScraper{
     }
 
     getEmbed(json) {
-        this.log(`Generating embed...`)
-
         return new Discord.MessageEmbed(
             {
                 "title": json.title,

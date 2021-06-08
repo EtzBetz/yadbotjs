@@ -49,8 +49,7 @@ class ScraperMovieReleases extends WebsiteScraper {
 
             if (entry.duration >= 60) elements.push(entry)
         }
-
-        this.log(`${elements.length} entries found...`)
+        this.log(`Parsed ${elements.length} entries...`)
         return elements
     }
 
@@ -61,8 +60,6 @@ class ScraperMovieReleases extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let embed = new Discord.MessageEmbed(
             {
                 'title': content.title,

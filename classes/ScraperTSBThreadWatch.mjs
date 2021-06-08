@@ -19,7 +19,7 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("#main-outlet > div.topic-body.crawler-post")
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         let latestPostId = 1
 
@@ -62,8 +62,6 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
     }
 
     getEmbed(json) {
-        this.log(`Generating embed...`)
-
         return new Discord.MessageEmbed(
             {
                 "description": `**#${json.postId}**:\n\`\`\`text\n${json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,

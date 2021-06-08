@@ -149,7 +149,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             }
 
         })
-        this.log(`${elements.length} entries found...`)
+        this.log(`Parsed ${elements.length} entries...`)
         return elements
     }
 
@@ -160,8 +160,6 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let descriptionString, startDate, endDate
 
         if (content.endDate !== undefined) {

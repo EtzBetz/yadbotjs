@@ -10,7 +10,7 @@ class ScraperBlackBoard extends WebsiteScraper {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll('div.clearfix > div[style] > div[style]')
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((entity, index) => {
             if (entity.textContent.trim() !== '') {
@@ -142,8 +142,6 @@ class ScraperBlackBoard extends WebsiteScraper {
     }
 
     getEmbed(json) {
-        this.log(`Generating embed...`)
-
         let paragraphString = ''
 
         json.paragraphs.forEach((paragraph, index) => {

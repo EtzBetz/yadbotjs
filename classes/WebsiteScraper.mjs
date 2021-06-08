@@ -122,7 +122,7 @@ export class WebsiteScraper {
         for (let entry of scrapeInfo.content) {
             if (entry.newData === true) newContentCount++
         }
-        this.log(`${newContentCount} entries are new.`)
+        if (newContentCount >= 1) this.log(`Found entries: ${scrapeInfo.content.length}, New entries: ${newContentCount}`)
         if (yadBot.getBot().user === null) {
             this.log('Bot is not yet online, not sending messages..')
             // todo: the loop is never ending, fix somehow.
@@ -165,7 +165,6 @@ export class WebsiteScraper {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll('title')
-        this.log(`${entities.length} entries found...`)
 
         entities.forEach((entity, index) => {
             elements.push({
@@ -183,18 +182,14 @@ export class WebsiteScraper {
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
             let readData = files.readJson(filePath, 'data', false, [])
-            if (readData.length === 0) {
-                console.log(fileName, 'does not exist, so it is new content.')
-            }
-
             let latestData = readData[readData.length - 1]
             if (latestData === undefined) latestData = {}
 
             if (JSON.stringify(latestData) !== JSON.stringify(scrapeInfo.content[contentIndex].json)) {
                 scrapeInfo.content[contentIndex].newData = true
                 readData.push(scrapeInfo.content[contentIndex].json)
+                this.log(`Saving new or updated JSON data in '${this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)}'...`)
                 files.writeJson(filePath, 'data', readData)
-                console.log(`JSON data is saved in ${this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)}.`)
             } else {
                 scrapeInfo.content[contentIndex].newData = false
             }

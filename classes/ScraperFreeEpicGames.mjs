@@ -72,7 +72,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 }
             }
         })
-        this.log(`${elements.length} entries found...`)
+        this.log(`Parsed ${elements.length} entries...`)
         return elements
     }
 
@@ -83,8 +83,6 @@ class ScraperFreeEpicGames extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let descriptionString, startDate, endDate
         startDate = luxon.DateTime.fromISO(content.startDate)
         endDate = luxon.DateTime.fromISO(content.endDate)

@@ -60,6 +60,7 @@ class ScraperCanIUseNews extends WebsiteScraper{
 
     parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
+        this.log(`Parsing ${scrapeInfo.response.data.length} entries...`)
         scrapeInfo.response.data.forEach(newsArticle => {
             let entry = {}
             entry.title = newsArticle.title
@@ -71,7 +72,6 @@ class ScraperCanIUseNews extends WebsiteScraper{
 
             elements.push(entry)
         })
-        this.log(`${elements.length} entries found...`)
         return elements
     }
 
@@ -82,8 +82,6 @@ class ScraperCanIUseNews extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let features = []
         let urlString = ""
         if (content.featIds !== undefined) {

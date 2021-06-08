@@ -10,7 +10,7 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
         let elements = []
 
         let entities = page.querySelectorAll('ul > li > article > div.item__inner')
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((element, index) => {
             let entry = {}
@@ -37,8 +37,6 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
     }
 
     getEmbed(json) {
-        this.log(`Generating embed...`)
-
         return new Discord.MessageEmbed(
             {
                 'title': 'A new game interface has been added!',

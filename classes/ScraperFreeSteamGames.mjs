@@ -27,7 +27,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
 
     async parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        this.log(`${scrapeInfo.response.data.response?.apps?.length || 0} entries found...`)
         // console.log(response.data.response)
         if (JSON.stringify(scrapeInfo.response.data.response) !== '{}') {
             for (const game of scrapeInfo.response.data?.response?.apps) {
@@ -95,7 +94,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 }
             }
         }
-        this.log(`${elements.length} entries found...`)
+        this.log(`Parsed ${elements.length} entries...`)
         return elements
     }
 
@@ -111,8 +110,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let descriptionText = ''
 
         switch (content.discountType) {
