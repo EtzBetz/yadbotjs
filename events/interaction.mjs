@@ -38,6 +38,6 @@ export default (interaction) => {
         interaction.options.forEach(option => {
             fullCommand += ` ${option.value !== undefined ? option.value : option.name}`
         })
-        yadBot.sendMessageToOwner(`Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${fullCommand}'.`)
+        yadBot.sendMessageToOwner(`Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${fullCommand}'.\n\`\`\`text\n${e.stack}\`\`\``)
     }
 }
