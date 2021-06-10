@@ -229,10 +229,10 @@ export class WebsiteScraper {
         for (let channelId of this.getSubGuildChannelIds()) {
             let channel = await yadBot.getBot().channels.fetch(channelId)
                 .catch((e) => console.dir(e))
-            if (yadBot.getBot().user === null) return
+            if (yadBot.getBot().user === null) continue
             this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
             for (let contentEntry of scrapeInfo.content) {
-                if (contentEntry.newData !== true) return
+                if (contentEntry.newData !== true) continue
                 let sentMessage = await channel.send(contentEntry.rendered)
                     .catch(e => {
                         yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
@@ -257,10 +257,10 @@ export class WebsiteScraper {
         for (let userId of this.getSubUserIds()) {
             let user = await yadBot.getBot().users.fetch(userId)
                 .catch((e) => console.dir(e))
-            if (yadBot.getBot().user === null) return
+            if (yadBot.getBot().user === null) continue
             this.log(`Sending embed(s) to ${user.username}`)
             for (let contentEntry of scrapeInfo.content) {
-                if (contentEntry.newData !== true) return
+                if (contentEntry.newData !== true) continue
                 let sentMessage = await user?.send(contentEntry.rendered)
                     .catch(e => console.dir(e))
                 const fileName = this.generateFileNameFromJson(contentEntry.json)
