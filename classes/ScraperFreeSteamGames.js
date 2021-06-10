@@ -25,12 +25,11 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return await super.requestWebsite(url)
     }
 
-    async parseWebsiteContentToJSON(response) {
+    async parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        this.log(`${response.data.response?.apps?.length || 0} entries found...`)
         // console.log(response.data.response)
-        if (JSON.stringify(response.data.response) !== '{}') {
-            for (const game of response.data?.response?.apps) {
+        if (JSON.stringify(scrapeInfo.response.data.response) !== '{}') {
+            for (const game of scrapeInfo.response.data?.response?.apps) {
                 let entry = {}
                 if (game.price_change_number !== 0) {
                     // this.debugLog(`priceChangeNumber is != 0 for '${game.name}'`)
@@ -40,7 +39,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                         const detailData = detailResponse.data[game.appid.toString()].data
                         if (
                             detailData.price_overview?.final === 0
-                                ||
+                            ||
                             (
                                 detailData.price_overview?.discount_percent !== undefined &&
                                 detailData.price_overview?.discount_percent === 100
@@ -95,7 +94,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 }
             }
         }
-        this.log(`${elements.length} entries found...`)
+        this.log(`Parsed ${elements.length} entries...`)
         return elements
     }
 
@@ -111,8 +110,6 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let descriptionText = ''
 
         switch (content.discountType) {
@@ -216,10 +213,10 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             return
         }
         // console.log(luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO())
-        const isoDate = luxon.DateTime.fromFormat(`${day}.${monthNumber+1}.${year}`, 'd.M.yyyy')
+        const isoDate = luxon.DateTime.fromFormat(`${day}.${monthNumber + 1}.${year}`, 'd.M.yyyy')
 
         if (isoDate === null || !isoDate.isValid) {
-            yadBot.sendMessageToOwner(`Date '${dateString}' with '${day}.${monthNumber+1}.${year}' is invalid in parseReleaseDate() [3]`)
+            yadBot.sendMessageToOwner(`Date '${dateString}' with '${day}.${monthNumber + 1}.${year}' is invalid in parseReleaseDate() [3]`)
             return
         }
 

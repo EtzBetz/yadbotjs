@@ -4,11 +4,11 @@ import jsdom from 'jsdom'
 
 class ScraperRechnernetze extends WebsiteScraper{
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("#content > div.clearfix > div > ul.verteiler > li > a")
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((entity, index) => {
 
@@ -25,7 +25,6 @@ class ScraperRechnernetze extends WebsiteScraper{
             }
 
             elements.push(entry)
-
         })
 
         return elements
@@ -37,8 +36,6 @@ class ScraperRechnernetze extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let fileType = content.link.split("").reverse().join("")
         let lastDotIndex = fileType.indexOf('.')
         fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")

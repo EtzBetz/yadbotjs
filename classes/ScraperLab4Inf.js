@@ -4,15 +4,13 @@ import jsdom from 'jsdom'
 
 class ScraperLab4Inf extends WebsiteScraper{
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll("table > tbody > tr > td")
 
         entities.forEach((columnElement, columnIndex) => {
-
             let rows = columnElement.querySelectorAll("ol > li > a")
-
             rows.forEach((rowElement, rowIndex) => {
                 let entry = {
                     category: columnIndex,
@@ -23,7 +21,7 @@ class ScraperLab4Inf extends WebsiteScraper{
                 elements.push(entry)
             })
         })
-        this.log(`${elements.length} entries found...`)
+        this.log(`Parsed ${elements.length} entries...`)
 
         return elements
     }
@@ -34,8 +32,6 @@ class ScraperLab4Inf extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let category
         switch (content.category) {
         case 0:

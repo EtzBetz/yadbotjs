@@ -6,9 +6,10 @@ import yadBot from './YadBot.js'
 
 class ScraperXRelReleases extends WebsiteScraper {
 
-    parseWebsiteContentToJSON(response) {
+    parseWebsiteContentToJSON(scrapeInfo) {
         let elements = []
-        let result = Json.parseXmlToJson(response.data)
+        let result = Json.parseXmlToJson(scrapeInfo.response.data)
+        this.log(`Parsing ${elements.length} entries...`)
         result.releases.list[0].release?.forEach((release, index) => {
             let entry = {}
 
@@ -43,8 +44,6 @@ class ScraperXRelReleases extends WebsiteScraper {
 
             elements.push(entry)
         })
-
-        this.log(`${elements.length} entries found...`)
         return elements
     }
 
@@ -55,8 +54,6 @@ class ScraperXRelReleases extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let typeString = ''
         switch (content.release_type) {
         case 'movie':

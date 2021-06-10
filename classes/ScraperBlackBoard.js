@@ -1,16 +1,16 @@
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 import yadBot from './YadBot.js'
 
 class ScraperBlackBoard extends WebsiteScraper {
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
         let entities = page.querySelectorAll('div.clearfix > div[style] > div[style]')
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((entity, index) => {
             if (entity.textContent.trim() !== '') {
@@ -19,27 +19,27 @@ class ScraperBlackBoard extends WebsiteScraper {
                 entity.querySelectorAll('div > div > div > div > div > *').forEach((entityParagraph, paragraphIndex) => {
                     let paragraph
                     switch (entityParagraph.tagName.toLowerCase()) {
-                    case 'p':
-                        paragraph = entityParagraph.textContent.trim()
-                        if (paragraphIndex === 0) {
-                            paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
-                        }
-                        break
-                    case 'ol':
-                    case 'ul':
-                        paragraph = ''
-                        entityParagraph.querySelectorAll('li').forEach((listParagraph, listIndex) => {
-                            paragraph += `\n> ${listParagraph.textContent.trim()}\n`
-                        })
-                        break
-                    default:
-                        paragraph = `\n[ Unimplemented element <${entityParagraph.tagName.toLowerCase()}> ]\n`
-                        console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
-                        console.log(entityParagraph.tagName.toLowerCase())
-                        console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
-                        yadBot.sendMessageToOwner(new Discord.MessageEmbed({
-                            description: `Unimplemented element <${entityParagraph.tagName.toLowerCase()}> in BlackBoard scraper!`
-                        }))
+                        case 'p':
+                            paragraph = entityParagraph.textContent.trim()
+                            if (paragraphIndex === 0) {
+                                paragraph = paragraph.substring(paragraph.indexOf('|') + 1).trim()
+                            }
+                            break
+                        case 'ol':
+                        case 'ul':
+                            paragraph = ''
+                            entityParagraph.querySelectorAll('li').forEach((listParagraph, listIndex) => {
+                                paragraph += `\n> ${listParagraph.textContent.trim()}\n`
+                            })
+                            break
+                        default:
+                            paragraph = `\n[ Unimplemented element <${entityParagraph.tagName.toLowerCase()}> ]\n`
+                            console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
+                            console.log(entityParagraph.tagName.toLowerCase())
+                            console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
+                            yadBot.sendMessageToOwner(new Discord.MessageEmbed({
+                                description: `Unimplemented element <${entityParagraph.tagName.toLowerCase()}> in BlackBoard scraper!`
+                            }))
                     }
                     entityParagraph.querySelectorAll('.SP-encrypted-email').forEach((mailAddressElement, addressIndex) => {
                         if (mailAddressElement.querySelector('i') !== null) {
@@ -56,9 +56,9 @@ class ScraperBlackBoard extends WebsiteScraper {
                             paragraph = paragraph.replace(mailAddressElement.textContent.trim(), mailLink)
                         } else if (mailAddressElement.tagName.toLowerCase() === "a") {
                             let mailLink = mailAddressElement.href?.trim()
-                            mailLink = mailLink.replace(/%E2%9A%B9/g,"@")
-                            mailLink = mailLink.replace(/%E2%97%A6/g,".")
-                            mailLink = mailLink.replace(/mailto:/g,"")
+                            mailLink = mailLink.replace(/%E2%9A%B9/g, "@")
+                            mailLink = mailLink.replace(/%E2%97%A6/g, ".")
+                            mailLink = mailLink.replace(/mailto:/g, "")
 
                             if ((paragraph.match(mailAddressElement.textContent.trim(), 'g') || []).length === 1) {
                                 paragraph = paragraph.replace(mailAddressElement.textContent.trim(), mailLink)
@@ -84,11 +84,10 @@ class ScraperBlackBoard extends WebsiteScraper {
 
                     if (downloadText === undefined) {
                         // button is link
-                        entryLinks.push({ text: linkText, address: linkAddress })
-                    }
-                    else {
+                        entryLinks.push({text: linkText, address: linkAddress})
+                    } else {
                         // button is download
-                        entryDownloads.push({ text: downloadText, address: linkAddress, info: downloadInfo })
+                        entryDownloads.push({text: downloadText, address: linkAddress, info: downloadInfo})
                     }
                 })
 
@@ -98,8 +97,7 @@ class ScraperBlackBoard extends WebsiteScraper {
                 // check if the <strong> element exists
                 if (entryDateElement !== null) {
                     entryDateString = entryDateElement?.textContent.trim()
-                }
-                else { // otherwise go back to it's parent
+                } else { // otherwise go back to it's parent
                     entryDateElement = entity.querySelector('div > div > p')
                     let firstParagraph = entryDateElement?.textContent.trim()
                     entryDateString = firstParagraph?.substring(0, firstParagraph.indexOf('|') - 1).trim()
@@ -144,8 +142,6 @@ class ScraperBlackBoard extends WebsiteScraper {
     }
 
     getEmbed(json) {
-        this.log(`Generating embed...`)
-
         let paragraphString = ''
 
         json.paragraphs.forEach((paragraph, index) => {
@@ -216,8 +212,7 @@ class ScraperBlackBoard extends WebsiteScraper {
         let dateObj
         if (json.date !== undefined) {
             dateObj = luxon.DateTime.fromISO(json.date)
-        }
-        else {
+        } else {
             dateObj = luxon.DateTime.local()
         }
         footerString += dateObj.toFormat('dd.MM.yyyy')

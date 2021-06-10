@@ -4,12 +4,12 @@ import { WebsiteScraper } from './WebsiteScraper'
 
 class ScraperInterfaceInGameArticles extends WebsiteScraper {
 
-    parseWebsiteContentToJSON(response) {
-        const page = new jsdom.JSDOM(response.data).window.document
+    parseWebsiteContentToJSON(scrapeInfo) {
+        const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
 
         let entities = page.querySelectorAll('ul > li > article > div.item__inner')
-        this.log(`${entities.length} entries found...`)
+        this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((element, index) => {
             let entry = {}
@@ -35,8 +35,6 @@ class ScraperInterfaceInGameArticles extends WebsiteScraper {
     }
 
     getEmbed(json) {
-        this.log(`Generating embed...`)
-
         return new Discord.MessageEmbed(
             {
                 'title': `New Article: ${json.title}`,

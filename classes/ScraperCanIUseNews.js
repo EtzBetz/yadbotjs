@@ -58,9 +58,10 @@ class ScraperCanIUseNews extends WebsiteScraper{
         return descriptionString
     }
 
-    parseWebsiteContentToJSON(response) {
+    parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        response.data.forEach(newsArticle => {
+        this.log(`Parsing ${scrapeInfo.response.data.length} entries...`)
+        scrapeInfo.response.data.forEach(newsArticle => {
             let entry = {}
             entry.title = newsArticle.title
             entry.description = this.filterDescription(newsArticle.description)
@@ -71,7 +72,6 @@ class ScraperCanIUseNews extends WebsiteScraper{
 
             elements.push(entry)
         })
-        this.log(`${elements.length} entries found...`)
         return elements
     }
 
@@ -82,8 +82,6 @@ class ScraperCanIUseNews extends WebsiteScraper{
     }
 
     getEmbed(content) {
-        this.log(`Generating embed...`)
-
         let features = []
         let urlString = ""
         if (content.featIds !== undefined) {
