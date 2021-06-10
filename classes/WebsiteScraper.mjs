@@ -217,11 +217,11 @@ export class WebsiteScraper {
         return this.generateSlugFromString(fileName) + '.json'
     }
 
-    async sendEmbedMessages(intervalInformation) {
+    async sendEmbedMessages(scrapeInfo) {
         let sendState = files.readJson(this.getScraperConfigPath(), 'send_embeds', false, true)
         let globalSendState = files.readJson(yadBot.getYadConfigPath(), 'global_send_embeds', false, true)
         let newContentCount = 0
-        for (let entry of intervalInformation.content) {
+        for (let entry of scrapeInfo.content) {
             if (entry.newData === true) newContentCount++
         }
         if (newContentCount === 0 || !sendState || !globalSendState) return
@@ -231,7 +231,7 @@ export class WebsiteScraper {
                 .catch((e) => console.dir(e))
             if (yadBot.getBot().user === null) return
             this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
-            for (let contentEntry of intervalInformation.content) {
+            for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) return
                 let sentMessage = await channel.send(contentEntry.rendered)
                     .catch(e => {
@@ -259,7 +259,7 @@ export class WebsiteScraper {
                 .catch((e) => console.dir(e))
             if (yadBot.getBot().user === null) return
             this.log(`Sending embed(s) to ${user.username}`)
-            for (let contentEntry of intervalInformation.content) {
+            for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) return
                 let sentMessage = await user?.send(contentEntry.rendered)
                     .catch(e => console.dir(e))
