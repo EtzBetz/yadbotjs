@@ -2,12 +2,13 @@ import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
 import yadBot from './YadBot.mjs';
+import jsdom from 'jsdom';
 
 class ScraperFreeEpicGames extends WebsiteScraper {
 
-    parseWebsiteContentToJSON(scrapeInfo) {
+    async parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
-        scrapeInfo.response.data.data.Catalog?.searchStore?.elements?.forEach(game => {
+        for (const game of scrapeInfo.response.data.data.Catalog?.searchStore?.elements) {
             let entry = {}
             entry.title = game.title
             entry.imageUrl = game.keyImages?.find(image => image.type === "DieselStoreFrontWide")?.url
@@ -25,6 +26,18 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             }
             entry.slug = slug
 
+            let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
+            const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
+            let originalPrice = gameDetails.querySelector('div[data-component="PDPDiscountedFromPrice"]')?.innerHTML.trim()
+            originalPrice = originalPrice?.substring(1)
+            let decimalIndex = originalPrice?.indexOf(".")
+
+            const priceEuro = originalPrice?.substring(0, decimalIndex)
+            const priceDecimal = originalPrice?.substring(decimalIndex + 1)
+            if (priceEuro !== undefined && priceDecimal !== undefined) {
+                entry.originalPrice = `${priceEuro},${priceDecimal}€`
+            }
+
             let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value
             let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value
             if (developer !== undefined) {
@@ -38,18 +51,6 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 if (tag.id === "9547") entry.windowsCompatibility = true
                 if (tag.id === "9548") entry.macCompatibility = true
             })
-
-            const originalPrice = game.price?.totalPrice?.originalPrice?.toString().padStart(3, '0')
-            const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
-            const decimalPosition = originalPrice?.length - (decimalCount || 2)
-            const priceEuro = originalPrice?.substring(0, decimalPosition)
-            const priceDecimal = originalPrice?.substring(originalPrice?.length - decimalCount)
-            if (priceEuro !== undefined && priceDecimal !== undefined) {
-                entry.originalPrice = `${priceEuro},${priceDecimal}€`
-            } else {
-                yadBot.sendMessageToOwner("epic games weirdness debug")
-                yadBot.sendMessageToOwner(JSON.stringify(scrapeInfo.response.data))
-            }
 
             let promotions = []
             if (game.promotions?.promotionalOffers[0]?.promotionalOffers !== undefined) {
@@ -71,7 +72,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                     elements.push(entry)
                 }
             }
-        })
+        }
         this.log(`Parsed ${elements.length} entries...`)
         return elements
     }
