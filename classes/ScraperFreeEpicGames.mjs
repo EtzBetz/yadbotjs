@@ -138,7 +138,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
         if (osString !== "") {
             embed.fields.push({
-                "name": "Supported OSs",
+                "name": "Platform(s)",
                 "value": osString,
                 "inline": true
             })
