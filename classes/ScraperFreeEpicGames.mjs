@@ -71,8 +71,8 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             )
 
             if (freePromotion !== undefined) {
-                entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('Europe/Berlin').toISO()
-                entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('Europe/Berlin').toISO()
+                entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('utc').toISO()
+                entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('utc').toISO()
                 if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
                     elements.push(entry)
                 }
@@ -90,8 +90,8 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
     getEmbed(content) {
         let descriptionString, startDate, endDate
-        startDate = luxon.DateTime.fromISO(content.startDate)
-        endDate = luxon.DateTime.fromISO(content.endDate)
+        startDate = luxon.DateTime.fromISO(content.startDate).setZone('utc')
+        endDate = luxon.DateTime.fromISO(content.endDate).setZone('utc')
 
         descriptionString = `**Free** in Epic Games Store until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}.`
 
@@ -128,7 +128,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         if (startDate !== undefined) {
             embed.fields.push({
                 "name": "Start Date",
-                "value": `${startDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(startDate.toFormat("d"), 10))}, ${startDate.toFormat('HH:mm')}`,
+                "value": `${startDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(startDate.toFormat("d"), 10))}, ${startDate.toFormat('HH:mm')} UTC`,
                 "inline": true
             })
         }
@@ -136,7 +136,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         if (endDate !== undefined) {
             embed.fields.push({
                 "name": "End Date",
-                "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')}`,
+                "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')} UTC`,
                 "inline": true
             })
         }
