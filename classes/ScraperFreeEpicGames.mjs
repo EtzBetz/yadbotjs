@@ -37,6 +37,17 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 entry.originalPrice = `${priceEuro},${priceDecimal}€`
             }
 
+            game.tags.forEach((tag) => {
+                if (tag.id === "9547") entry.windowsCompatibility = true
+                if (tag.id === "9548") entry.macCompatibility = true
+            })
+            if (gameDetails.querySelector('li[data-testid="metadata-platform-windows"]') !== null) {
+                entry.windowsCompatibility = true
+            }
+            if (gameDetails.querySelector('li[data-testid="metadata-platform-mac"]') !== null) {
+                entry.macCompatibility = true
+            }
+
             let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value
             let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value
             if (developer !== undefined) {
@@ -45,11 +56,6 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             if (publisher !== undefined) {
                 entry.publisher = publisher
             }
-
-            game.tags.forEach((tag) => {
-                if (tag.id === "9547") entry.windowsCompatibility = true
-                if (tag.id === "9548") entry.macCompatibility = true
-            })
 
             let promotions = []
             if (game.promotions?.promotionalOffers[0]?.promotionalOffers !== undefined) {
