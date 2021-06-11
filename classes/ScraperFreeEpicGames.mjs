@@ -28,10 +28,9 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
             let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
             const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
-            let originalPrice = gameDetails.querySelector('div[data-component="PDPDiscountedFromPrice"]')?.innerHTML.trim()
+            let originalPrice = gameDetails.querySelector('div[data-component="PDPDiscountedFromPrice"]')?.textContent.trim()
             originalPrice = originalPrice?.substring(1)
             let decimalIndex = originalPrice?.indexOf(".")
-
             const priceEuro = originalPrice?.substring(0, decimalIndex)
             const priceDecimal = originalPrice?.substring(decimalIndex + 1)
             if (priceEuro !== undefined && priceDecimal !== undefined) {
