@@ -132,15 +132,15 @@ export class WebsiteScraper {
         }
         scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction())
         if (newContentCount >= 1) this.log(`Generating ${newContentCount} embed(s)...`)
-        scrapeInfo.content.forEach(content => {
+        for (let content of scrapeInfo.content) {
             try {
                 if (content.newData === true) {
-                    content.rendered = (this.filterEmbedLength(this.getEmbed(content.json)))
+                    content.rendered = (this.filterEmbedLength(await this.getEmbed(content.json)))
                 }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
             }
-        })
+        }
         if (newContentCount >= 1) {
             await this.sendEmbedMessages(scrapeInfo)
         }

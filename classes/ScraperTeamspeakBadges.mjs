@@ -69,7 +69,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
             {
                 "title": "New Teamspeak Badge available!",
                 "description": "A new Badge was listed on the Forums.\n Unlock it [here](https://www.myteamspeak.com/userarea/badges/redeem) or in your Teamspeak application!",
-                "url": `${await this.getScrapingUrl()}`,
+                "url": await this.getScrapingUrl(),
                 "author": {
                     "name": "Teamspeak",
                     "url": "https://teamspeak.com",
