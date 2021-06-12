@@ -1,8 +1,8 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 
-class ScraperTeamspeakBadges extends WebsiteScraper{
+class ScraperTeamspeakBadges extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
@@ -64,12 +64,12 @@ class ScraperTeamspeakBadges extends WebsiteScraper{
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    getEmbed(json) {
+    async getEmbed(json) {
         return new Discord.MessageEmbed(
             {
                 "title": "New Teamspeak Badge available!",
                 "description": "A new Badge was listed on the Forums.\n Unlock it [here](https://www.myteamspeak.com/userarea/badges/redeem) or in your Teamspeak application!",
-                "url": `${this.getScrapingUrl()}`,
+                "url": `${await this.getScrapingUrl()}`,
                 "author": {
                     "name": "Teamspeak",
                     "url": "https://teamspeak.com",
