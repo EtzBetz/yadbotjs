@@ -111,19 +111,18 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         scrapeInfo.response.data.news.forEach(game => {
             switch (game.placement) {
                 case "freeevents":
-                case "":
                     break
                 default:
-                    yadBot.sendMessageToOwner("new `placement` type in ubisoft scraper->", game.placement)
+                    yadBot.sendMessageToOwner(`new \`placement\` type in ubisoft scraper->${game['placement']}`)
                     yadBot.sendMessageToOwner(JSON.stringify(game))
             }
             switch (game.type) {
                 case "freegame":
                 case "gametrial":
-                case "":
+                case "freeweekend":
                     break
                 default:
-                    yadBot.sendMessageToOwner("new `type` type in ubisoft scraper->", game.type)
+                    yadBot.sendMessageToOwner(`new \`type\` type in ubisoft scraper->${game['type']}`)
                     yadBot.sendMessageToOwner(JSON.stringify(game))
             }
 

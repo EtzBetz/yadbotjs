@@ -132,15 +132,15 @@ export class WebsiteScraper {
         }
         scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction())
         if (newContentCount >= 1) this.log(`Generating ${newContentCount} embed(s)...`)
-        scrapeInfo.content.forEach(content => {
+        for (let content of scrapeInfo.content) {
             try {
                 if (content.newData === true) {
-                    content.rendered = (this.filterEmbedLength(this.getEmbed(content.json)))
+                    content.rendered = (this.filterEmbedLength(await this.getEmbed(content.json)))
                 }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
             }
-        })
+        }
         if (newContentCount >= 1) {
             await this.sendEmbedMessages(scrapeInfo)
         }
@@ -225,20 +225,14 @@ export class WebsiteScraper {
             if (entry.newData === true) newContentCount++
         }
         if (newContentCount === 0 || !sendState || !globalSendState) return
-        this.log(`Sending ${newContentCount} embed(s)...`)
+        this.log(`Sending and updating ${newContentCount} embed(s)...`)
         for (let channelId of this.getSubGuildChannelIds()) {
-            let channel = await yadBot.getBot().channels.fetch(channelId)
+            let embedTargetChannel = await yadBot.getBot().channels.fetch(channelId)
                 .catch((e) => console.dir(e))
             if (yadBot.getBot().user === null) continue
-            this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
+            this.log(`Sending and updating embed(s) in Guild "${embedTargetChannel.guild.name}", Channel "${embedTargetChannel.name}"`)
             for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) continue
-                let sentMessage = await channel.send(contentEntry.rendered)
-                    .catch(e => {
-                        yadBot.sendMessageToOwner(`error with guild ${channel?.guild?.id} channel ${channel?.id}`)
-                        this.sendMissingAccessToGuildAdmins(channel.guild.id)
-                        console.dir(e)
-                    })
                 const fileName = this.generateFileNameFromJson(contentEntry.json)
                 const filePath = `${this.getScraperEmbedPath()}/${fileName}`
                 let sentChannels = files.readJson(
@@ -250,19 +244,35 @@ export class WebsiteScraper {
                         user_message_ids: [],
                     }
                 )
-                sentChannels.guild_message_ids.push(sentMessage.id)
-                files.writeJson(filePath, 'sent_channels', sentChannels)
+                let messageDataToUpdate = sentChannels.guild_message_ids?.find((sentMessageData) => {
+                    return sentMessageData.channelId === embedTargetChannel.id
+                })
+                if (messageDataToUpdate !== undefined) {
+                    let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                    await messageToUpdate.edit(contentEntry.rendered)
+                } else {
+
+                    let sentMessage = await embedTargetChannel.send(contentEntry.rendered)
+                        .catch(e => {
+                            yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
+                            this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
+                            console.dir(e)
+                        })
+                    sentChannels.guild_message_ids.push({
+                        messageId: sentMessage.id,
+                        channelId: sentMessage.channel.id
+                    })
+                    files.writeJson(filePath, 'sent_channels', sentChannels)
+                }
             }
         }
         for (let userId of this.getSubUserIds()) {
-            let user = await yadBot.getBot().users.fetch(userId)
+            let embedTargetUser = await yadBot.getBot().users.fetch(userId)
                 .catch((e) => console.dir(e))
             if (yadBot.getBot().user === null) continue
-            this.log(`Sending embed(s) to ${user.username}`)
+            this.log(`Sending and updating embed(s) for ${embedTargetUser.username}`)
             for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) continue
-                let sentMessage = await user?.send(contentEntry.rendered)
-                    .catch(e => console.dir(e))
                 const fileName = this.generateFileNameFromJson(contentEntry.json)
                 const filePath = `${this.getScraperEmbedPath()}/${fileName}`
                 let sentChannels = files.readJson(
@@ -274,8 +284,22 @@ export class WebsiteScraper {
                         user_message_ids: [],
                     }
                 )
-                sentChannels.user_message_ids.push(sentMessage.id)
-                files.writeJson(filePath, 'sent_channels', sentChannels)
+                let messageDataToUpdate = sentChannels.user_message_ids.find(async (sentMessageData) => {
+                    return (await yadBot.getBot().channels.fetch(sentMessageData.channelId)).recipient.id === embedTargetUser.id
+                })
+                if (messageDataToUpdate !== undefined) {
+                    let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
+                    let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                    await messageToUpdate.edit(contentEntry.rendered)
+                } else {
+                    let sentMessage = await embedTargetUser?.send(contentEntry.rendered)
+                        .catch(e => console.dir(e))
+                    sentChannels.user_message_ids.push({
+                        messageId: sentMessage.id,
+                        channelId: sentMessage.channel.id
+                    })
+                    files.writeJson(filePath, 'sent_channels', sentChannels)
+                }
             }
         }
     }
