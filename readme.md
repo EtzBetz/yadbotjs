@@ -5,14 +5,14 @@
 1. createTimerInterval()
     1. Runs `timeIntervalBody()` in a loop, dependent on `getScrapingInterval()`, which per default reads `interval_milliseconds` from the scrapers config.
 1. timeIntervalBody()
-    1. Runs `getScrapingUrl()`, usually just reads `scraping_url` from scrapers config.
+    1. Runs `getScrapingUrl()`, by default reads `scraping_url` from scrapers config.
     1. Runs `requestWebsite()` with the given scraping URL.
-    1. Runs `parseWebsiteContentToJSON()` with the data given to generate JSON from the website content.
-    1. Runs `filterNewContent()` with the generated JSON, marking old content, updating or saving new.
-    1. Runs `getSortingFunction()` to sort new content after specified arguments.
-    1. Runs `getEmbed()` to generate Discord embeds from generated JSON.
+    1. Runs `parseWebsiteContentToJSON()` with the data given to generate an array of JSON objects from the website content.
+    1. Runs `filterNewContent()` with the generated JSON array, marking old content, updating or saving new.
+    1. Runs `getSortingFunction()` to sort content after specified arguments.
+    1. Runs `getEmbed()` to generate Discord embed for each generated JSON object.
     1. Runs `filterEmbedLength()` to filter length of generated embeds according to Discord's policies.
-    1. Runs `sendEmbedMessages()` to send and update new content to subscribed users and guilds.
+    1. Runs `sendEmbedMessages()` to send and update new content to subscribed users and guilds, when `global_send_embeds` and `send_embeds` are `true` in configs.
 ## `scrapeInfo` Object
 ```text
 {
