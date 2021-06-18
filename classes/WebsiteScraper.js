@@ -135,7 +135,7 @@ export class WebsiteScraper {
         for (let content of scrapeInfo.content) {
             try {
                 if (content.newData === true) {
-                    content.rendered = (this.filterEmbedLength(await this.getEmbed(content)))
+                    content.embed = (this.filterEmbedLength(await this.getEmbed(content)))
                 }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
@@ -250,11 +250,11 @@ export class WebsiteScraper {
                 if (messageDataToUpdate !== undefined) {
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
                     await messageToUpdate.edit({
-                        embeds: [contentEntry.rendered]
+                        embeds: [contentEntry.embed]
                     })
                 } else {
                     let sentMessage = await embedTargetChannel?.send({
-                        embeds: [contentEntry.rendered]
+                        embeds: [contentEntry.embed]
                     })
                         .catch(e => {
                             yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
@@ -294,11 +294,11 @@ export class WebsiteScraper {
                     let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
                     await messageToUpdate.edit({
-                        embeds: [contentEntry.rendered]
+                        embeds: [contentEntry.embed]
                     })
                 } else {
                     let sentMessage = await embedTargetUser?.send({
-                        embeds: [contentEntry.rendered]
+                        embeds: [contentEntry.embed]
                     })
                         .catch(e => console.dir(e))
                     sentChannels.user_message_ids.push({
