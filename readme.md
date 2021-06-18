@@ -14,7 +14,7 @@
     1. Runs `filterEmbedLength()` to filter length of generated embeds according to Discord's policies.
     1. Runs `sendEmbedMessages()` to send and update new content to subscribed users and guilds.
 ## `scrapeInfo` Object
-```json
+```text
 {
     url: String,                    // generated from getScrapingUrl()
     response: AxiosResponse,        // returned from requestWebsite()
