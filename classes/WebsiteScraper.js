@@ -249,10 +249,13 @@ export class WebsiteScraper {
                 })
                 if (messageDataToUpdate !== undefined) {
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
-                    await messageToUpdate.edit(contentEntry.rendered)
+                    await messageToUpdate.edit({
+                        embeds: [contentEntry.rendered]
+                    })
                 } else {
-
-                    let sentMessage = await embedTargetChannel.send(contentEntry.rendered)
+                    let sentMessage = await embedTargetChannel?.send({
+                        embeds: [contentEntry.rendered]
+                    })
                         .catch(e => {
                             yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
                             this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
@@ -290,9 +293,13 @@ export class WebsiteScraper {
                 if (messageDataToUpdate !== undefined) {
                     let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
-                    await messageToUpdate.edit(contentEntry.rendered)
+                    await messageToUpdate.edit({
+                        embeds: [contentEntry.rendered]
+                    })
                 } else {
-                    let sentMessage = await embedTargetUser?.send(contentEntry.rendered)
+                    let sentMessage = await embedTargetUser?.send({
+                        embeds: [contentEntry.rendered]
+                    })
                         .catch(e => console.dir(e))
                     sentChannels.user_message_ids.push({
                         messageId: sentMessage.id,
