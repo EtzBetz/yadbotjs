@@ -136,6 +136,7 @@ export class WebsiteScraper {
             try {
                 if (content.newData === true) {
                     content.embed = (this.filterEmbedLength(await this.getEmbed(content)))
+                    content.components = await this.getComponents(content)
                 }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
@@ -250,11 +251,13 @@ export class WebsiteScraper {
                 if (messageDataToUpdate !== undefined) {
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
                     await messageToUpdate.edit({
-                        embeds: [contentEntry.embed]
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
                     })
                 } else {
                     let sentMessage = await embedTargetChannel?.send({
-                        embeds: [contentEntry.embed]
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
                     })
                         .catch(e => {
                             yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
@@ -294,11 +297,13 @@ export class WebsiteScraper {
                     let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
                     await messageToUpdate.edit({
-                        embeds: [contentEntry.embed]
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
                     })
                 } else {
                     let sentMessage = await embedTargetUser?.send({
-                        embeds: [contentEntry.embed]
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
                     })
                         .catch(e => console.dir(e))
                     sentChannels.user_message_ids.push({
@@ -318,6 +323,20 @@ export class WebsiteScraper {
             color: EmbedColors.GREEN,
             url: this.getScrapingUrl(),
         })
+    }
+
+    getComponents(content) {
+        return []
+
+        // new Discord.MessageActionRow({
+        //     components: [
+        //         new Discord.MessageButton({
+        //             label: "Google",
+        //             style: 'LINK',
+        //             url: "https://google.de/"
+        //         }),
+        //     ]
+        // })
     }
 
     getSortingFunction() {
