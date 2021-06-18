@@ -48,29 +48,42 @@ class ScraperMovieReleases extends WebsiteScraper {
             entry.budget = movieDetails.budget
             entry.imdbId = movieDetails.imdb_id
 
-            // let xRelReleaseQueryUrl = "https://api.xrel.to/v2/search/ext_info.xml"
-            // xRelReleaseQueryUrl += "?type=movie"
-            // xRelReleaseQueryUrl += `&q=${encodeURIComponent(entry.title)}`
-            //
-            // let xRelReleaseQuery
-            // try {
-            //     xRelReleaseQuery = await this.requestWebsite(xRelReleaseQueryUrl)
-            //     let queryResult = Json.parseXmlToJson(xRelReleaseQuery.data).ext_info_search
-            //     if (queryResult.total[0] === 1) {
-            //         entry.xrelId = queryResult.results[0].ext_info.id
-            //         entry.xrelTitle = queryResult.results[0].ext_info.title
-            //         entry.xrelLink = queryResult.results[0].ext_info.link_href
-            //         console.log(JSON.stringify(queryResult.results[0].ext_info))
-            //     } else if (queryResult.total[0] > 1) {
-            //         // TODO: try to find exact match or closest match
-            //         console.log(JSON.stringify(queryResult.results))
-            //     } else {
-            //         console.log(`0 results for "${entry.title}"`)
-            //     }
-            // }
-            // catch (e) {
-            //     console.log(e)
-            // }
+            let xRelReleaseQueryUrl = "https://api.xrel.to/v2/search/ext_info.xml"
+            xRelReleaseQueryUrl += "?type=movie"
+            xRelReleaseQueryUrl += `&q=${encodeURIComponent(entry.title)}`
+
+            if (entry.duration >= 60) {
+                let xRelReleaseQuery
+                try {
+                    xRelReleaseQuery = await this.requestWebsite(xRelReleaseQueryUrl)
+                    let queryResult = Json.parseXmlToJson(xRelReleaseQuery.data).ext_info_search
+                    if (queryResult.total[0] === 1) {
+                        entry.xRelId = queryResult.results[0].ext_info.id[0]
+                        entry.xRelTitle = queryResult.results[0].ext_info.title[0]
+                        entry.xRelLink = queryResult.results[0].ext_info.link_href[0]
+                        console.log(JSON.stringify(queryResult.results[0].ext_info))
+                    } else if (queryResult.total[0] > 1) {
+                        // TODO: try to find exact match or closest match
+                        let result = queryResult.results[0].ext_info.find((movieResult) => {
+                            return movieResult.title[0] === entry.title
+                        })
+                        if (result !== undefined) {
+                            entry.xRelId = result.id[0]
+                            entry.xRelTitle = result.title[0]
+                            entry.xRelLink = result.link_href[0]
+                        }
+                        // console.log(JSON.stringify(queryResult.results))
+                    } else {
+                        console.log(`0 results for "${entry.title}"`)
+                    }
+                    console.log("------")
+                    console.log(entry.xRelId)
+                    console.log(entry.xRelTitle)
+                    console.log(entry.xRelLink)
+                } catch (e) {
+                    console.log(e)
+                }
+            }
 
             if (entry.duration >= 60) elements.push(entry)
         }
@@ -147,6 +160,44 @@ class ScraperMovieReleases extends WebsiteScraper {
         }
 
         return embed
+    }
+
+    getComponents(content) {
+        if (content.json.xRelId !== undefined) {
+            let actionRow = new Discord.MessageActionRow({
+                components: [
+                    new Discord.MessageButton({
+                        label: `Subscribe to xREL Releases for '${content.json.xRelTitle}'`,
+                        customID: `xrel::subscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
+                        style: 'PRIMARY',
+                    }),
+                    new Discord.MessageButton({
+                        label: `Unsubscribe`,
+                        customID: `xrel::unsubscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
+                        style: 'DANGER',
+                    }),
+                    new Discord.MessageButton({
+                        label: `xREL Release Page`,
+                        url: content.json.xRelLink,
+                        style: 'LINK',
+                    }),
+                ]
+            })
+            return [actionRow]
+        } else {
+            return []
+        }
+
+
+        // new Discord.MessageActionRow({
+        //     components: [
+        //         new Discord.MessageButton({
+        //             label: "Google",
+        //             style: 'LINK',
+        //             url: "https://google.de/"
+        //         }),
+        //     ]
+        // })
     }
 
     generateDescriptionString(tagline, description, imdbId, tmdbId) {

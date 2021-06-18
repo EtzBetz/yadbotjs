@@ -1,5 +1,6 @@
 import Discord from "discord.js"
 import yadBot from '../classes/YadBot.js'
+import EmbedColors from '../constants/EmbedColors';
 
 export default (interaction) => {
     if (interaction.isCommand()) {
@@ -40,6 +41,26 @@ export default (interaction) => {
             yadBot.sendMessageToOwner(`Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${fullCommand}'.\n\`\`\`text\n${e.stack}\`\`\``)
         }
     } else if (interaction.isMessageComponent()) {
+        if (interaction.isButton()) {
+            interaction.defer({ ephemeral: true })
 
+            let interactionCommand = interaction.customID.split("::")
+            console.log(interactionCommand)
+
+            switch (interactionCommand[0]) {
+                case "xrel":
+                    switch (interactionCommand[1]) {
+                        case "subscribe":
+                            break
+                        case "unsubscribe":
+                            break
+                        default:
+                            interaction.editReply({ embeds: [{title: 'Error while processing interaction', description:'Unknown interaction command parameter.', color: EmbedColors.RED}], ephemeral: true })
+                    }
+                    break
+                default:
+                    interaction.editReply({ embeds: [{title: 'Error while processing interaction', description:'Unknown interaction command.', color: EmbedColors.RED}], ephemeral: true })
+            }
+        }
     }
 }
