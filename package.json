@@ -15,7 +15,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "diff": "^5.0.0",
-    "discord.js": "^13.0.0-dev.f7e420bf290f5404e8b99b8896c63e178f77bbfc",
+    "discord.js": "^13.0.0-dev.fdad14099779e61cb84dcd1cb2497e0e853a6144",
     "edit-json-file": "^1.4.1",
     "eslint": "^7.7.0",
     "jsdom": "^16.4.0",
