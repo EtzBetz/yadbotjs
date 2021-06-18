@@ -26,7 +26,7 @@ class ScraperLab4Inf extends WebsiteScraper{
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.title}`
         return this.generateSlugFromString(fileName) + ".json"
     }

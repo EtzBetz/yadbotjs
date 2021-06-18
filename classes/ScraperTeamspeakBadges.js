@@ -59,7 +59,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
         return sourceString.replace(regexFakeWhitespace, '')
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.expiration}-${json.title}-${json.unlock}`
         return this.generateSlugFromString(fileName) + ".json"
     }

@@ -135,7 +135,7 @@ class ScraperBlackBoard extends WebsiteScraper {
         return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO()
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
         return this.generateSlugFromString(fileName) + '.json'

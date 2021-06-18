@@ -179,7 +179,7 @@ export class WebsiteScraper {
     filterNewContent(scrapeInfo) {
         for (let contentIndex in scrapeInfo.content) {
             if (!scrapeInfo.content.hasOwnProperty(contentIndex)) continue
-            const fileName = this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)
+            const fileName = this.generateFileName(scrapeInfo.content[contentIndex].json)
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
             let readData = files.readJson(filePath, 'data', false, [])
@@ -213,7 +213,7 @@ export class WebsiteScraper {
         return `${this.getScraperFolderPath()}/embeds`
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `test`
         return this.generateSlugFromString(fileName) + '.json'
     }
@@ -234,7 +234,7 @@ export class WebsiteScraper {
             this.log(`Sending and updating embed(s) in Guild "${embedTargetChannel.guild.name}", Channel "${embedTargetChannel.name}"`)
             for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) continue
-                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                const fileName = this.generateFileName(contentEntry.json)
                 const filePath = `${this.getScraperEmbedPath()}/${fileName}`
                 let sentChannels = files.readJson(
                     filePath,
@@ -279,7 +279,7 @@ export class WebsiteScraper {
             this.log(`Sending and updating embed(s) for ${embedTargetUser.username}`)
             for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) continue
-                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                const fileName = this.generateFileName(contentEntry.json)
                 const filePath = `${this.getScraperEmbedPath()}/${fileName}`
                 let sentChannels = files.readJson(
                     filePath,

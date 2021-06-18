@@ -98,7 +98,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString
         if (json.date !== undefined) {
             dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')

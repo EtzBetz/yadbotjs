@@ -47,7 +47,7 @@ class ScraperXRelReleases extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.release_title}`
         return this.generateSlugFromString(fileName) + '.json'

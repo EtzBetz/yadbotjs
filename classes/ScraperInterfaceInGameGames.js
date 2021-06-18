@@ -30,7 +30,7 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title.substring(0, 50)}`
         return this.generateSlugFromString(fileName) + '.json'

@@ -56,7 +56,7 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `0${json.postId}-${json.author}`
         return this.generateSlugFromString(fileName) + ".json"
     }

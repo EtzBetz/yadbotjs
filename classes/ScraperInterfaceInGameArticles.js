@@ -29,7 +29,7 @@ class ScraperInterfaceInGameArticles extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.title.substring(0, 50)}`
         return this.generateSlugFromString(fileName) + '.json'
     }
