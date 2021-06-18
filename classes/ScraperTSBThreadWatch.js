@@ -61,13 +61,13 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    getEmbed(json) {
+    getEmbed(content) {
         return new Discord.MessageEmbed(
             {
-                "description": `**#${json.postId}**:\n\`\`\`text\n${json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,
+                "description": `**#${content.json.postId}**:\n\`\`\`text\n${content.json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,
                 "url": `${this.getScrapingUrl()}`,
                 "author": {
-                    "name": `${json.author} (${json.date})`,
+                    "name": `${content.json.author} (${content.json.date})`,
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_ts.png"
                 }
             }

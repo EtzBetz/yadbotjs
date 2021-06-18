@@ -55,7 +55,7 @@ class ScraperXRelReleases extends WebsiteScraper {
 
     getEmbed(content) {
         let typeString = ''
-        switch (content.release_type) {
+        switch (content.json.release_type) {
         case 'movie':
             typeString = `Movie`
             break
@@ -74,24 +74,24 @@ class ScraperXRelReleases extends WebsiteScraper {
         default:
             yadBot.sendMessageToOwner(new Discord.MessageEmbed({
                 title: 'New release type in xREL Releases Scraper',
-                description: `New release type: \`${content.release_type}\``
+                description: `New release type: \`${content.json.release_type}\``
             }))
-            typeString = `UNKNOWN (${content.release_type})`
+            typeString = `UNKNOWN (${content.json.release_type})`
             break
         }
 
         let detailString = ''
-        switch (content.release_type) {
+        switch (content.json.release_type) {
         case 'tv':
-            if (content.series_details.single !== true) detailString = `Season ${content.series_details.season}, Episode ${content.series_details.episode}\n`
+            if (content.json.series_details.single !== true) detailString = `Season ${content.json.series_details.season}, Episode ${content.json.series_details.episode}\n`
             break
         }
 
         let embed = new Discord.MessageEmbed(
             {
                 title: 'New scene release available!',
-                description: `${typeString}:\n[${content.title}](${content.main_link})\n${detailString}[\`${content.release_title}\`](${content.release_link})`,
-                timestamp: content.date,
+                description: `${typeString}:\n[${content.json.title}](${content.json.main_link})\n${detailString}[\`${content.json.release_title}\`](${content.json.release_link})`,
+                timestamp: content.json.date,
                 author: {
                     name: 'xREL Releases',
                     url: 'https://www.xrel.to/releases.html',
@@ -100,21 +100,21 @@ class ScraperXRelReleases extends WebsiteScraper {
                 fields: [
                     {
                         name: 'Released by',
-                        value: `${content.release_group}`,
+                        value: `${content.json.release_group}`,
                     },
                     {
                         name: 'Language',
-                        value: `${content.language === 'en_US' ? '🇺🇸 English' : '🇩🇪 German'}`,
+                        value: `${content.json.language === 'en_US' ? '🇺🇸 English' : '🇩🇪 German'}`,
                     },
                 ],
             },
         )
 
-        if (content.release_type === 'tv') {
+        if (content.json.release_type === 'tv') {
             embed.fields.push(
                 {
                     'name': 'Video- & Audio-type',
-                    'value': `${content.series_details.video}, ${content.series_details.audio}`,
+                    'value': `${content.json.series_details.video}, ${content.json.series_details.audio}`,
                 },
             )
         }
@@ -122,11 +122,11 @@ class ScraperXRelReleases extends WebsiteScraper {
         embed.fields.push(
             {
                 'name': 'Download size',
-                'value': `${content.size_raw} ${content.size_unit}`,
+                'value': `${content.json.size_raw} ${content.json.size_unit}`,
             },
         )
 
-        if (content.fixed_release === true) {
+        if (content.json.fixed_release === true) {
             embed.fields.push(
                 {
                     'name': 'Fixed release',

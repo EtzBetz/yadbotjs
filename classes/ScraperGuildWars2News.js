@@ -84,12 +84,12 @@ class ScraperGuildWars2News extends WebsiteScraper{
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    getEmbed(json) {
+    getEmbed(content) {
         return new Discord.MessageEmbed(
             {
-                "title": json.title,
-                "description": json.description,
-                "url": json.url,
+                "title": content.json.title,
+                "description": content.json.description,
+                "url": content.json.url,
                 // "color": 0xff2222,
                 "author": {
                     "name": `Guild Wars 2`,
@@ -97,7 +97,7 @@ class ScraperGuildWars2News extends WebsiteScraper{
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_gw2.png"
                 },
                 footer: {
-                    text: `${json.author}  •  ${luxon.DateTime.fromISO(json.date).toFormat('dd.MM.yyyy')}`
+                    text: `${content.json.author}  •  ${luxon.DateTime.fromISO(content.json.date).toFormat('dd.MM.yyyy')}`
                 }
             }
         )

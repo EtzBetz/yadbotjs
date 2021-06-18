@@ -87,42 +87,42 @@ class ScraperMovieReleases extends WebsiteScraper {
     getEmbed(content) {
         let embed = new Discord.MessageEmbed(
             {
-                'title': content.title,
-                'description': this.generateDescriptionString(content.tagline, content.description, content.imdbId, content.id),
-                'url': content.url,
-                'timestamp': content.date,
+                'title': content.json.title,
+                'description': this.generateDescriptionString(content.json.tagline, content.json.description, content.json.imdbId, content.json.id),
+                'url': content.json.url,
+                'timestamp': content.json.date,
                 'thumbnail': {
-                    'url': `https://image.tmdb.org/t/p/w500${content.poster}`,
+                    'url': `https://image.tmdb.org/t/p/w500${content.json.poster}`,
                 },
                 'fields': [],
             },
         )
 
-        if (content.genres?.length > 0) {
+        if (content.json.genres?.length > 0) {
             embed.fields.push(
                 {
                     'name': 'Genres',
-                    'value': this.generateGenreString(content.genres),
+                    'value': this.generateGenreString(content.json.genres),
                     'inline': false,
                 }
             )
         }
 
-        if (content.producers.length > 0) {
+        if (content.json.producers.length > 0) {
             embed.fields.push(
                 {
                     'name': 'Produzenten',
-                    'value': this.generateProducerString(content.producers),
+                    'value': this.generateProducerString(content.json.producers),
                     'inline': false,
                 },
             )
         }
 
-        if (content.duration !== undefined && content.duration > 0) {
+        if (content.json.duration !== undefined && content.json.duration > 0) {
             embed.fields.push(
                 {
                     'name': 'Dauer',
-                    'value': this.generateDurationString(content.duration),
+                    'value': this.generateDurationString(content.json.duration),
                     'inline': false,
                 },
             )
@@ -136,11 +136,11 @@ class ScraperMovieReleases extends WebsiteScraper {
             )
         }
 
-        if (content.budget !== undefined && content.budget > 0) {
+        if (content.json.budget !== undefined && content.json.budget > 0) {
             embed.fields.push(
                 {
                     'name': 'Budget',
-                    'value': this.generateBudgetString(content.budget),
+                    'value': this.generateBudgetString(content.json.budget),
                     'inline': false,
                 },
             )

@@ -135,7 +135,7 @@ export class WebsiteScraper {
         for (let content of scrapeInfo.content) {
             try {
                 if (content.newData === true) {
-                    content.rendered = (this.filterEmbedLength(await this.getEmbed(content.json)))
+                    content.rendered = (this.filterEmbedLength(await this.getEmbed(content)))
                 }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
@@ -307,7 +307,7 @@ export class WebsiteScraper {
     getEmbed(content) {
         return new Discord.MessageEmbed({
             title: 'Preview Embed',
-            description: `Website title: "${content.title}"`,
+            description: `Website title: "${content.json.title}"`,
             color: EmbedColors.GREEN,
             url: this.getScrapingUrl(),
         })

@@ -34,14 +34,14 @@ class ScraperInterfaceInGameArticles extends WebsiteScraper {
         return this.generateSlugFromString(fileName) + '.json'
     }
 
-    getEmbed(json) {
+    getEmbed(content) {
         return new Discord.MessageEmbed(
             {
-                'title': `New Article: ${json.title}`,
-                'description': json.subtitle,
-                'url': `https://interfaceingame.com/${json.url}`,
+                'title': `New Article: ${content.json.title}`,
+                'description': content.json.subtitle,
+                'url': `https://interfaceingame.com/${content.json.url}`,
                 'image': {
-                    'url': json.image,
+                    'url': content.json.image,
                 },
                 'author': {
                     'name': 'Interface In Game',
@@ -51,7 +51,7 @@ class ScraperInterfaceInGameArticles extends WebsiteScraper {
                 'fields': [
                     {
                         'name': 'Category(s)',
-                        'value': this.getGenreString(json.genres),
+                        'value': this.getGenreString(content.json.genres),
                         inline: true
                     },
                 ],

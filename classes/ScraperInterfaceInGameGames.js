@@ -36,14 +36,14 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
         return this.generateSlugFromString(fileName) + '.json'
     }
 
-    getEmbed(json) {
+    getEmbed(content) {
         return new Discord.MessageEmbed(
             {
                 'title': 'A new game interface has been added!',
-                'description': `${json.title}\'s interface has been added.`,
-                'url': `https://interfaceingame.com/${json.url}`,
+                'description': `${content.json.title}\'s interface has been added.`,
+                'url': `https://interfaceingame.com/${content.json.url}`,
                 'image': {
-                    'url': json.image,
+                    'url': content.json.image,
                 },
                 'author': {
                     'name': 'Interface In Game',
@@ -53,12 +53,12 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
                 'fields': [
                     {
                         'name': 'Release date',
-                        'value': luxon.DateTime.fromISO(json.date).toFormat('MMMM d, yyyy'),
+                        'value': luxon.DateTime.fromISO(content.json.date).toFormat('MMMM d, yyyy'),
                         inline: true
                     },
                     {
                         'name': 'Genre(s)',
-                        'value': this.getGenreString(json.genres),
+                        'value': this.getGenreString(content.json.genres),
                         inline: true
                     },
                 ],
