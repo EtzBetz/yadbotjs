@@ -188,7 +188,7 @@ export class WebsiteScraper {
             if (JSON.stringify(latestData) !== JSON.stringify(scrapeInfo.content[contentIndex].json)) {
                 scrapeInfo.content[contentIndex].newData = true
                 readData.push(scrapeInfo.content[contentIndex].json)
-                this.log(`Saving new or updated JSON data in '${this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)}'...`)
+                this.log(`Saving new or updated JSON data in '${fileName}'...`)
                 files.writeJson(filePath, 'data', readData)
             } else {
                 scrapeInfo.content[contentIndex].newData = false
