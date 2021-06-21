@@ -226,6 +226,7 @@ export class WebsiteScraper {
         }
         if (newContentCount === 0 || !sendState || !globalSendState) return
         this.log(`Sending and updating ${newContentCount} embed(s)...`)
+
         for (let channelId of this.getSubGuildChannelIds()) {
             let embedTargetChannel = await yadBot.getBot().channels.fetch(channelId)
                 .catch((e) => console.dir(e))
@@ -266,6 +267,7 @@ export class WebsiteScraper {
                 }
             }
         }
+
         for (let userId of this.getSubUserIds()) {
             let embedTargetUser = await yadBot.getBot().users.fetch(userId)
                 .catch((e) => console.dir(e))
@@ -533,6 +535,14 @@ export class WebsiteScraper {
     }
 
     subscribe(interaction) {
+        // todo: eventually fix this
+        if (interaction.channel === null) {
+            yadBot.sendMessageToOwner("error: could not fetch channel on subscribe interaction")
+            return {
+                error: true,
+                data: `The interaction channel could not be fetched.\nPlease try again in a few seconds.`
+            }
+        }
         switch (interaction.channel.type) {
             case 'unknown':
                 return {error: true, data: 'Message channel type was unknown.'}
@@ -549,12 +559,12 @@ export class WebsiteScraper {
                 if (indexResult === -1) {
                     return {
                         error: false,
-                        data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `You have been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 } else {
                     return {
                         error: false,
-                        data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `You have been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 }
             case 'text':
