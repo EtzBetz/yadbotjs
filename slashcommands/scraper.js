@@ -31,7 +31,7 @@ export default {
             ]
         }
     },
-    execute(interaction) {
+    async execute(interaction) {
         if (interaction.options.get('subscribe') !== undefined) {
             let selectedScraper
             for (let i = 0; i < yadBot.scrapers.length; i++) {
@@ -45,7 +45,7 @@ export default {
                 yadBot.sendCommandErrorEmbed(interaction, `No scraper has been found for '${interaction.options.get('subscribe').options.get('scraper-name').value.toLowerCase()}'`)
                 return
             }
-            let result = selectedScraper.subscribe(interaction)
+            let result = await selectedScraper.subscribe(interaction)
             if (result.error) {
                 yadBot.sendCommandErrorEmbed(interaction, result.data)
             } else {
