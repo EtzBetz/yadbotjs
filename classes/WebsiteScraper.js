@@ -227,6 +227,7 @@ export class WebsiteScraper {
         }
         if (newContentCount === 0 || !sendState || !globalSendState) return
         this.log(`Sending and updating ${newContentCount} embed(s)...`)
+
         for (let channelId of this.getSubGuildChannelIds()) {
             let embedTargetChannel = await yadBot.getBot().channels.fetch(channelId)
                 .catch((e) => console.dir(e))
@@ -272,6 +273,7 @@ export class WebsiteScraper {
                 }
             }
         }
+
         for (let userId of this.getSubUserIds()) {
             let embedTargetUser = await yadBot.getBot().users.fetch(userId)
                 .catch((e) => console.dir(e))
@@ -558,8 +560,13 @@ export class WebsiteScraper {
         }
     }
 
-    subscribe(interaction) {
-        switch (interaction.channel.type) {
+    async subscribe(interaction) {
+        let interactionChannel = interaction.channel
+        if (interactionChannel === null) {
+            interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelID, true, true)
+        }
+
+        switch (interactionChannel.type) {
             case 'unknown':
                 return {error: true, data: 'Message channel type was unknown.'}
             case 'dm':
@@ -575,21 +582,21 @@ export class WebsiteScraper {
                 if (indexResult === -1) {
                     return {
                         error: false,
-                        data: `You have been added to the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `You have been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 } else {
                     return {
                         error: false,
-                        data: `You have been removed from the subscribers list of scraper **${this.constructor.name}**.`,
+                        data: `You have been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 }
             case 'text':
             case 'news':
                 if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                     let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
-                    let indexResultGuild = subChannels.indexOf(interaction.channel.id)
+                    let indexResultGuild = subChannels.indexOf(interactionChannel.id)
                     if (indexResultGuild === -1) {
-                        subChannels.push(interaction.channel.id)
+                        subChannels.push(interactionChannel.id)
                     } else {
                         subChannels.splice(indexResultGuild, 1)
                     }

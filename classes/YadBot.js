@@ -37,7 +37,8 @@ class YadBot {
                 'GUILD_MESSAGE_TYPING',
                 'DIRECT_MESSAGE_REACTIONS',
                 'DIRECT_MESSAGE_TYPING'
-            ]
+            ],
+            partials: []
         })
 
         this.bot.commands = new Discord.Collection()
