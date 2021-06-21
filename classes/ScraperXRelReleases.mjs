@@ -71,6 +71,9 @@ class ScraperXRelReleases extends WebsiteScraper {
         case 'game':
             typeString = `Game`
             break
+        case 'xxx':
+            typeString = `XXX`
+            break
         default:
             yadBot.sendMessageToOwner(new Discord.MessageEmbed({
                 title: 'New release type in xREL Releases Scraper',
