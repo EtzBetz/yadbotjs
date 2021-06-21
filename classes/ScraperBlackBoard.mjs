@@ -71,24 +71,32 @@ class ScraperBlackBoard extends WebsiteScraper {
                 let entryLinks = [], entryDownloads = []
 
                 entity.querySelectorAll('div:nth-child(3) > ul.verteiler > li').forEach((linkContainer, linkIndex) => {
-                    let linkText = linkContainer.querySelector('a > strong')?.textContent.trim()
-                    let linkAddress = linkContainer.querySelector('a').href?.trim()
+                    // let linkText = linkContainer.querySelector('a > strong')?.textContent.trim()
+                    // let linkAddress = linkContainer.querySelector('a').href?.trim()
+                    //
+                    // if (linkAddress.substring(0, 1) === '/') {
+                    //     linkAddress = 'https://www.fh-muenster.de' + linkAddress
+                    // }
+                    //
+                    // let downloadText = linkContainer.querySelector('a[onclick]')?.textContent.trim()
+                    // let downloadInfo = linkContainer.querySelector('a[onclick] > small')?.textContent.trim()
+                    // downloadText = downloadText?.substring(0, downloadText.length - downloadInfo?.length).trim()
+                    //
+                    // if (downloadText === undefined) {
+                    //     // button is link
+                    //     entryLinks.push({text: linkText, address: linkAddress})
+                    // } else {
+                    //     // button is download
+                    //     entryDownloads.push({text: downloadText, address: linkAddress, info: downloadInfo})
+                    // }
 
+                    let linkText = linkContainer.textContent.trim()
+                    let linkAddress = linkContainer.querySelector('a').href?.trim()
                     if (linkAddress.substring(0, 1) === '/') {
                         linkAddress = 'https://www.fh-muenster.de' + linkAddress
                     }
 
-                    let downloadText = linkContainer.querySelector('a[onclick]')?.textContent.trim()
-                    let downloadInfo = linkContainer.querySelector('a[onclick] > small')?.textContent.trim()
-                    downloadText = downloadText?.substring(0, downloadText.length - downloadInfo.length).trim()
-
-                    if (downloadText === undefined) {
-                        // button is link
-                        entryLinks.push({text: linkText, address: linkAddress})
-                    } else {
-                        // button is download
-                        entryDownloads.push({text: downloadText, address: linkAddress, info: downloadInfo})
-                    }
+                    entryLinks.push({text: linkText, address: linkAddress})
                 })
 
                 let entryDateString
