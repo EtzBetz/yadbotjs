@@ -126,6 +126,7 @@ class YadBot {
 
         for (const file of this.commandFiles) {
             let command = await import(`./../slashcommands/${file}`)
+            if (command.default.enabled === false) continue
             let commandData = command.default.getData()
             await this.bot.commands.set(commandData.name, command.default)
             commandsDataArr.push(commandData)
