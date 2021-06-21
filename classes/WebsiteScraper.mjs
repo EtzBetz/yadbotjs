@@ -534,16 +534,13 @@ export class WebsiteScraper {
         }
     }
 
-    subscribe(interaction) {
-        // todo: eventually fix this
-        if (interaction.channel === null) {
-            yadBot.sendMessageToOwner("error: could not fetch channel on subscribe interaction")
-            return {
-                error: true,
-                data: `The interaction channel could not be fetched.\nPlease try again in a few seconds.`
-            }
+    async subscribe(interaction) {
+        let interactionChannel = interaction.channel
+        if (interactionChannel === null) {
+            interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelID, true, true)
         }
-        switch (interaction.channel.type) {
+
+        switch (interactionChannel.type) {
             case 'unknown':
                 return {error: true, data: 'Message channel type was unknown.'}
             case 'dm':
@@ -571,9 +568,9 @@ export class WebsiteScraper {
             case 'news':
                 if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                     let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
-                    let indexResultGuild = subChannels.indexOf(interaction.channel.id)
+                    let indexResultGuild = subChannels.indexOf(interactionChannel.id)
                     if (indexResultGuild === -1) {
-                        subChannels.push(interaction.channel.id)
+                        subChannels.push(interactionChannel.id)
                     } else {
                         subChannels.splice(indexResultGuild, 1)
                     }

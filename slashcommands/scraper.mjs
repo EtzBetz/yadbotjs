@@ -31,7 +31,7 @@ export default {
             ]
         }
     },
-    execute(interaction) {
+    async execute(interaction) {
         switch (interaction.options[0].name.toLowerCase()) {
             case "subscribe":
                 let selectedScraper
@@ -46,7 +46,7 @@ export default {
                     yadBot.sendCommandErrorEmbed(interaction, `No scraper has been found for '${interaction.options[0].options[0].value.toLowerCase()}'`)
                     break
                 }
-                let result = selectedScraper.subscribe(interaction)
+                let result = await selectedScraper.subscribe(interaction)
                 if (result.error) {
                     yadBot.sendCommandErrorEmbed(interaction, result.data)
                 } else {
