@@ -397,7 +397,7 @@ export class WebsiteScraper {
     async sendUnreliableEmbedToSubscribers() {
         const updateEmbed = new Discord.MessageEmbed({
             title: `Notice`,
-            description: `New data is available from this scraper, but due to changes on the received data, Yad can not process it without error.\nYou can visit the page yourself [here](${await this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
+            description: `New data is available from this scraper(${this.constructor.name}), but due to changes in the received data, Yad can not process it without error.\nYou can visit the page [here](${await this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
             color: EmbedColors.ORANGE,
         })
 
