@@ -146,9 +146,9 @@ class YadBot {
         this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
         for (const file of this.eventFiles) {
             import(`./../events/${file}`)
-                .then((event) => {
+                .then(async (event) => {
                     let eventName = file.split('.')[0]
-                    this.bot.on(eventName, event.default.bind(this.bot))
+                    this.bot.on(eventName, await event.default.bind(this.bot))
                 })
         }
     }

@@ -1,13 +1,17 @@
 import Discord from "discord.js"
 import yadBot from './../classes/YadBot'
 
-export default (interaction) => {
+export default async (interaction) => {
     if (!interaction.isCommand()) return;
 
     const command = yadBot.getBot().commands.get(interaction.commandName)
 
     if(!yadBot.isInteractionAuthorOwner(interaction)) {
-        yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interaction.channel.name}'.`)
+        let interactionChannel = interaction.channel
+        if (interactionChannel === null) {
+            interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelID, true, true)
+        }
+        yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interactionChannel.name}'.`)
     }
 
     if (command === undefined) {
