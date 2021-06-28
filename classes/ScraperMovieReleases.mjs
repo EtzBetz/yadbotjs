@@ -15,7 +15,7 @@ class ScraperMovieReleases extends WebsiteScraper {
         url += `&region=de`
         url += `&release_date.gte=${pastDate}`
         url += `&release_date.lte=${todayDate}`
-        url += `&with_release_type=3|4|5|6`
+        url += `&with_release_type=3|4|5`
         url += `&sort_by=release_date.desc`
         url += `&api_key=${apiKey}`
         return url
