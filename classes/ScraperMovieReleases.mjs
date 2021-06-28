@@ -21,6 +21,13 @@ class ScraperMovieReleases extends WebsiteScraper {
         return url
     }
 
+    getReleaseDateScrapingUrl(scrapeInfo, entry) {
+        const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
+        let url = `https://api.themoviedb.org/3/movie/${entry.id}/release_dates`
+        url += `?api_key=${apiKey}`
+        return url
+    }
+
     async parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
         const apiKey = files.readJson(this.getScraperConfigPath(), 'tmdb_api_key', true, 'ENTER API KEY HERE')
@@ -40,13 +47,31 @@ class ScraperMovieReleases extends WebsiteScraper {
             entry.tagline = movieDetails.tagline
             entry.description = movie.overview
             entry.url = movieDetails.homepage
-            entry.date = luxon.DateTime.fromFormat(movie.release_date, 'yyyy-MM-dd').setZone('UTC+0').toISO()
+            // entry.date = luxon.DateTime.fromFormat(movie.release_date, 'yyyy-MM-dd').setZone('UTC+0').toISO()
             entry.poster = movie.poster_path
             entry.genres = movieDetails.genres
             entry.producers = movieDetails.production_companies
             entry.duration = movieDetails.runtime
             entry.budget = movieDetails.budget
             entry.imdbId = movieDetails.imdb_id
+
+            let releaseData = await super.requestWebsite(this.getReleaseDateScrapingUrl(scrapeInfo, entry))
+
+            entry.releases = []
+            for (const countryReleases of releaseData.data.results) {
+                if (countryReleases.iso_3166_1 !== "US" && countryReleases.iso_3166_1 !== "DE") continue
+                let countryReleasesNew = {}
+                countryReleasesNew.iso_3166 = countryReleases.iso_3166_1
+                countryReleasesNew.release_dates = []
+                for (const release of countryReleases.release_dates) {
+                    let releaseNew = {}
+                    releaseNew.type = release.type
+                    releaseNew.date = release.release_date
+                    releaseNew.note = release.note
+                    countryReleasesNew.release_dates.push(releaseNew)
+                }
+                entry.releases.push(countryReleasesNew)
+            }
 
             // let xRelReleaseQueryUrl = "https://api.xrel.to/v2/search/ext_info.xml"
             // xRelReleaseQueryUrl += "?type=movie"
@@ -79,7 +104,6 @@ class ScraperMovieReleases extends WebsiteScraper {
     }
 
     generateFileNameFromJson(json) {
-        // let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${json.id}-${json.title}`
         return this.generateSlugFromString(fileName) + '.json'
     }
@@ -90,7 +114,6 @@ class ScraperMovieReleases extends WebsiteScraper {
                 'title': content.title,
                 'description': this.generateDescriptionString(content.tagline, content.description, content.imdbId, content.id),
                 'url': content.url,
-                'timestamp': content.date,
                 'thumbnail': {
                     'url': `https://image.tmdb.org/t/p/w500${content.poster}`,
                 },
@@ -144,6 +167,76 @@ class ScraperMovieReleases extends WebsiteScraper {
                     'inline': false,
                 },
             )
+        }
+
+        // 1  Premiere
+        // 2  Theatrical (limited)
+        // 3  Theatrical
+        // 4  Digital
+        // 5  Physical
+        // 6  TV
+        if (content.releases?.length > 0) {
+            let usString = ""
+            let deString = ""
+            for (const countryRelease of content.releases) {
+                let releases = countryRelease.release_dates
+                releases.sort((releaseA, releaseB) => {
+                    let dateA = parseInt(luxon.DateTime.fromISO(releaseA.date).toFormat('yyyyMMdd'), 10)
+                    let dateB = parseInt(luxon.DateTime.fromISO(releaseB.date).toFormat('yyyyMMdd'), 10)
+                    return dateA - dateB
+                })
+                for (const release of releases) {
+                    let finalString = ""
+                    finalString += luxon.DateTime.fromISO(release.date).toFormat('dd.MM.yyyy')
+                    switch (release.type) {
+                        case 1:
+                            finalString += " - Premiere"
+                            break
+                        case 2:
+                            finalString += " - Kino (begrenzt)"
+                            break
+                        case 3:
+                            finalString += " - Kino"
+                            break
+                        case 4:
+                            finalString += " - Digital"
+                            break
+                        case 5:
+                            finalString += " - Physisch"
+                            break
+                        case 6:
+                            finalString += " - TV"
+                            break
+                    }
+                    if (release.note !== "") {
+                        finalString += ` (${release.note})`
+                    }
+                    switch (countryRelease.iso_3166) {
+                        case "US":
+                            usString += `${finalString}\n`
+                            break
+                        case "DE":
+                            deString += `${finalString}\n`
+                            break
+                    }
+                }
+            }
+            if (usString !== "") {
+                embed.fields.push(
+                    {
+                        'name': 'US-Release(s)',
+                        'value': usString,
+                    }
+                )
+            }
+            if (deString !== "") {
+                embed.fields.push(
+                    {
+                        'name': 'DE-Release(s)',
+                        'value': deString,
+                    }
+                )
+            }
         }
 
         return embed
