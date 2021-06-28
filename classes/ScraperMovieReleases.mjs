@@ -79,8 +79,8 @@ class ScraperMovieReleases extends WebsiteScraper {
     }
 
     generateFileNameFromJson(json) {
-        let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
-        let fileName = `${dateString}-${json.title}`
+        // let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
+        let fileName = `${json.id}-${json.title}`
         return this.generateSlugFromString(fileName) + '.json'
     }
 
