@@ -259,11 +259,13 @@ export class WebsiteScraper {
                             this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
                             console.dir(e)
                         })
-                    sentChannels.guild_message_ids.push({
-                        messageId: sentMessage.id,
-                        channelId: sentMessage.channel.id
-                    })
-                    files.writeJson(filePath, 'sent_channels', sentChannels)
+                    if (sentMessage !== undefined) {
+                        sentChannels.guild_message_ids.push({
+                            messageId: sentMessage.id,
+                            channelId: sentMessage.channel.id
+                        })
+                        files.writeJson(filePath, 'sent_channels', sentChannels)
+                    }
                 }
             }
         }
@@ -296,11 +298,13 @@ export class WebsiteScraper {
                 } else {
                     let sentMessage = await embedTargetUser?.send(contentEntry.rendered)
                         .catch(e => console.dir(e))
-                    sentChannels.user_message_ids.push({
-                        messageId: sentMessage.id,
-                        channelId: sentMessage.channel.id
-                    })
-                    files.writeJson(filePath, 'sent_channels', sentChannels)
+                    if (sentMessage !== undefined) {
+                        sentChannels.user_message_ids.push({
+                            messageId: sentMessage.id,
+                            channelId: sentMessage.channel.id
+                        })
+                        files.writeJson(filePath, 'sent_channels', sentChannels)
+                    }
                 }
             }
         }
