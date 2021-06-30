@@ -288,8 +288,11 @@ export class WebsiteScraper {
                         user_message_ids: [],
                     }
                 )
-                let messageDataToUpdate = sentChannels.user_message_ids.find(async (sentMessageData) => {
-                    return (await yadBot.getBot().channels.fetch(sentMessageData.channelId)).recipient.id === embedTargetUser.id
+                let messageDataToUpdate = sentChannels.user_message_ids.find((sentMessageData) => {
+                    yadBot.getBot().channels.fetch(sentMessageData.channelId)
+                        .then((channel) => {
+                            return channel.recipient.id === embedTargetUser.id
+                        })
                 })
                 if (messageDataToUpdate !== undefined) {
                     let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
