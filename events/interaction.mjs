@@ -35,7 +35,7 @@ export default async (interaction) => {
     }
 
     try {
-        command?.execute(interaction)
+        await command?.execute(interaction)
     } catch (e) {
         yadBot.sendCommandErrorEmbed(interaction, 'Some unknown error occurred. The admins have been notified.')
         let fullCommand = `${interaction.commandName}`

@@ -90,7 +90,7 @@ export default {
             ]
         }
     },
-    execute(interaction) {
+    async execute(interaction) {
         switch (interaction.options[0].name.toLowerCase()) {
             case 'status':
                 let statusDescription = ``
@@ -190,7 +190,7 @@ export default {
                     return
                 }
 
-                const embed = sendingScraper.filterEmbedLength(sendingScraper.getEmbed(jsonData.data[jsonData.data.length - 1]))
+                const embed = sendingScraper.filterEmbedLength(await sendingScraper.getEmbed(jsonData.data[jsonData.data.length - 1]))
 
                 // todo: add argument 'all', send to all subscribers then
                 sendingScraper.log(`Sending embed(s) to ${interaction.options[0].options[2].channel.guild?.name}:${interaction.options[0].options[2].channel.name}`)
