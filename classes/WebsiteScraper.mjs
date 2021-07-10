@@ -250,6 +250,7 @@ export class WebsiteScraper {
                 })
                 if (messageDataToUpdate !== undefined) {
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                    // todo: if message is older than x, send new instead of edit
                     await messageToUpdate.edit(contentEntry.rendered)
                 } else {
 
@@ -289,14 +290,11 @@ export class WebsiteScraper {
                     }
                 )
                 let messageDataToUpdate = sentChannels.user_message_ids.find((sentMessageData) => {
-                    yadBot.getBot().channels.fetch(sentMessageData.channelId)
-                        .then((channel) => {
-                            return channel.recipient.id === embedTargetUser.id
-                        })
+                    return sentMessageData.userId === embedTargetUser.id
                 })
                 if (messageDataToUpdate !== undefined) {
-                    let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
-                    let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                    let messageToUpdate = await (await embedTargetUser.createDM()).messages.fetch(messageDataToUpdate.messageId)
+                    // todo: if message is older than x, send new instead of edit
                     await messageToUpdate.edit(contentEntry.rendered)
                 } else {
                     let sentMessage = await embedTargetUser?.send(contentEntry.rendered)
@@ -304,7 +302,7 @@ export class WebsiteScraper {
                     if (sentMessage !== undefined) {
                         sentChannels.user_message_ids.push({
                             messageId: sentMessage.id,
-                            channelId: sentMessage.channel.id
+                            userId: embedTargetUser.id
                         })
                         files.writeJson(filePath, 'sent_channels', sentChannels)
                     }
