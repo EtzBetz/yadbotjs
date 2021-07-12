@@ -53,7 +53,7 @@ export default {
         fullyVaccinated = parseInt(data[0].personen_voll_kumulativ)
         atLeastFirstVaccinated = parseInt(data[0].personen_erst_kumulativ)
 
-        if (fullyVaccinated >= (citizens - children)) {
+        if (fullyVaccinated >= (citizens - (children / 2))) {
             interaction.reply({
                 embeds: [{
                     title: "Corona pandemic ended?",
@@ -83,7 +83,7 @@ export default {
                             "th"
             const dateString5 = expectedDate.toFormat("yyyy")
 
-            const currentWeekResultPartial = Math.ceil((((((citizens - children) * 0.7) - fullyVaccinated) * 2) - (atLeastFirstVaccinated - fullyVaccinated)) / (dailyAverageVaccinations * data.length))
+            const currentWeekResultPartial = Math.ceil((((((citizens - children) * 0.85) - fullyVaccinated) * 2) - (atLeastFirstVaccinated - fullyVaccinated)) / (dailyAverageVaccinations * data.length))
 
             const expectedDatePartial = luxon.DateTime.local().plus({weeks: currentWeekResultPartial})
             const datePartialString1 = expectedDatePartial.toFormat("MMMM d")
@@ -99,7 +99,10 @@ export default {
             interaction.reply({
                 embeds: [{
                     title: "Coronalife",
-                    description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining ~${((citizens-children)-atLeastFirstVaccinated).toLocaleString('de-DE')} unvaccinated and ~${(atLeastFirstVaccinated-fullyVaccinated).toLocaleString('de-DE')} first-time vaccinated german adults.\nBased on this calculation, the pandemic could be over on **${dateString1}${dateString4} ${dateString5}**.\n\nThe target goal of vaccinating 70% of all german adults could currently take **~${currentWeekResultPartial} weeks**.\nThis would result in the calculated date and first big openings around **${datePartialString1}${datePartialString4} ${datePartialString5}**.\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${(atLeastFirstVaccinated-fullyVaccinated).toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}\n\n**Please take this data with a grain of salt!** It is only calculated to have a very rough understanding of how long it **could** take until we have our pre-covid lives back again. To get a better understanding of the current situation, **visit other sources** as well, like [Impfdashboard.de](https://impfdashboard.de/), [Pandemieende.de](https://pandemieende.de/) or others.`
+                    description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining ~${((citizens - children) - atLeastFirstVaccinated).toLocaleString('de-DE')} unvaccinated and ~${(atLeastFirstVaccinated - fullyVaccinated).toLocaleString('de-DE')} first-time vaccinated german adults.\nBased on this calculation, the pandemic could be over on **${dateString1}${dateString4} ${dateString5}**.\n\nThe target goal of vaccinating 85% of all german adults could currently take **~${currentWeekResultPartial} weeks**.\nThis would result in the calculated date and first big openings around **${datePartialString1}${datePartialString4} ${datePartialString5}**.\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${(atLeastFirstVaccinated - fullyVaccinated).toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}\n\n**Please take this data with a grain of salt!** It is only calculated to have a very rough understanding of how long it **could** take until we have our pre-covid lives back again. To get a better understanding of the current situation, **visit other sources** as well, like [Impfdashboard.de](https://impfdashboard.de/), [Pandemieende.de](https://pandemieende.de/) or others.`,
+                    image: {
+                        url: `https://impfdashboard.de/static/zgc-750x620.jpg?date=${luxon.DateTime.local().toSeconds()}`
+                    }
                 }]
             })
         }
