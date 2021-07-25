@@ -57,6 +57,7 @@ class ScraperMovieReleases extends WebsiteScraper {
 
             let releaseData = await super.requestWebsite(this.getReleaseDateScrapingUrl(scrapeInfo, entry))
 
+            // todo: sort array by iso3166 because otherwise the array can be shuffled up and be "new"
             entry.releases = []
             for (const countryReleases of releaseData.data.results) {
                 if (countryReleases.iso_3166_1 !== "US" && countryReleases.iso_3166_1 !== "DE") continue
