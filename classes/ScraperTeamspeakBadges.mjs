@@ -42,7 +42,8 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
         //      "unlimited"
         //      "Never"
 
-        const regexBadges = /Name:\s*(.+)\s*\((.+)\)\nGUID:\s*\S*\nBadge code:\s*(.+)\s*\(Available until:\s*(.+)\S*\)/gmi
+        const regexBadges = /Name:\s*(.+)\s*\((.+)\)\nGUID:\s*\S*\nBadge code:\s*(.+)\s*\(.*?: (.+)\S*\)/gmi
+        // const regexBadges = /Name:\s*(.+)\s*\((.+)\)\nGUID:\s*\S*\nBadge code:\s*(.+)\s*\(.*?: (\d{1,2}\.\d{1,2}\.\d{2,4})\S*\)/gmi
 
         const result = regexBadges.exec(this.filterFakeWhitespace(sourceString))
         return {
