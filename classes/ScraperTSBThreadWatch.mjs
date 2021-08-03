@@ -7,7 +7,7 @@ import files from './Files.mjs';
 class ScraperTSBThreadWatch extends WebsiteScraper {
 
     getScrapingUrl() {
-        return 'https://community.teamspeak.com/t/teamspeak-badge-list/358/' + files.readJson(
+        return 'https://community.teamspeak.com/t/updated-teamspeak-badge-list/25184/' + files.readJson(
             this.getScraperConfigPath(),
             'latest_post_id',
             false,
