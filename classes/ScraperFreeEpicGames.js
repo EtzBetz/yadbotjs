@@ -1,7 +1,7 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
-import yadBot from './YadBot.mjs';
+import yadBot from './YadBot.js';
 import jsdom from 'jsdom';
 
 class ScraperFreeEpicGames extends WebsiteScraper {
@@ -82,7 +82,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.slug}`
         return this.generateSlugFromString(fileName) + ".json"
@@ -90,24 +90,24 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
     getEmbed(content) {
         let descriptionString, startDate, endDate
-        startDate = luxon.DateTime.fromISO(content.startDate).setZone('utc')
-        endDate = luxon.DateTime.fromISO(content.endDate).setZone('utc')
+        startDate = luxon.DateTime.fromISO(content.json.startDate).setZone('utc')
+        endDate = luxon.DateTime.fromISO(content.json.endDate).setZone('utc')
 
         descriptionString = `**Free** in Epic Games Store until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}.`
 
         let osString = ""
 
-        if (content.windowsCompatibility) osString += "Windows"
-        if (content.macCompatibility) {
+        if (content.json.windowsCompatibility) osString += "Windows"
+        if (content.json.macCompatibility) {
             if (osString !== "") osString += ", "
             osString += "macOS"
         }
 
         let embed = new Discord.MessageEmbed(
             {
-                "title": content.title,
+                "title": content.json.title,
                 "description": descriptionString,
-                "url": `https://www.epicgames.com/store/us/p/${content.slug}`,
+                "url": `https://www.epicgames.com/store/us/p/${content.json.slug}`,
                 "author": {
                     "name": "Epic Games Store",
                     "url": "https://www.epicgames.com/store/us/free-games",
@@ -117,10 +117,10 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             }
         )
 
-        if (content.originalPrice !== undefined) {
+        if (content.json.originalPrice !== undefined) {
             embed.fields.push({
                 "name": "Original Price",
-                "value": `~~${content.originalPrice}~~`,
+                "value": `~~${content.json.originalPrice}~~`,
                 "inline": true
             })
         }
@@ -149,27 +149,27 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             })
         }
 
-        if (content.imageUrl !== undefined) {
+        if (content.json.imageUrl !== undefined) {
             embed.image = {
-                url: content.imageUrl
+                url: content.json.imageUrl
             }
         }
 
-        if (content.developer !== undefined) {
+        if (content.json.developer !== undefined) {
             embed.fields.push(
                 {
                     "name": "Developer",
-                    "value": `${content.developer}`,
+                    "value": `${content.json.developer}`,
                     "inline": true
                 }
             )
         }
 
-        if (content.publisher !== undefined) {
+        if (content.json.publisher !== undefined) {
             embed.fields.push(
                 {
                     "name": "Publisher",
-                    "value": `${content.publisher}`,
+                    "value": `${content.json.publisher}`,
                     "inline": true
                 }
             )

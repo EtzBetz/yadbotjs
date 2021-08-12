@@ -1,5 +1,5 @@
 import Discord from "discord.js"
-import yadBot from '../classes/YadBot'
+import yadBot from '../classes/YadBot.js'
 import config from '../config.json'
 
 export default {
@@ -17,7 +17,7 @@ export default {
         }
     },
     execute(interaction) {
-        let text = interaction.options[0].value
+        let text = interaction.options.get('input').value
         let formattedText = ""
         for (let i = text.length - 1; i >= 0; i--) {
             formattedText += this.flipCharacter(text[i])

@@ -98,12 +98,33 @@ export default {
 
             interaction.reply({
                 embeds: [{
-                    title: "Coronalife",
-                    description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining ~${((citizens - children) - atLeastFirstVaccinated).toLocaleString('de-DE')} unvaccinated and ~${(atLeastFirstVaccinated - fullyVaccinated).toLocaleString('de-DE')} first-time vaccinated german adults.\nBased on this calculation, the pandemic could be over on **${dateString1}${dateString4} ${dateString5}**.\n\nThe target goal of vaccinating 85% of all german adults could currently take **~${currentWeekResultPartial} weeks**.\nThis would result in the calculated date and first big openings around **${datePartialString1}${datePartialString4} ${datePartialString5}**.\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${(atLeastFirstVaccinated - fullyVaccinated).toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}\n\n**Please take this data with a grain of salt!** It is only calculated to have a very rough understanding of how long it **could** take until we have our pre-covid lives back again. To get a better understanding of the current situation, **visit other sources** as well, like [Impfdashboard.de](https://impfdashboard.de/), [Pandemieende.de](https://pandemieende.de/) or others.`,
+                    title: "Coronatime",
+                    description: `Based on current weekly data, it will take **~${currentWeekResult} weeks** to vaccinate all remaining ~${((citizens - children) - atLeastFirstVaccinated).toLocaleString('de-DE')} unvaccinated and ~${(atLeastFirstVaccinated - fullyVaccinated).toLocaleString('de-DE')} first-time vaccinated german adults.\nBased on this calculation, the pandemic could be over on **${dateString1}${dateString4} ${dateString5}**.\n\nThe target goal of vaccinating 85% of all german adults could currently take **~${currentWeekResultPartial} weeks**.\nThis would result in the calculated date and first big openings around **${datePartialString1}${datePartialString4} ${datePartialString5}**.\n\n**Data:**\nCitizens in Germany: ${citizens.toLocaleString("de-DE")}\nChildren in Germany: ${children.toLocaleString("de-DE")}\nFully vaccinated citizens: ${fullyVaccinated.toLocaleString("de-DE")}\nOne-time vaccinated citizens: ${(atLeastFirstVaccinated - fullyVaccinated).toLocaleString("de-DE")}\nCurrent daily vaccinations: ${dailyAverageVaccinations.toLocaleString("de-DE")}\n\n**Please take this data with a grain of salt!** It is only calculated to have a very rough understanding of how long it **could** take until we have our pre-covid lives back again. To get a better understanding of the current situation, **visit other sources** as well, a few have been listed below.`,
                     image: {
                         url: `https://impfdashboard.de/static/zgc-750x620.jpg?date=${luxon.DateTime.local().toSeconds()}`
                     }
-                }]
+                }],
+                components: [
+                    new Discord.MessageActionRow({
+                        components: [
+                            new Discord.MessageButton({
+                                label: "Impfdashboard.de",
+                                style: 'LINK',
+                                url: "https://impfdashboard.de/"
+                            }),
+                            new Discord.MessageButton({
+                                label: "Bundesregierung.de",
+                                style: 'LINK',
+                                url: "https://www.bundesregierung.de/breg-de/themen/coronavirus"
+                            }),
+                            new Discord.MessageButton({
+                                label: "Pandemieende.de",
+                                style: 'LINK',
+                                url: "https://pandemieende.de/"
+                            })
+                        ]
+                    }),
+                ],
             })
         }
     },

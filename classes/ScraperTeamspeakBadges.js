@@ -60,12 +60,12 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
         return sourceString.replace(regexFakeWhitespace, '')
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.expiration}-${json.title}-${json.unlock}`
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    async getEmbed(json) {
+    async getEmbed(content) {
         return new Discord.MessageEmbed(
             {
                 "title": "New Teamspeak Badge available!",
@@ -79,26 +79,26 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
                 "fields": [
                     {
                         "name": "Title",
-                        "value": json.title
+                        "value": content.json.title
                     },
                     {
                         "name": "Note",
-                        "value": json.note
+                        "value": content.json.note
                     },
                     {
                         "name": "Unlockable until",
-                        "value": json.expiration
+                        "value": content.json.expiration
                     },
                     {
                         "name": `${
-                            json.unlock.toLowerCase() === "auto assign" ||
-                            json.unlock.toLowerCase() === "one-time code" ||
-                            json.unlock.toLowerCase() === "non-assignable" ? `Unlock Type` : `Unlock Code`
+                            content.json.unlock.toLowerCase() === "auto assign" ||
+                            content.json.unlock.toLowerCase() === "one-time code" ||
+                            content.json.unlock.toLowerCase() === "non-assignable" ? `Unlock Type` : `Unlock Code`
                         }`,
                         "value": `${
-                            json.unlock.toLowerCase() === "auto assign" ||
-                            json.unlock.toLowerCase() === "one-time code" ||
-                            json.unlock.toLowerCase() === "non-assignable" ? `${json.unlock}` : `\`${json.unlock}\``
+                            content.json.unlock.toLowerCase() === "auto assign" ||
+                            content.json.unlock.toLowerCase() === "one-time code" ||
+                            content.json.unlock.toLowerCase() === "non-assignable" ? `${content.json.unlock}` : `\`${content.json.unlock}\``
                         }`
                     }
                 ]

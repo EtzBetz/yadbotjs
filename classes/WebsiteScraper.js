@@ -1,12 +1,12 @@
 import * as rax from 'retry-axios'
 import axios from 'axios'
 import * as Discord from 'discord.js'
-import yadBot from './YadBot'
-import {debugLog, errorLog, log, red, reset} from '../index'
+import yadBot from './YadBot.js'
+import {debugLog, errorLog, log, red, reset} from '../index.js'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
-import files from './Files.mjs'
-import EmbedColors from '../constants/EmbedColors.mjs';
+import files from './Files.js'
+import EmbedColors from '../constants/EmbedColors.js';
 
 export class WebsiteScraper {
 
@@ -135,7 +135,8 @@ export class WebsiteScraper {
         for (let content of scrapeInfo.content) {
             try {
                 if (content.newData === true) {
-                    content.rendered = (this.filterEmbedLength(await this.getEmbed(content.json)))
+                    content.embed = (this.filterEmbedLength(await this.getEmbed(content)))
+                    content.components = await this.getComponents(content)
                 }
             } catch (e) {
                 yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
@@ -178,7 +179,7 @@ export class WebsiteScraper {
     filterNewContent(scrapeInfo) {
         for (let contentIndex in scrapeInfo.content) {
             if (!scrapeInfo.content.hasOwnProperty(contentIndex)) continue
-            const fileName = this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)
+            const fileName = this.generateFileName(scrapeInfo.content[contentIndex].json)
             const filePath = `${this.getScraperEmbedPath()}/${fileName}`
 
             let readData = files.readJson(filePath, 'data', false, [])
@@ -188,7 +189,7 @@ export class WebsiteScraper {
             if (JSON.stringify(latestData) !== JSON.stringify(scrapeInfo.content[contentIndex].json)) {
                 scrapeInfo.content[contentIndex].newData = true
                 readData.push(scrapeInfo.content[contentIndex].json)
-                this.log(`Saving new or updated JSON data in '${this.generateFileNameFromJson(scrapeInfo.content[contentIndex].json)}'...`)
+                this.log(`Saving new or updated JSON data in '${fileName}'...`)
                 files.writeJson(filePath, 'data', readData)
             } else {
                 scrapeInfo.content[contentIndex].newData = false
@@ -212,7 +213,7 @@ export class WebsiteScraper {
         return `${this.getScraperFolderPath()}/embeds`
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `test`
         return this.generateSlugFromString(fileName) + '.json'
     }
@@ -234,7 +235,7 @@ export class WebsiteScraper {
             this.log(`Sending and updating embed(s) in Guild "${embedTargetChannel.guild.name}", Channel "${embedTargetChannel.name}"`)
             for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) continue
-                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                const fileName = this.generateFileName(contentEntry.json)
                 const filePath = `${this.getScraperEmbedPath()}/${fileName}`
                 let sentChannels = files.readJson(
                     filePath,
@@ -251,10 +252,15 @@ export class WebsiteScraper {
                 if (messageDataToUpdate !== undefined) {
                     let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
                     // todo: if message is older than x, send new instead of edit
-                    await messageToUpdate.edit(contentEntry.rendered)
+                    await messageToUpdate.edit({
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
+                    })
                 } else {
-
-                    let sentMessage = await embedTargetChannel.send(contentEntry.rendered)
+                    let sentMessage = await embedTargetChannel?.send({
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
+                    })
                         .catch(e => {
                             yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
                             this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
@@ -278,7 +284,7 @@ export class WebsiteScraper {
             this.log(`Sending and updating embed(s) for ${embedTargetUser.username}`)
             for (let contentEntry of scrapeInfo.content) {
                 if (contentEntry.newData !== true) continue
-                const fileName = this.generateFileNameFromJson(contentEntry.json)
+                const fileName = this.generateFileName(contentEntry.json)
                 const filePath = `${this.getScraperEmbedPath()}/${fileName}`
                 let sentChannels = files.readJson(
                     filePath,
@@ -296,8 +302,17 @@ export class WebsiteScraper {
                     let messageToUpdate = await (await embedTargetUser.createDM()).messages.fetch(messageDataToUpdate.messageId)
                     // todo: if message is older than x, send new instead of edit
                     await messageToUpdate.edit(contentEntry.rendered)
+                    let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
+                    let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                    await messageToUpdate.edit({
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
+                    })
                 } else {
-                    let sentMessage = await embedTargetUser?.send(contentEntry.rendered)
+                    let sentMessage = await embedTargetUser?.send({
+                        embeds: [contentEntry.embed],
+                        components: contentEntry.components
+                    })
                         .catch(e => console.dir(e))
                     if (sentMessage !== undefined) {
                         sentChannels.user_message_ids.push({
@@ -314,10 +329,24 @@ export class WebsiteScraper {
     getEmbed(content) {
         return new Discord.MessageEmbed({
             title: 'Preview Embed',
-            description: `Website title: "${content.title}"`,
+            description: `Website title: "${content.json.title}"`,
             color: EmbedColors.GREEN,
             url: this.getScrapingUrl(),
         })
+    }
+
+    getComponents(content) {
+        return []
+
+        // new Discord.MessageActionRow({
+        //     components: [
+        //         new Discord.MessageButton({
+        //             label: "Google",
+        //             style: 'LINK',
+        //             url: "https://google.de/"
+        //         }),
+        //     ]
+        // })
     }
 
     getSortingFunction() {

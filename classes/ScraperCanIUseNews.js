@@ -75,7 +75,7 @@ class ScraperCanIUseNews extends WebsiteScraper{
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${this.generateSlugFromString(json.title)}`
         return this.generateSlugFromString(fileName) + ".json"
@@ -84,10 +84,10 @@ class ScraperCanIUseNews extends WebsiteScraper{
     getEmbed(content) {
         let features = []
         let urlString = ""
-        if (content.featIds !== undefined) {
+        if (content.json.featIds !== undefined) {
             const separationRegex = /([^,]+)/g
 
-            let separationResult = [...content.featIds.matchAll(separationRegex)]
+            let separationResult = [...content.json.featIds.matchAll(separationRegex)]
             separationResult.forEach((result, index) => {
                 features.push(result[1])
             })
@@ -99,8 +99,8 @@ class ScraperCanIUseNews extends WebsiteScraper{
 
         let embed = new Discord.MessageEmbed(
             {
-                "title": content.title,
-                "description": content.description,
+                "title": content.json.title,
+                "description": content.json.description,
                 "author": {
                     "name": "CanIUse.com",
                     "url": "https://caniuse.com",

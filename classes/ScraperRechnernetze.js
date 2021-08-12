@@ -30,17 +30,17 @@ class ScraperRechnernetze extends WebsiteScraper{
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.title}`
         return this.generateSlugFromString(fileName) + ".json"
     }
 
     getEmbed(content) {
-        let fileType = content.link.split("").reverse().join("")
+        let fileType = content.json.link.split("").reverse().join("")
         let lastDotIndex = fileType.indexOf('.')
         fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")
 
-        let fileName = content.title.split("").reverse().join("")
+        let fileName = content.json.title.split("").reverse().join("")
         let lastDotIndexTitle = fileName.indexOf('.')
 
         if (lastDotIndexTitle !== -1) {
@@ -50,7 +50,7 @@ class ScraperRechnernetze extends WebsiteScraper{
 
         return new Discord.MessageEmbed(
             {
-                "description": `Neue Datei zum Download:\n[${fileName} (.${fileType})](${content.link})`,
+                "description": `Neue Datei zum Download:\n[${fileName} (.${fileType})](${content.json.link})`,
                 "author": {
                     "name": "Rechnernetze",
                     "url": this.getScrapingUrl(),

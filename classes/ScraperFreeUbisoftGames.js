@@ -1,17 +1,16 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
-import files from './Files.mjs';
+import files from './Files.js';
 import axios from 'axios';
-import yadBot from './YadBot.mjs';
+import yadBot from './YadBot.js';
 
 class ScraperFreeUbisoftGames extends WebsiteScraper {
 
     async getScrapingUrl(scrapeInfo) {
         let response = await this.requestWebsite("https://free.ubisoft.com/configuration.js")
 
-        let data = response.data
-        data = data.replace(/(\r\n|\n|\r|\t)/gm, "")
+        let data = response.data.replace(/(\r\n|\n|\r|\t)/gm, "")
 
         let config = await this.getObjectFromRelaxedKey(data, 'var config')
         let feed = await this.getObjectFromRelaxedKey(config, 'feedUrl:')
@@ -152,7 +151,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.startDate).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
         return this.generateSlugFromString(fileName) + ".json"
@@ -161,8 +160,8 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
     getEmbed(content) {
         let descriptionString, startDate, endDate
 
-        if (content.endDate !== undefined) {
-            endDate = luxon.DateTime.fromISO(content.endDate)
+        if (content.json.endDate !== undefined) {
+            endDate = luxon.DateTime.fromISO(content.json.endDate)
             descriptionString = `**Free** until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))} in Ubisoft Store.`
         } else {
             descriptionString = `Currently **free** in Ubisoft Store.`
@@ -170,11 +169,11 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
 
         let embed = new Discord.MessageEmbed(
             {
-                "title": content.title,
+                "title": content.json.title,
                 "description": descriptionString,
-                "url": content.url,
+                "url": content.json.url,
                 "image": {
-                    "url": content.image
+                    "url": content.json.image
                 },
                 "author": {
                     "name": "Ubisoft Store",
@@ -185,15 +184,15 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             }
         )
 
-        if (content.startDate !== undefined) {
+        if (content.json.startDate !== undefined) {
             embed.fields.push({
                 "name": "Start Date",
-                "value": `${luxon.DateTime.fromISO(content.startDate).toFormat('MMMM')} ${yadBot.ordinal(parseInt(luxon.DateTime.fromISO(content.startDate).toFormat("d"), 10))}, ${luxon.DateTime.fromISO(content.startDate).toFormat('yyyy, HH:mm')}`,
+                "value": `${luxon.DateTime.fromISO(content.json.startDate).toFormat('MMMM')} ${yadBot.ordinal(parseInt(luxon.DateTime.fromISO(content.json.startDate).toFormat("d"), 10))}, ${luxon.DateTime.fromISO(content.json.startDate).toFormat('yyyy, HH:mm')}`,
                 "inline": true
             })
         }
 
-        if (content.endDate !== undefined) {
+        if (content.json.endDate !== undefined) {
             embed.fields.push({
                 "name": "End Date",
                 "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')}`,

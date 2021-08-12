@@ -1,22 +1,22 @@
 import fs from 'fs'
 import Discord from 'discord.js'
-import scraperBlackBoard from './ScraperBlackBoard.mjs'
+import scraperBlackBoard from './ScraperBlackBoard.js'
 import scraperFreeEpicGames from './ScraperFreeEpicGames'
-import scraperFreeSteamGames from './ScraperFreeSteamGames.mjs'
-import scraperFreeUbisoftGames from './ScraperFreeUbisoftGames.mjs'
-import scraperGuildWars2News from './ScraperGuildWars2News.mjs'
-import scraperTeamspeakBadges from './ScraperTeamspeakBadges.mjs'
-import ScraperMovieReleases from './ScraperMovieReleases.mjs'
-import ScraperXRelReleases from './ScraperXRelReleases.mjs'
-import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.mjs'
-import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.mjs'
-import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.mjs'
-import ScraperCanIUseNews from './ScraperCanIUseNews.mjs'
+import scraperFreeSteamGames from './ScraperFreeSteamGames.js'
+import scraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
+import scraperGuildWars2News from './ScraperGuildWars2News.js'
+import scraperTeamspeakBadges from './ScraperTeamspeakBadges.js'
+import ScraperMovieReleases from './ScraperMovieReleases.js'
+import ScraperXRelReleases from './ScraperXRelReleases.js'
+import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.js'
+import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.js'
+import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js'
+import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import {log, debugLog} from '../index'
-import files from './Files.mjs'
-import activityTypes from '../constants/ActivityTypes.mjs'
+import files from './Files.js'
+import activityTypes from '../constants/ActivityTypes.js'
 import * as diff from 'diff';
-import EmbedColors from '../constants/EmbedColors.mjs';
+import EmbedColors from '../constants/EmbedColors.js';
 
 class YadBot {
 
@@ -120,7 +120,7 @@ class YadBot {
 
     async bindCommands() {
 
-        this.commandFiles = fs.readdirSync(`./slashcommands/`).filter(file => file.endsWith('.mjs'))
+        this.commandFiles = fs.readdirSync(`./slashcommands/`).filter(file => file.endsWith('.js'))
         this.bot.commands.clear()
         let commandsDataArr = []
 
@@ -143,7 +143,7 @@ class YadBot {
 
     bindEvents() {
         this.unbindEvents()
-        this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.mjs'))
+        this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.js'))
         for (const file of this.eventFiles) {
             import(`./../events/${file}`)
                 .then(async (event) => {

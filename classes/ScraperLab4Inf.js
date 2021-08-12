@@ -26,14 +26,14 @@ class ScraperLab4Inf extends WebsiteScraper{
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.title}`
         return this.generateSlugFromString(fileName) + ".json"
     }
 
     getEmbed(content) {
         let category
-        switch (content.category) {
+        switch (content.json.category) {
         case 0:
             category = "Skript-"
             break
@@ -48,13 +48,13 @@ class ScraperLab4Inf extends WebsiteScraper{
             break
         }
 
-        let fileType = content.address.split("").reverse().join("")
+        let fileType = content.json.address.split("").reverse().join("")
         let lastDotIndex = fileType.indexOf('.')
         fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")
 
         return new Discord.MessageEmbed(
             {
-                "description": `Neue ${category}Datei zum Download:\n[${content.title} (.${fileType})](http://www.lab4inf.fh-muenster.de/${content.address})`,
+                "description": `Neue ${category}Datei zum Download:\n[${content.json.title} (.${fileType})](http://www.lab4inf.fh-muenster.de/${content.json.address})`,
                 "author": {
                     "name": "Höhere Programmierkonzepte",
                     "url": this.getScrapingUrl(),

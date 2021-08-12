@@ -2,7 +2,7 @@ import jsdom from 'jsdom'
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
-import yadBot from './YadBot.mjs'
+import yadBot from './YadBot.js'
 
 class ScraperBlackBoard extends WebsiteScraper {
 
@@ -143,16 +143,16 @@ class ScraperBlackBoard extends WebsiteScraper {
         return luxon.DateTime.fromFormat(`${day}.${month}.${year}`, 'd.M.yyyy').setZone('Europe/Berlin').toISO()
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
         let fileName = `${dateString}-${json.title}`
         return this.generateSlugFromString(fileName) + '.json'
     }
 
-    getEmbed(json) {
+    getEmbed(content) {
         let paragraphString = ''
 
-        json.paragraphs.forEach((paragraph, index) => {
+        content.json.paragraphs.forEach((paragraph, index) => {
             if (index !== 0) paragraphString += '\n'
             paragraphString += paragraph
         })
@@ -181,12 +181,12 @@ class ScraperBlackBoard extends WebsiteScraper {
 
         let linkTitle = 'Link'
         let linkContent = ''
-        if (json.links?.length > 0) {
-            if (json.links?.length > 1) {
+        if (content.json.links?.length > 0) {
+            if (content.json.links?.length > 1) {
                 linkTitle += 's'
             }
 
-            json.links.forEach((link, index) => {
+            content.json.links.forEach((link, index) => {
                 if (index !== 0) linkContent += '\n'
                 linkContent += `> [${link.text}](${link.address})`
             })
@@ -198,13 +198,13 @@ class ScraperBlackBoard extends WebsiteScraper {
         }
         let downloadTitle = 'Download'
         let downloadContent = ''
-        if (json.downloads?.length > 0) {
-            if (json.downloads?.length > 1) {
+        if (content.json.downloads?.length > 0) {
+            if (content.json.downloads?.length > 1) {
                 downloadTitle += 's'
             }
 
             downloadTitle += 's'
-            json.downloads.forEach((download, index) => {
+            content.json.downloads.forEach((download, index) => {
                 if (index !== 0) downloadContent += '\n'
                 downloadContent += `> [${download.info} ${download.text}](${download.address})`
             })
@@ -218,8 +218,8 @@ class ScraperBlackBoard extends WebsiteScraper {
         let footerString = `Alle Angaben ohne Gewähr!  •  `
 
         let dateObj
-        if (json.date !== undefined) {
-            dateObj = luxon.DateTime.fromISO(json.date)
+        if (content.json.date !== undefined) {
+            dateObj = luxon.DateTime.fromISO(content.json.date)
         } else {
             dateObj = luxon.DateTime.local()
         }
@@ -227,9 +227,9 @@ class ScraperBlackBoard extends WebsiteScraper {
 
         return new Discord.MessageEmbed(
             {
-                title: json.title !== undefined ? Discord.Util.escapeMarkdown(json.title) : 'Neuer Aushang',
+                title: content.json.title !== undefined ? Discord.Util.escapeMarkdown(content.json.title) : 'Neuer Aushang',
                 description: paragraphString,
-                url: this.buildUrl(json),
+                url: this.buildUrl(content),
                 footer: {
                     text: footerString,
                 },
@@ -243,10 +243,10 @@ class ScraperBlackBoard extends WebsiteScraper {
         )
     }
 
-    buildUrl(json) {
+    buildUrl(content) {
         let url = `https://www.fh-muenster.de/eti/aktuell/aushang/index.php`
         url += `#:~:text=`
-        url += encodeURI(json.title)
+        url += encodeURI(content.json.title)
         return url
     }
 

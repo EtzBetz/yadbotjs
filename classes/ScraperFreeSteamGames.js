@@ -1,8 +1,8 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
-import files from './Files.mjs'
-import yadBot from './YadBot.mjs';
+import files from './Files.js'
+import yadBot from './YadBot.js';
 
 class ScraperFreeSteamGames extends WebsiteScraper {
 
@@ -98,7 +98,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let dateString
         if (json.date !== undefined) {
             dateString = luxon.DateTime.fromISO(json.date).toFormat('yyyy-MM-dd')
@@ -112,9 +112,9 @@ class ScraperFreeSteamGames extends WebsiteScraper {
     getEmbed(content) {
         let descriptionText = ''
 
-        switch (content.discountType) {
+        switch (content.json.discountType) {
             case 'discounted':
-                descriptionText = `Discounted by ${content.discountAmount}%.`
+                descriptionText = `Discounted by ${content.json.discountAmount}%.`
                 break
             case 'free':
                 descriptionText = `Free to play in Steam Store.`
@@ -126,9 +126,9 @@ class ScraperFreeSteamGames extends WebsiteScraper {
 
         let embed = new Discord.MessageEmbed(
             {
-                'title': content.title,
+                'title': content.json.title,
                 'description': descriptionText,
-                'url': `https://store.steampowered.com/app/${content.id}/`,
+                'url': `https://store.steampowered.com/app/${content.json.id}/`,
                 'author': {
                     'name': 'Steam',
                     'url': 'https://store.steampowered.com/',
@@ -138,49 +138,49 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             },
         )
 
-        if (content.finalPrice !== undefined && content.discountType !== "gift") {
+        if (content.json.finalPrice !== undefined && content.json.discountType !== "gift") {
             embed.fields.push(
                 {
                     'name': 'Discounted Price',
-                    'value': `**${content.finalPrice}**`,
+                    'value': `**${content.json.finalPrice}**`,
                     'inline': true,
                 },
             )
         }
 
-        if (content.originalPrice !== undefined) {
+        if (content.json.originalPrice !== undefined) {
             embed.fields.push(
                 {
                     'name': 'Original Price',
-                    'value': `~~${content.originalPrice}~~`,
+                    'value': `~~${content.json.originalPrice}~~`,
                     'inline': true,
                 },
             )
         }
 
-        if (content.date !== undefined) {
+        if (content.json.date !== undefined) {
             embed.fields.push(
                 {
                     'name': 'Release Date',
-                    'value': luxon.DateTime.fromISO(content.date).toFormat('d. LLLL yyyy', {locale: "de"}),
+                    'value': luxon.DateTime.fromISO(content.json.date).toFormat('d. LLLL yyyy', {locale: "de"}),
                     'inline': true,
                 },
             )
         }
 
-        if (content.dateRaw !== undefined) {
+        if (content.json.dateRaw !== undefined) {
             embed.fields.push(
                 {
                     'name': 'Release Date',
-                    'value': content.dateRaw,
+                    'value': content.json.dateRaw,
                     'inline': true,
                 },
             )
         }
 
-        if (content.imageUrl !== undefined) {
+        if (content.json.imageUrl !== undefined) {
             embed.image = {
-                url: content.imageUrl,
+                url: content.json.imageUrl,
             }
         }
         return embed

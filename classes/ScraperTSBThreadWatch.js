@@ -1,8 +1,8 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
-import yadBot from './YadBot.mjs';
-import files from './Files.mjs';
+import yadBot from './YadBot.js';
+import files from './Files.js';
 
 class ScraperTSBThreadWatch extends WebsiteScraper {
 
@@ -56,18 +56,18 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `0${json.postId}-${json.author}`
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    getEmbed(json) {
+    getEmbed(content) {
         return new Discord.MessageEmbed(
             {
-                "description": `**#${json.postId}**:\n\`\`\`text\n${json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,
+                "description": `**#${content.json.postId}**:\n\`\`\`text\n${content.json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,
                 "url": `${this.getScrapingUrl()}`,
                 "author": {
-                    "name": `${json.author} (${json.date})`,
+                    "name": `${content.json.author} (${content.json.date})`,
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_ts.png"
                 }
             }

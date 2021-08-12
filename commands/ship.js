@@ -1,5 +1,5 @@
 import Discord from "discord.js"
-import yadBot from '../classes/YadBot.mjs'
+import yadBot from '../classes/YadBot.js'
 import config from '../config.json'
 
 export default {
