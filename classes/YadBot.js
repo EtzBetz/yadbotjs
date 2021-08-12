@@ -23,22 +23,25 @@ class YadBot {
     constructor() {
         this.bot = new Discord.Client({
             intents: [
-                'GUILDS',
-                'GUILD_MEMBERS',
-                'GUILD_BANS',
-                'GUILD_EMOJIS',
-                'GUILD_INTEGRATIONS',
-                'GUILD_WEBHOOKS',
-                'GUILD_INVITES',
-                'GUILD_VOICE_STATES',
-                'GUILD_PRESENCES',
-                'GUILD_MESSAGES',
-                'GUILD_MESSAGE_REACTIONS',
-                'GUILD_MESSAGE_TYPING',
-                'DIRECT_MESSAGE_REACTIONS',
-                'DIRECT_MESSAGE_TYPING'
+                Discord.Intents.FLAGS.GUILDS,
+                Discord.Intents.FLAGS.GUILD_MEMBERS,
+                Discord.Intents.FLAGS.GUILD_BANS,
+                Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+                Discord.Intents.FLAGS.GUILD_INTEGRATIONS,
+                Discord.Intents.FLAGS.GUILD_WEBHOOKS,
+                Discord.Intents.FLAGS.GUILD_INVITES,
+                Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+                Discord.Intents.FLAGS.GUILD_PRESENCES,
+                Discord.Intents.FLAGS.GUILD_MESSAGES,
+                Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+                Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+                Discord.Intents.FLAGS.DIRECT_MESSAGES,
+                Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+                Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
             ],
-            partials: []
+            partials: [
+                'CHANNEL'
+            ]
         })
 
         this.bot.commands = new Discord.Collection()
@@ -63,7 +66,7 @@ class YadBot {
                 ScraperCanIUseNews
             ]
             await this.bindCommands()
-            this.bindEvents()
+            await this.bindEvents()
             log(`-------------------------------`)
             log('I\'m online! Setting presence...')
 
@@ -71,7 +74,7 @@ class YadBot {
             if (customActivityState) {
                 let customActivityType = files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, activityTypes.PLAYING)
                 let customActivityText = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
-                this.bot.user.setActivity(customActivityText, {type: customActivityType})
+                this.bot.user.setActivity(customActivityText, {type: Discord.ActivityFlags.FLAGS.PLAY})
             }
             log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
             this.bot.guilds.cache.forEach(guild => {
@@ -141,15 +144,13 @@ class YadBot {
         }
     }
 
-    bindEvents() {
+    async bindEvents() {
         this.unbindEvents()
         this.eventFiles = fs.readdirSync(`./events/`).filter(file => file.endsWith('.js'))
         for (const file of this.eventFiles) {
-            import(`./../events/${file}`)
-                .then(async (event) => {
-                    let eventName = file.split('.')[0]
-                    this.bot.on(eventName, await event.default.bind(this.bot))
-                })
+            let event = await import(`./../events/${file}`)
+            let eventName = file.split('.')[0]
+            this.bot.on(eventName, await event.default.bind(this.bot))
         }
     }
 

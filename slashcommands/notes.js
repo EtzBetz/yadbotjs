@@ -54,50 +54,54 @@ export default {
         let notesString = ""
         let notes = undefined
 
-        if (interaction.options.get('list') !== undefined) {
-            notes = files.readJson(
-                yadBot.getCommandConfigPath("notes"),
-                interaction.user.id,
-                false,
-                []
-            )
+        switch (interaction.options.getSubcommand()) {
+            case 'list':
+                notes = files.readJson(
+                    yadBot.getCommandConfigPath("notes"),
+                    interaction.user.id,
+                    false,
+                    []
+                )
 
-            notes.forEach((noteEntry, index) => {
-                notesString += ` \`${(index + 1)}:\` ${noteEntry}\n`
-            })
-            if (notesString === "") notesString = "Your notes list is empty."
+                notes.forEach((noteEntry, index) => {
+                    notesString += ` \`${(index + 1)}:\` ${noteEntry}\n`
+                })
+                if (notesString === "") notesString = "Your notes list is empty."
 
-            this.embedNotes(interaction, interaction, notesString, 0)
-        } else if (interaction.options.get('add') !== undefined) {
-            notes = files.readJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, false, [])
-            notes.push(interaction.options.get('add').options.get('note').value)
-            files.writeJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, notes)
+                this.embedNotes(interaction, interaction, notesString, 0)
+                break
+            case 'add':
+                notes = files.readJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, false, [])
+                notes.push(interaction.options.getString('note'))
+                files.writeJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, notes)
 
-            notes.forEach((entry, index) => {
-                notesString += ` \`${(index + 1)}:\` ${index + 1 === notes.length ? "**" : ""}${entry}${index + 1 === notes.length ? "**" : ""}\n`
-            })
-            this.embedNotes(interaction, interaction, notesString, 1)
-        } else if (interaction.options.get('remove') !== undefined) {
-            notes = files.readJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, false, [])
+                notes.forEach((entry, index) => {
+                    notesString += ` \`${(index + 1)}:\` ${index + 1 === notes.length ? "**" : ""}${entry}${index + 1 === notes.length ? "**" : ""}\n`
+                })
+                this.embedNotes(interaction, interaction, notesString, 1)
 
-            let indexToRemove = interaction.options.get('remove').options.get('note-number').value
-            if (notes.length < indexToRemove) {
-                this.embedErrorInvalidRemoveIndex(interaction, interaction)
-                return
-            }
+                break
+            case 'remove':
+                notes = files.readJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, false, [])
 
-            let oldNotes = JSON.stringify(notes) // stringify to copy by value
-            notes.splice(interaction.options.get('remove').options.get('note-number').value - 1, 1)
-            files.writeJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, notes)
+                let indexToRemove = interaction.options.getInteger('note-number')
+                if (notes.length < indexToRemove) {
+                    this.embedErrorInvalidRemoveIndex(interaction, interaction)
+                    return
+                }
 
-            notesString = ""
-            JSON.parse(oldNotes).forEach((entry, index) => {
-                notesString += ` \`${(index + 1)}:\` ${index + 1 === interaction.options.get('remove').options.get('note-number').value ? "**~~" : ""}${entry}${index + 1 === interaction.options.get('remove').options.get('note-number').value ? "~~**" : ""}\n`
-            })
-            if (notesString === "") notesString = "Your notes list is empty."
+                let oldNotes = JSON.stringify(notes) // stringify to copy by value
+                notes.splice(interaction.options.getInteger('note-number') - 1, 1)
+                files.writeJson(yadBot.getCommandConfigPath("notes"), interaction.user.id, notes)
 
-            this.embedNotes(interaction, interaction, notesString, 2)
+                notesString = ""
+                JSON.parse(oldNotes).forEach((entry, index) => {
+                    notesString += ` \`${(index + 1)}:\` ${index + 1 === interaction.options.getInteger('note-number') ? "**~~" : ""}${entry}${index + 1 === interaction.options.getInteger('note-number') ? "~~**" : ""}\n`
+                })
+                if (notesString === "") notesString = "Your notes list is empty."
 
+                this.embedNotes(interaction, interaction, notesString, 2)
+                break
         }
     },
     embedNotes(interaction, args, notesString, embedType) {
@@ -123,9 +127,6 @@ export default {
             }],
             ephemeral: true
         })
-    },
-    embedErrorInvalidArguments(message, args) {
-        yadBot.sendCommandErrorEmbed(message, `Invalid arguments were given.\n Use \`${config.prefix}help\` for more information`)
     },
     embedErrorInvalidRemoveIndex(message, args) {
         yadBot.sendCommandErrorEmbed(message, `Invalid index to remove was given.`)

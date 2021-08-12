@@ -299,11 +299,8 @@ export class WebsiteScraper {
                     return sentMessageData.userId === embedTargetUser.id
                 })
                 if (messageDataToUpdate !== undefined) {
-                    let messageToUpdate = await (await embedTargetUser.createDM()).messages.fetch(messageDataToUpdate.messageId)
                     // todo: if message is older than x, send new instead of edit
-                    await messageToUpdate.edit(contentEntry.rendered)
-                    let embedTargetChannel = await yadBot.getBot().channels.fetch(messageDataToUpdate.channelId)
-                    let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                    let messageToUpdate = await (await embedTargetUser.createDM()).messages.fetch(messageDataToUpdate.messageId)
                     await messageToUpdate.edit({
                         embeds: [contentEntry.embed],
                         components: contentEntry.components
@@ -393,7 +390,7 @@ export class WebsiteScraper {
 
         yadBot.getBot().guilds.fetch(guildId)
             .then((guild) => {
-                guild.owner?.send(noticeEmbed)
+                guild.owner?.send({embeds: [noticeEmbed]})
             })
             .catch(e => {
                 this.errorLog("Could not message the guild's scraper channel and not the owner of that guild!")
@@ -405,7 +402,7 @@ export class WebsiteScraper {
     async sendUnreliableEmbedToSubscribers() {
         const updateEmbed = new Discord.MessageEmbed({
             title: `Notice`,
-            description: `New data is available from this scraper(${this.constructor.name}), but due to changes in the received data, Yad can not process it without error.\nYou can visit the page [here](${await this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
+            description: `New data is available from this scraper (${this.constructor.name}), but due to changes in the received data, Yad can not process it without error.\nYou can visit the page [here](${await this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
             color: EmbedColors.ORANGE,
         })
 
@@ -414,7 +411,7 @@ export class WebsiteScraper {
                 .then(channel => {
                     if (yadBot.getBot().user === null) return
                     this.log(`Sending embed(s) to ${channel.guild.name}:${channel.name}`)
-                    channel.send(updateEmbed)
+                    channel.send({embeds: [updateEmbed]})
                         .catch(e => console.dir(e))
                 })
                 .catch((e) => {
@@ -427,7 +424,7 @@ export class WebsiteScraper {
                 .then(user => {
                     if (yadBot.getBot().user === null) return
                     this.log(`Sending embed(s) to ${user.username}`)
-                    user?.send(updateEmbed)
+                    user?.send({embeds: [updateEmbed]})
                         .catch(e => console.dir(e))
                 })
                 .catch((e) => {
@@ -571,13 +568,13 @@ export class WebsiteScraper {
     async subscribe(interaction) {
         let interactionChannel = interaction.channel
         if (interactionChannel === null) {
-            interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelID, true, true)
+            interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {cache: true, force: true})
         }
 
         switch (interactionChannel.type) {
-            case 'unknown':
+            case "UNKNOWN":
                 return {error: true, data: 'Message channel type was unknown.'}
-            case 'dm':
+            case "DM":
                 let subUsers = files.readJson(this.getScraperConfigPath(), 'sub_user_ids', false, [])
 
                 let indexResult = subUsers.indexOf(interaction.user.id)
@@ -598,8 +595,8 @@ export class WebsiteScraper {
                         data: `You have been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 }
-            case 'text':
-            case 'news':
+            case "GUILD_TEXT":
+            case "GUILD_NEWS":
                 if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                     let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
                     let indexResultGuild = subChannels.indexOf(interactionChannel.id)
@@ -625,6 +622,11 @@ export class WebsiteScraper {
                         error: true,
                         data: `You need admin permissions on this server to be able to manage subscriptions.`,
                     }
+                }
+            default:
+                return {
+                    error: true,
+                    data: `Unknown type of channel.`,
                 }
         }
     }

@@ -1,13 +1,17 @@
 import Discord from "discord.js"
-import yadBot from '../classes/YadBot.js'
+import yadBot from '../classes/YadBot'
 import EmbedColors from '../constants/EmbedColors';
 
-export default (interaction) => {
+export default async (interaction) => {
     if (interaction.isCommand()) {
         const command = yadBot.getBot().commands.get(interaction.commandName)
 
-        if (!yadBot.isInteractionAuthorOwner(interaction)) {
-            yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interaction.channel.name}'.`)
+        if(!yadBot.isInteractionAuthorOwner(interaction)) {
+            let interactionChannel = interaction.channel
+            if (interactionChannel === null) {
+                interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {cache: true, force: true})
+            }
+            yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interactionChannel.name}'.`)
         }
 
         if (command === undefined) {
@@ -34,17 +38,14 @@ export default (interaction) => {
             command?.execute(interaction)
         } catch (e) {
             yadBot.sendCommandErrorEmbed(interaction, 'Some unknown error occurred. The admins have been notified.')
-            let fullCommand = `${interaction.commandName}`
-            interaction.options.forEach(option => {
-                fullCommand += ` ${option.value !== undefined ? option.value : option.name}`
-            })
-            yadBot.sendMessageToOwner(`Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${fullCommand}'.\n\`\`\`text\n${e.stack}\`\`\``)
+            // todo: build full command chain
+            yadBot.sendMessageToOwner(`Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${interaction.commandName}'.\n\`\`\`text\n${e.stack}\`\`\``)
         }
     } else if (interaction.isMessageComponent()) {
         if (interaction.isButton()) {
-            interaction.defer({ ephemeral: true })
+            interaction.deferReply({ ephemeral: true })
 
-            let interactionCommand = interaction.customID.split("::")
+            let interactionCommand = interaction.customId.split("::")
             console.log(interactionCommand)
 
             switch (interactionCommand[0]) {

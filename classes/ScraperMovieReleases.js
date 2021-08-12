@@ -141,7 +141,7 @@ class ScraperMovieReleases extends WebsiteScraper {
         return elements
     }
 
-    generateFileNameFromJson(json) {
+    generateFileName(json) {
         let fileName = `${json.id}-${json.title}`
         return this.generateSlugFromString(fileName) + '.json'
     }
@@ -286,12 +286,12 @@ class ScraperMovieReleases extends WebsiteScraper {
                 components: [
                     new Discord.MessageButton({
                         label: `Subscribe to xREL Releases for '${content.json.xRelTitle}'`,
-                        customID: `xrel::subscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
+                        customId: `xrel::subscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
                         style: 'PRIMARY',
                     }),
                     new Discord.MessageButton({
                         label: `Unsubscribe`,
-                        customID: `xrel::unsubscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
+                        customId: `xrel::unsubscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
                         style: 'DANGER',
                     }),
                     new Discord.MessageButton({

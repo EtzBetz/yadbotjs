@@ -43,19 +43,19 @@ export default {
                                 .then(guildMember => {
                                     if (args[0] === "add") {
                                         guildMember.roles.add(serverRole, 'Given by Yad command as SC Ship')
-                                        message.channel.send(new Discord.MessageEmbed({
+                                        message.channel.send({embeds: [new Discord.MessageEmbed({
                                             title: "Role added",
                                             color: 0x4CAF50,
                                             description: `The ship-role "${serverRole.name}" was given to ${guildMember.toString()}.`
-                                        }))
+                                        })]})
                                     }
                                     else if (args[0] === "remove") {
                                         guildMember.roles.remove(serverRole, 'Removed by Yad command as SC Ship')
-                                        message.channel.send(new Discord.MessageEmbed({
+                                        message.channel.send({embeds: [new Discord.MessageEmbed({
                                             title: "Role removed",
                                             color: 0x4CAF50,
                                             description: `The ship-role "${serverRole.name}" has been removed from ${guildMember.toString()}'s ship-list.`
-                                        }))
+                                        })]})
                                     }
                                 })
                         }
@@ -133,13 +133,13 @@ export default {
                             })
                         })
 
-                        message.channel.send(new Discord.MessageEmbed({
+                        message.channel.send({embeds: [new Discord.MessageEmbed({
                             "author": {
                                 "name": `All Ships and Vehicles`,
                                 "icon_url": guild.iconURL({dynamic: true} )
                             },
                             description: `**Ships:**\n${shipString}\n\n**Vehicles:**\n${vehicleString}`
-                        }))
+                        })]})
                     })
 
 
@@ -171,7 +171,7 @@ export default {
                                     }
                                 })
 
-                                message.channel.send(new Discord.MessageEmbed({
+                                message.channel.send({embeds: [new Discord.MessageEmbed({
                                     "author": {
                                         "name": `${userToHandle.username}'s Ships and Vehicles`,
                                         "icon_url": userToHandle.avatarURL({dynamic: true} )
@@ -186,7 +186,7 @@ export default {
                                             "value": vehicleList !== "" ? vehicleList : "Owns no vehicle yet."
                                         },
                                     ]
-                                }))
+                                })]})
 
                             })
                     })
