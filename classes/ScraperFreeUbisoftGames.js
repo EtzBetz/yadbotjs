@@ -119,6 +119,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
                 case "freegame":
                 case "gametrial":
                 case "freeweekend":
+                case "beta":
                     break
                 default:
                     yadBot.sendMessageToOwner(`new \`type\` type in ubisoft scraper->${game['type']}`)
@@ -126,7 +127,10 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             }
 
             let entry = {}
-            if (game.placement === "freeevents" && game.type === "freegame") {
+            if (
+                (game.placement === "freeevents" && game.type === "freegame") ||
+                (game.placement === "freeevents" && game.type === "beta")
+            ) {
                 entry.title = game.title
                 entry.image = game.mediaURL
 
@@ -137,10 +141,10 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
                 }
 
                 if (game.publicationDate !== undefined && game.publicationDate !== null) {
-                    entry.startDate = luxon.DateTime.fromISO(game.publicationDate).setZone('Europe/Berlin').toISO()
+                    entry.startDate = luxon.DateTime.fromISO(game.publicationDate).toISO()
                 }
                 if (game.expirationDate !== undefined && game.expirationDate !== null) {
-                    entry.endDate = luxon.DateTime.fromFormat(game.expirationDate, 'yyyy-MM-ddTHH:mm:ss').toISO()
+                    entry.endDate = luxon.DateTime.fromISO(game.expirationDate).toISO()
                 }
 
                 elements.push(entry)
@@ -187,7 +191,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         if (content.json.startDate !== undefined) {
             embed.fields.push({
                 "name": "Start Date",
-                "value": `${luxon.DateTime.fromISO(content.json.startDate).toFormat('MMMM')} ${yadBot.ordinal(parseInt(luxon.DateTime.fromISO(content.json.startDate).toFormat("d"), 10))}, ${luxon.DateTime.fromISO(content.json.startDate).toFormat('yyyy, HH:mm')}`,
+                "value": `${luxon.DateTime.fromISO(content.json.startDate).toFormat('MMMM')} ${yadBot.ordinal(parseInt(luxon.DateTime.fromISO(content.json.startDate).toFormat("d"), 10))}, ${luxon.DateTime.fromISO(content.json.startDate).toFormat('HH:mm')}`,
                 "inline": true
             })
         }
