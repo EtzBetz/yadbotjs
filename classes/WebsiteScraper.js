@@ -104,8 +104,12 @@ export class WebsiteScraper {
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
         let scrapeInfo = {}
-        scrapeInfo.url = await this.getScrapingUrl(scrapeInfo)
-        scrapeInfo.response = await this.requestWebsite(scrapeInfo.url)
+        try { scrapeInfo.url = await this.getScrapingUrl(scrapeInfo) } catch (e) {
+            yadBot.sendMessageToOwner(`Error 1 while trying to get scraping url in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+        }
+        try { scrapeInfo.response = await this.requestWebsite(scrapeInfo.url) } catch (e) {
+            yadBot.sendMessageToOwner(`Error 2 while requesting website in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+        }
         scrapeInfo.content = []
         try {
             let jsonContents = await this.parseWebsiteContentToJSON(scrapeInfo)
@@ -115,7 +119,7 @@ export class WebsiteScraper {
                 })
             }
         } catch (e) {
-            yadBot.sendMessageToOwner(`Error 1 while parsing response to JSON in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+            yadBot.sendMessageToOwner(`Error 3 while parsing response to JSON in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
         }
         this.filterNewContent(scrapeInfo)
         let newContentCount = 0
@@ -139,7 +143,7 @@ export class WebsiteScraper {
                     content.components = await this.getComponents(content)
                 }
             } catch (e) {
-                yadBot.sendMessageToOwner(`Error 2 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                yadBot.sendMessageToOwner(`Error 4 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
             }
         }
         if (newContentCount >= 1) {
