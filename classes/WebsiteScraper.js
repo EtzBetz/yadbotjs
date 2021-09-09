@@ -554,7 +554,7 @@ export class WebsiteScraper {
     }
 
     cutStringAddDots(string, maxLength, extraStringEnd = null) {
-        let stringEnd = ' (...)'
+        let stringEnd = '\n **(...)**'
         if (extraStringEnd !== null) stringEnd = extraStringEnd
 
         if (typeof string === 'string') {
