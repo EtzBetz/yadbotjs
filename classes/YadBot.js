@@ -1,17 +1,18 @@
 import fs from 'fs'
 import Discord from 'discord.js'
-import scraperBlackBoard from './ScraperBlackBoard.js'
-import scraperFreeEpicGames from './ScraperFreeEpicGames'
-import scraperFreeSteamGames from './ScraperFreeSteamGames.js'
-import scraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
-import scraperGuildWars2News from './ScraperGuildWars2News.js'
-import scraperTeamspeakBadges from './ScraperTeamspeakBadges.js'
+import ScraperBlackBoard from './ScraperBlackBoard.js'
+import ScraperFreeEpicGames from './ScraperFreeEpicGames'
+import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
+import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
+import ScraperGuildWars2News from './ScraperGuildWars2News.js'
+import ScraperTeamspeakBadges from './ScraperTeamspeakBadges.js'
 import ScraperMovieReleases from './ScraperMovieReleases.js'
 import ScraperXRelReleases from './ScraperXRelReleases.js'
 import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.js'
 import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.js'
 import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js'
 import ScraperCanIUseNews from './ScraperCanIUseNews.js'
+import ScraperFreeUEAssets from './scraperFreeUEAssets.js'
 import {log, debugLog} from '../index'
 import files from './Files.js'
 import activityTypes from '../constants/ActivityTypes.js'
@@ -52,18 +53,19 @@ class YadBot {
         this.bot.once('ready', async () => {
             // todo: build in waiting for the main bot to come online (interval in scrapers?)
             this.scrapers = [
-                scraperBlackBoard,
-                scraperFreeEpicGames,
-                scraperFreeSteamGames,
-                scraperFreeUbisoftGames,
-                scraperGuildWars2News,
-                scraperTeamspeakBadges,
+                ScraperBlackBoard,
+                ScraperFreeEpicGames,
+                ScraperFreeSteamGames,
+                ScraperFreeUbisoftGames,
+                ScraperGuildWars2News,
+                ScraperTeamspeakBadges,
                 ScraperMovieReleases,
                 ScraperXRelReleases,
                 ScraperInterfaceInGameGames,
                 ScraperInterfaceInGameArticles,
                 ScraperTSBThreadWatch,
-                ScraperCanIUseNews
+                ScraperCanIUseNews,
+                ScraperFreeUEAssets
             ]
             await this.bindCommands()
             await this.bindEvents()
