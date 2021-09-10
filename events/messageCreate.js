@@ -9,10 +9,10 @@ export default async (message) => {
     const botId = files.readJson(yadBot.getYadConfigPath(), 'bot', true, 'ENTER BOT ID HERE')
 
     if (message.author.bot) return
-    if (message.channel.type === "dm" && message.author.id !== ownerId) yadBot.mirrorDirectMessageToOwner(message)
+    if (message.channel.type === "DM" && message.author.id !== ownerId) yadBot.mirrorDirectMessageToOwner(message)
 
     if (message.mentions.users.get(botId) !== undefined || message.mentions.members?.get(botId) !== undefined) {
-        if (message.channel.type !== 'dm' && message.channel.type !== 'unknown') {
+        if (message.channel.type !== 'DM' && message.channel.type !== 'UNKNOWN') {
             if (message.reference?.messageId !== undefined) {
                 message.fetchReference()
                     .then(referenceMessage => {

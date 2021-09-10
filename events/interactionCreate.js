@@ -11,7 +11,11 @@ export default async (interaction) => {
             if (interactionChannel === null) {
                 interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {cache: true, force: true})
             }
-            yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interactionChannel.name}'.`)
+            if (interactionChannel.type !== 'DM' && interactionChannel.type !== 'GROUP_DM' && interactionChannel.type !== 'UNKNOWN') {
+                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interactionChannel.name}' in guild '${interactionChannel.guild.name}'.`)
+            } else {
+                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in DMs.`)
+            }
         }
 
         if (command === undefined) {
