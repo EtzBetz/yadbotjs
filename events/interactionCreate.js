@@ -5,6 +5,12 @@ import EmbedColors from '../constants/EmbedColors';
 export default async (interaction) => {
     if (interaction.isCommand()) {
         const command = yadBot.getBot().commands.get(interaction.commandName)
+        let commandString
+        try {
+            commandString = yadBot.buildCommandStringFromInteraction(interaction)
+        } catch (e) {
+            yadBot.sendMessageToOwner(`interaction building failed.`)
+        }
 
         if(!yadBot.isInteractionAuthorOwner(interaction)) {
             let interactionChannel = interaction.channel
@@ -12,9 +18,9 @@ export default async (interaction) => {
                 interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {cache: true, force: true})
             }
             if (interactionChannel.type !== 'DM' && interactionChannel.type !== 'GROUP_DM' && interactionChannel.type !== 'UNKNOWN') {
-                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in channel '${interactionChannel.name}' in guild '${interactionChannel.guild.name}'.`)
+                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${commandString}' in channel '${interactionChannel.name}' in guild '${interactionChannel.guild.name}'.`)
             } else {
-                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${interaction.commandName}' in DMs.`)
+                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${commandString}' in DMs.`)
             }
         }
 

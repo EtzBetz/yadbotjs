@@ -370,6 +370,29 @@ class YadBot {
         let v = n%100;
         return n + (s[(v-20)%10] || s[v] || s[0]);
     }
+
+    buildCommandStringFromInteraction(interaction) {
+        let string = "/" + interaction.commandName
+
+        for(const optionData of interaction.options.data) {
+            if (optionData.value !== undefined) {
+                string += ` ${optionData.name}:'${optionData.value}'`
+            } else {
+                string += ` ${optionData.name}`
+            }
+            if (optionData.options !== undefined) {
+                for (const valueData of optionData.options) {
+                    if (valueData.value !== undefined) {
+                        string += ` ${valueData.name}:'${valueData.value}'`
+                    } else {
+                        string += ` ${valueData.name}`
+                    }
+                }
+            }
+        }
+
+        return string
+    }
 }
 
 export default new YadBot()
