@@ -147,7 +147,11 @@ export class WebsiteScraper {
             }
         }
         if (newContentCount >= 1) {
-            await this.sendEmbedMessages(scrapeInfo)
+            try {
+                await this.sendEmbedMessages(scrapeInfo)
+            } catch (e) {
+                yadBot.sendMessageToOwner(`Error 5 while sending embeds in"${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+            }
         }
 
     }
