@@ -86,6 +86,26 @@ export default {
                             required: true
                         }
                     ]
+                },
+                {
+                    name: "list-subscribers",
+                    description: "List all subscribers of a specific Scraper.",
+                    type: 'SUB_COMMAND',
+                    options: [
+                        {
+                            name: "scraper-name",
+                            description: "Scraper to which the embed belongs to.",
+                            type: "STRING",
+                            choices: yadBot.getScraperChoiceData(),
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: "list-guilds",
+                    description: "List all guilds the bot is joined currently.",
+                    type: 'SUB_COMMAND',
+                    options: []
                 }
             ]
         }
@@ -206,6 +226,63 @@ export default {
                         title: `Embed has been sent`,
                         description: `The embed has been sent to the specified channel ${interaction.options.getChannel('target-channel').toString()}.`,
                         color: EmbedColors.GREEN,
+                    }],
+                    ephemeral: true
+                })
+                break
+            case "list-subscribers":
+                const subScraper = yadBot.scrapers.find(scraper => scraper.constructor.name.toLowerCase().includes(interaction.options.getString('scraper-name').toLowerCase()))
+
+                if (subScraper === undefined) {
+                    yadBot.sendCommandErrorEmbed(interaction, `You need to provide additional arguments for this command or incorrect arguments were given.`)
+                    return
+                }
+
+                let guildChannels = []
+                let userChannels = []
+
+                for (const channelId of subScraper.getSubGuildChannelIds()) {
+                    let channel = await yadBot.getBot().channels.fetch(channelId)
+                    guildChannels.push(channel)
+                }
+                for (const userId of subScraper.getSubUserIds()) {
+                    let user = await yadBot.getBot().users.fetch(userId)
+                    userChannels.push(user)
+                }
+
+                let guildChannelsString = ""
+                let userChannelsString = ""
+
+                for (const guildChannel of guildChannels) {
+                    if (guildChannelsString !== "") guildChannelsString += `\n`
+                    guildChannelsString += `- ${guildChannel.guild.name} (${guildChannel.name}) [${guildChannel.id}]`
+                }
+
+                for (const user of userChannels) {
+                    if (userChannelsString !== "") userChannelsString += `\n`
+                    userChannelsString += `- ${user.username} [${user.id}]`
+                }
+
+                interaction.reply({
+                    embeds: [{
+                        title: `Subscribers of '${subScraper.constructor.name}'`,
+                        description: `These are all Guilds (Channels) [ChannelIDs] which are subscribed:\n**${guildChannelsString}**\n\nThese are all Users [IDs]:\n**${userChannelsString}**`,
+                    }],
+                    ephemeral: true
+                })
+                break
+            case "list-guilds":
+                let guildsString = ""
+
+                yadBot.getBot().guilds.cache.forEach(guild => {
+                    if (guildsString !== "") guildsString += `\n`
+                    guildsString += ` - ${guild.name} [${guild.id}]`
+                })
+
+                interaction.reply({
+                    embeds: [{
+                        title: `Joined Guilds`,
+                        description: `These are all Guilds [IDs] which I'm joined currently:\n**${guildsString}**`,
                     }],
                     ephemeral: true
                 })
