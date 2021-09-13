@@ -242,12 +242,28 @@ export default {
                 let userChannels = []
 
                 for (const channelId of subScraper.getSubGuildChannelIds()) {
-                    let channel = await yadBot.getBot().channels.fetch(channelId)
-                    guildChannels.push(channel)
+                    try {
+                        let channel = await yadBot.getBot().channels.fetch(channelId)
+                        guildChannels.push(channel)
+                    } catch (e) {
+                        if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL) {
+                            subScraper.toggleSubscriptionInFile(channelId, true)
+                        } else {
+                            yadBot.sendMessageToOwner(`Error while sending embeds in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                        }
+                    }
                 }
                 for (const userId of subScraper.getSubUserIds()) {
-                    let user = await yadBot.getBot().users.fetch(userId)
-                    userChannels.push(user)
+                    try {
+                        let user = await yadBot.getBot().users.fetch(userId)
+                        userChannels.push(user)
+                    } catch (e) {
+                        if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL) {
+                            subScraper.toggleSubscriptionInFile(userId, false)
+                        } else {
+                            yadBot.sendMessageToOwner(`Error while sending embeds in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                        }
+                    }
                 }
 
                 let guildChannelsString = ""
