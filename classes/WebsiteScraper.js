@@ -290,6 +290,8 @@ export class WebsiteScraper {
             } catch (e) {
                 if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL) {
                     this.toggleSubscriptionInFile(channelId, true)
+                } else {
+                    yadBot.sendMessageToOwner(`Error while sending embeds in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
                 }
             }
         }
@@ -340,6 +342,8 @@ export class WebsiteScraper {
             } catch (e) {
                 if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL) {
                     this.toggleSubscriptionInFile(userId, false)
+                } else {
+                    yadBot.sendMessageToOwner(`Error while sending embeds in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
                 }
             }
         }
