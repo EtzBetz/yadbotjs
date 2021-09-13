@@ -104,10 +104,14 @@ export class WebsiteScraper {
     async timeIntervalBody() {
         this.log(`Fetching and parsing website...`)
         let scrapeInfo = {}
-        try { scrapeInfo.url = await this.getScrapingUrl(scrapeInfo) } catch (e) {
+        try {
+            scrapeInfo.url = await this.getScrapingUrl(scrapeInfo)
+        } catch (e) {
             yadBot.sendMessageToOwner(`Error 1 while trying to get scraping url in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
         }
-        try { scrapeInfo.response = await this.requestWebsite(scrapeInfo.url) } catch (e) {
+        try {
+            scrapeInfo.response = await this.requestWebsite(scrapeInfo.url)
+        } catch (e) {
             yadBot.sendMessageToOwner(`Error 2 while requesting website in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
         }
         scrapeInfo.content = []
@@ -237,95 +241,105 @@ export class WebsiteScraper {
         this.log(`Sending and updating ${newContentCount} embed(s)...`)
 
         for (let channelId of this.getSubGuildChannelIds()) {
-            let embedTargetChannel = await yadBot.getBot().channels.fetch(channelId)
-                .catch((e) => console.dir(e))
-            if (yadBot.getBot().user === null) continue
-            this.log(`Sending and updating embed(s) in Guild "${embedTargetChannel.guild.name}", Channel "${embedTargetChannel.name}"`)
-            for (let contentEntry of scrapeInfo.content) {
-                if (contentEntry.newData !== true) continue
-                const fileName = this.generateFileName(contentEntry.json)
-                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
-                let sentChannels = files.readJson(
-                    filePath,
-                    'sent_channels',
-                    false,
-                    {
-                        guild_message_ids: [],
-                        user_message_ids: [],
-                    }
-                )
-                let messageDataToUpdate = sentChannels.guild_message_ids?.find((sentMessageData) => {
-                    return sentMessageData.channelId === embedTargetChannel.id
-                })
-                if (messageDataToUpdate !== undefined) {
-                    let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
-                    // todo: if message is older than x, send new instead of edit
-                    await messageToUpdate.edit({
-                        embeds: [contentEntry.embed],
-                        components: contentEntry.components
+            try {
+                let embedTargetChannel = await yadBot.getBot().channels.fetch(channelId)
+                if (yadBot.getBot().user === null) continue
+                this.log(`Sending and updating embed(s) in Guild "${embedTargetChannel.guild.name}", Channel "${embedTargetChannel.name}"`)
+                for (let contentEntry of scrapeInfo.content) {
+                    if (contentEntry.newData !== true) continue
+                    const fileName = this.generateFileName(contentEntry.json)
+                    const filePath = `${this.getScraperEmbedPath()}/${fileName}`
+                    let sentChannels = files.readJson(
+                        filePath,
+                        'sent_channels',
+                        false,
+                        {
+                            guild_message_ids: [],
+                            user_message_ids: [],
+                        }
+                    )
+                    let messageDataToUpdate = sentChannels.guild_message_ids?.find((sentMessageData) => {
+                        return sentMessageData.channelId === embedTargetChannel.id
                     })
-                } else {
-                    let sentMessage = await embedTargetChannel?.send({
-                        embeds: [contentEntry.embed],
-                        components: contentEntry.components
-                    })
-                        .catch(e => {
-                            yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
-                            this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
-                            console.dir(e)
+                    if (messageDataToUpdate !== undefined) {
+                        let messageToUpdate = await embedTargetChannel.messages.fetch(messageDataToUpdate.messageId)
+                        // todo: if message is older than x, send new instead of edit
+                        await messageToUpdate.edit({
+                            embeds: [contentEntry.embed],
+                            components: contentEntry.components
                         })
-                    if (sentMessage !== undefined) {
-                        sentChannels.guild_message_ids.push({
-                            messageId: sentMessage.id,
-                            channelId: sentMessage.channel.id
+                    } else {
+                        let sentMessage = await embedTargetChannel?.send({
+                            embeds: [contentEntry.embed],
+                            components: contentEntry.components
                         })
-                        files.writeJson(filePath, 'sent_channels', sentChannels)
+                            .catch(e => {
+                                yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
+                                this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
+                                console.dir(e)
+                            })
+                        if (sentMessage !== undefined) {
+                            sentChannels.guild_message_ids.push({
+                                messageId: sentMessage.id,
+                                channelId: sentMessage.channel.id
+                            })
+                            files.writeJson(filePath, 'sent_channels', sentChannels)
+                        }
                     }
+                }
+            } catch (e) {
+                if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL) {
+                    this.toggleSubscriptionInFile(channelId, true)
                 }
             }
         }
 
         for (let userId of this.getSubUserIds()) {
-            let embedTargetUser = await yadBot.getBot().users.fetch(userId)
-                .catch((e) => console.dir(e))
-            if (yadBot.getBot().user === null) continue
-            this.log(`Sending and updating embed(s) for ${embedTargetUser.username}`)
-            for (let contentEntry of scrapeInfo.content) {
-                if (contentEntry.newData !== true) continue
-                const fileName = this.generateFileName(contentEntry.json)
-                const filePath = `${this.getScraperEmbedPath()}/${fileName}`
-                let sentChannels = files.readJson(
-                    filePath,
-                    'sent_channels',
-                    false,
-                    {
-                        guild_message_ids: [],
-                        user_message_ids: [],
-                    }
-                )
-                let messageDataToUpdate = sentChannels.user_message_ids.find((sentMessageData) => {
-                    return sentMessageData.userId === embedTargetUser.id
-                })
-                if (messageDataToUpdate !== undefined) {
-                    // todo: if message is older than x, send new instead of edit
-                    let messageToUpdate = await (await embedTargetUser.createDM()).messages.fetch(messageDataToUpdate.messageId)
-                    await messageToUpdate.edit({
-                        embeds: [contentEntry.embed],
-                        components: contentEntry.components
+            try {
+                let embedTargetUser = await yadBot.getBot().users.fetch(userId)
+                if (yadBot.getBot().user === null) continue
+                this.log(`Sending and updating embed(s) for ${embedTargetUser.username}`)
+                for (let contentEntry of scrapeInfo.content) {
+                    if (contentEntry.newData !== true) continue
+                    const fileName = this.generateFileName(contentEntry.json)
+                    const filePath = `${this.getScraperEmbedPath()}/${fileName}`
+                    let sentChannels = files.readJson(
+                        filePath,
+                        'sent_channels',
+                        false,
+                        {
+                            guild_message_ids: [],
+                            user_message_ids: [],
+                        }
+                    )
+                    let messageDataToUpdate = sentChannels.user_message_ids.find((sentMessageData) => {
+                        return sentMessageData.userId === embedTargetUser.id
                     })
-                } else {
-                    let sentMessage = await embedTargetUser?.send({
-                        embeds: [contentEntry.embed],
-                        components: contentEntry.components
-                    })
-                        .catch(e => console.dir(e))
-                    if (sentMessage !== undefined) {
-                        sentChannels.user_message_ids.push({
-                            messageId: sentMessage.id,
-                            userId: embedTargetUser.id
+                    if (messageDataToUpdate !== undefined) {
+                        // todo: if message is older than x, send new instead of edit
+                        let messageToUpdate = await (await embedTargetUser.createDM()).messages.fetch(messageDataToUpdate.messageId)
+                        await messageToUpdate.edit({
+                            embeds: [contentEntry.embed],
+                            components: contentEntry.components
                         })
-                        files.writeJson(filePath, 'sent_channels', sentChannels)
+                    } else {
+                        let sentMessage = await embedTargetUser?.send({
+                            embeds: [contentEntry.embed],
+                            components: contentEntry.components
+                        })
+                            .catch(e => console.dir(e))
+                        if (sentMessage !== undefined) {
+                            sentChannels.user_message_ids.push({
+                                messageId: sentMessage.id,
+                                userId: embedTargetUser.id
+                            })
+                            files.writeJson(filePath, 'sent_channels', sentChannels)
+                        }
                     }
+                }
+            } catch (e) {
+                if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL) {
+                    this.toggleSubscriptionInFile(userId, false)
                 }
             }
         }
@@ -583,16 +597,8 @@ export class WebsiteScraper {
             case "UNKNOWN":
                 return {error: true, data: 'Message channel type was unknown.'}
             case "DM":
-                let subUsers = files.readJson(this.getScraperConfigPath(), 'sub_user_ids', false, [])
-
-                let indexResult = subUsers.indexOf(interaction.user.id)
-                if (indexResult === -1) {
-                    subUsers.push(interaction.user.id)
-                } else {
-                    subUsers.splice(indexResult, 1)
-                }
-                files.writeJson(this.getScraperConfigPath(), 'sub_user_ids', subUsers)
-                if (indexResult === -1) {
+                let subscriptionResult = this.toggleSubscriptionInFile(interactionChannel.id, false)
+                if (subscriptionResult) {
                     return {
                         error: false,
                         data: `You have been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
@@ -606,15 +612,8 @@ export class WebsiteScraper {
             case "GUILD_TEXT":
             case "GUILD_NEWS":
                 if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-                    let subChannels = files.readJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', false, [])
-                    let indexResultGuild = subChannels.indexOf(interactionChannel.id)
-                    if (indexResultGuild === -1) {
-                        subChannels.push(interactionChannel.id)
-                    } else {
-                        subChannels.splice(indexResultGuild, 1)
-                    }
-                    files.writeJson(this.getScraperConfigPath(), 'sub_guild_channel_ids', subChannels)
-                    if (indexResultGuild === -1) {
+                    let subscriptionResult = this.toggleSubscriptionInFile(interactionChannel.id, true)
+                    if (subscriptionResult) {
                         return {
                             error: false,
                             data: `This channel has been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
@@ -637,6 +636,20 @@ export class WebsiteScraper {
                     data: `Unknown type of channel.`,
                 }
         }
+    }
+
+    toggleSubscriptionInFile(channelId, isGuildChannel) {
+        let propertyToChange = isGuildChannel ? 'sub_guild_channel_ids' : 'sub_user_ids'
+
+        let subChannels = files.readJson(this.getScraperConfigPath(), propertyToChange, false, [])
+        let indexResultChannel = subChannels.indexOf(channelId)
+        if (indexResultChannel === -1) {
+            subChannels.push(channelId)
+        } else {
+            subChannels.splice(indexResultChannel, 1)
+        }
+        files.writeJson(this.getScraperConfigPath(), 'propertyToChange', subChannels)
+        return indexResultChannel === -1
     }
 
     generateSlugFromString(originalString) {
