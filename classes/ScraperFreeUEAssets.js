@@ -13,7 +13,7 @@ class ScraperFreeUEAssets extends WebsiteScraper {
                 let entry = {}
                 entry.title = asset.title
                 entry.isFeatured = asset.isFeatured
-                if(asset.tags.includes(4910)) {
+                if (asset.tags.includes(4910)) {
                     entry.isTimeLimited = true
                 }
                 entry.description = asset.description
@@ -27,7 +27,9 @@ class ScraperFreeUEAssets extends WebsiteScraper {
                 entry.authorName = asset.seller.name
                 entry.date = asset.effectiveDate
 
-                elements.push(entry)
+                if (asset.seller?.financeCheckExempted !== true) {
+                    elements.push(entry)
+                }
             }
         }
         this.log(`Parsed ${elements.length} entries...`)
