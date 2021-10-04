@@ -1,6 +1,7 @@
 import fs from 'fs'
 import Discord from 'discord.js'
 import ScraperBlackBoard from './ScraperBlackBoard.js'
+import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
 import ScraperFreeEpicGames from './ScraperFreeEpicGames'
 import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
 import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
@@ -54,6 +55,7 @@ class YadBot {
             // todo: build in waiting for the main bot to come online (interval in scrapers?)
             this.scrapers = [
                 ScraperBlackBoard,
+                ScraperMensaFHMuenster,
                 ScraperFreeEpicGames,
                 ScraperFreeSteamGames,
                 ScraperFreeUbisoftGames,
@@ -138,11 +140,13 @@ class YadBot {
         }
         if (files.readJson(this.getYadConfigPath(), 'prod', false, false)) {
             this.bot.application.commands.set(commandsDataArr)
-                .then((commandResult) => {})
+                .then((commandResult) => {
+                })
         } else {
             let testServer = files.readJson(this.getYadConfigPath(), 'test_server', true, 'ENTER TEST SERVER ID HERE')
             this.bot.guilds.cache.get(testServer)?.commands.set(commandsDataArr)
-                .then((commandResult) => {})
+                .then((commandResult) => {
+                })
         }
     }
 
@@ -367,14 +371,14 @@ class YadBot {
 
     ordinal(n) {
         let s = ["th", "st", "nd", "rd"];
-        let v = n%100;
-        return n + (s[(v-20)%10] || s[v] || s[0]);
+        let v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
     }
 
     buildCommandStringFromInteraction(interaction) {
         let string = "/" + interaction.commandName
 
-        for(const optionData of interaction.options.data) {
+        for (const optionData of interaction.options.data) {
             if (optionData.value !== undefined) {
                 string += ` ${optionData.name}:'${optionData.value}'`
             } else {
