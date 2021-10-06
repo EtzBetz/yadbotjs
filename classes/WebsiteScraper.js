@@ -652,7 +652,7 @@ export class WebsiteScraper {
         } else {
             subChannels.splice(indexResultChannel, 1)
         }
-        files.writeJson(this.getScraperConfigPath(), 'propertyToChange', subChannels)
+        files.writeJson(this.getScraperConfigPath(), propertyToChange, subChannels)
         return indexResultChannel === -1
     }
 
