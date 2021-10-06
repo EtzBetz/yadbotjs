@@ -10,8 +10,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
         let menu = {}
         let data = scrapeInfo.response.data
 
-        menu.title = "";
-        menu.date = luxon.DateTime.local().minus({hours: 6}).toFormat('yyyy-MM-dd');
+        menu.title = ""
+        menu.date = luxon.DateTime.local().minus({hours: 6}).toFormat('yyyy-MM-dd')
         menu.meals = []
         menu.side_dishes = []
         menu.additives = []
@@ -156,11 +156,6 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             }
         )
 
-        // embed.fields.push({
-        //     name: "\u200B",
-        //     value: "Über eine [Spende](https://paypal.me/raphaelbetz) freue ich mich."
-        // })
-
         return embed
     }
 
@@ -178,11 +173,11 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                         customId: `mensafh::additives::${content.json.date}`,
                         style: Discord.Constants.MessageButtonStyles.SECONDARY,
                     }),
-                    // new Discord.MessageButton({
-                    //     label: "❤️ Spenden",
-                    //     style: Discord.Constants.MessageButtonStyles.LINK,
-                    //     url: "https://paypal.me/raphaelbetz"
-                    // }),
+                    new Discord.MessageButton({
+                        label: "❤️ Spenden",
+                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        url: "https://paypal.me/raphaelbetz"
+                    }),
                 ]
             })
 
