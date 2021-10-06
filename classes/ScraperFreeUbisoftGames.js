@@ -120,6 +120,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
                 case "gametrial":
                 case "freeweekend":
                 case "beta":
+                case "dlc":
                     break
                 default:
                     yadBot.sendMessageToOwner(`new \`type\` type in ubisoft scraper->${game['type']}`)
@@ -129,7 +130,8 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             let entry = {}
             if (
                 (game.placement === "freeevents" && game.type === "freegame") ||
-                (game.placement === "freeevents" && game.type === "beta")
+                (game.placement === "freeevents" && game.type === "beta") ||
+                (game.placement === "freeevents" && game.type === "dlc")
             ) {
                 entry.title = game.title
                 entry.image = game.mediaURL
