@@ -1,6 +1,8 @@
 import fs from 'fs'
 import Discord from 'discord.js'
 import ScraperBlackBoard from './ScraperBlackBoard.js'
+import ScraperLab4Inf from './ScraperLab4Inf.js'
+// import ScraperRechnernetze from './ScraperRechnernetze.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
 import ScraperFreeEpicGames from './ScraperFreeEpicGames'
 import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
@@ -67,7 +69,8 @@ class YadBot {
                 ScraperInterfaceInGameArticles,
                 ScraperTSBThreadWatch,
                 ScraperCanIUseNews,
-                ScraperFreeUEAssets
+                ScraperFreeUEAssets,
+                ScraperLab4Inf
             ]
             await this.bindCommands()
             await this.bindEvents()

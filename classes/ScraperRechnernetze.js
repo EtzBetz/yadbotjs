@@ -1,8 +1,8 @@
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 import jsdom from 'jsdom'
 
-class ScraperRechnernetze extends WebsiteScraper{
+class ScraperRechnernetze extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
@@ -15,7 +15,7 @@ class ScraperRechnernetze extends WebsiteScraper{
             let entryTitle = entity.querySelector('strong').textContent.trim()
             let entryLink = entity.href.trim()
 
-            if (entryLink.substring(0,1) === "/") {
+            if (entryLink.substring(0, 1) === "/") {
                 entryLink = "https://www.fh-muenster.de" + entryLink
             }
 
@@ -35,7 +35,7 @@ class ScraperRechnernetze extends WebsiteScraper{
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    getEmbed(content) {
+    async getEmbed(content) {
         let fileType = content.json.link.split("").reverse().join("")
         let lastDotIndex = fileType.indexOf('.')
         fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")
@@ -53,7 +53,7 @@ class ScraperRechnernetze extends WebsiteScraper{
                 "description": `Neue Datei zum Download:\n[${fileName} (.${fileType})](${content.json.link})`,
                 "author": {
                     "name": "Rechnernetze",
-                    "url": this.getScrapingUrl(),
+                    "url": await this.getScrapingUrl(),
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 }
             }

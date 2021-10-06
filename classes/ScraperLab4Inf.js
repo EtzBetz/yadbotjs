@@ -1,8 +1,8 @@
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 import jsdom from 'jsdom'
 
-class ScraperLab4Inf extends WebsiteScraper{
+class ScraperLab4Inf extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
@@ -31,21 +31,21 @@ class ScraperLab4Inf extends WebsiteScraper{
         return this.generateSlugFromString(fileName) + ".json"
     }
 
-    getEmbed(content) {
+    async getEmbed(content) {
         let category
         switch (content.json.category) {
-        case 0:
-            category = "Skript-"
-            break
-        case 1:
-            category = "Übungs-"
-            break
-        case 2:
-            category = "Praktikums-"
-            break
-        default:
-            category = ""
-            break
+            case 0:
+                category = "Skript-"
+                break
+            case 1:
+                category = "Übungs-"
+                break
+            case 2:
+                category = "Praktikums-"
+                break
+            default:
+                category = ""
+                break
         }
 
         let fileType = content.json.address.split("").reverse().join("")
@@ -57,7 +57,7 @@ class ScraperLab4Inf extends WebsiteScraper{
                 "description": `Neue ${category}Datei zum Download:\n[${content.json.title} (.${fileType})](http://www.lab4inf.fh-muenster.de/${content.json.address})`,
                 "author": {
                     "name": "Höhere Programmierkonzepte",
-                    "url": this.getScrapingUrl(),
+                    "url": await this.getScrapingUrl(),
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
                 }
             }
