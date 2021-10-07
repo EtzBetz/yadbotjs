@@ -9,53 +9,6 @@ class ScraperFreeEpicGames extends WebsiteScraper {
     async parseWebsiteContentToJSON(scrapeInfo) {
         const elements = []
         for (const game of scrapeInfo.response.data.data.Catalog?.searchStore?.elements) {
-            let entry = {}
-            entry.title = game.title
-            entry.imageUrl = game.keyImages?.find(image => image.type === "DieselStoreFrontWide")?.url
-            if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
-                entry.imageUrl = game.keyImages[0].url
-            }
-            entry.imageUrl = encodeURI(entry.imageUrl)
-
-            let slug
-            const slashPosition = game.productSlug.toString().indexOf('/')
-            if (slashPosition !== -1) {
-                slug = game.productSlug.toString().substring(0, slashPosition)
-            } else {
-                slug = game.productSlug.toString()
-            }
-            entry.slug = slug
-
-            let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
-            const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
-            let originalPrice = gameDetails.querySelector('div[data-component="PDPDiscountedFromPrice"]')?.textContent.trim()
-            originalPrice = originalPrice?.substring(1)
-            let decimalIndex = originalPrice?.indexOf(".")
-            const priceEuro = originalPrice?.substring(0, decimalIndex)
-            const priceDecimal = originalPrice?.substring(decimalIndex + 1)
-            if (priceEuro !== undefined && priceDecimal !== undefined) {
-                entry.originalPrice = `${priceEuro},${priceDecimal}€`
-            }
-
-            game.tags.forEach((tag) => {
-                if (tag.id === "9547") entry.windowsCompatibility = true
-                if (tag.id === "9548") entry.macCompatibility = true
-            })
-            if (gameDetails.querySelector('li[data-testid="metadata-platform-windows"]') !== null) {
-                entry.windowsCompatibility = true
-            }
-            if (gameDetails.querySelector('li[data-testid="metadata-platform-mac"]') !== null) {
-                entry.macCompatibility = true
-            }
-
-            let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value
-            let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value
-            if (developer !== undefined) {
-                entry.developer = developer
-            }
-            if (publisher !== undefined) {
-                entry.publisher = publisher
-            }
 
             let promotions = []
             if (game.promotions?.promotionalOffers[0]?.promotionalOffers !== undefined) {
@@ -71,6 +24,59 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             )
 
             if (freePromotion !== undefined) {
+                let entry = {}
+                entry.title = game.title
+                entry.imageUrl = game.keyImages?.find(image => image.type === "DieselStoreFrontWide")?.url
+                if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
+                    entry.imageUrl = game.keyImages[0].url
+                }
+                entry.imageUrl = encodeURI(entry.imageUrl)
+
+                let slug
+                if (game.productSlug !== undefined && game.productSlug !== null) {
+                    const slashPosition = game.productSlug.toString().indexOf('/')
+                    if (slashPosition !== -1) {
+                        slug = game.productSlug.toString().substring(0, slashPosition)
+                    } else {
+                        slug = game.productSlug.toString()
+                    }
+                } else {
+                    slug = game.urlSlug
+                }
+                entry.slug = slug
+
+                let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
+                const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
+                let originalPrice = gameDetails.querySelector('div[data-component="PDPDiscountedFromPrice"]')?.textContent.trim()
+                originalPrice = originalPrice?.substring(1)
+                let decimalIndex = originalPrice?.indexOf(".")
+                const priceEuro = originalPrice?.substring(0, decimalIndex)
+                const priceDecimal = originalPrice?.substring(decimalIndex + 1)
+                if (priceEuro !== undefined && priceDecimal !== undefined) {
+                    entry.originalPrice = `${priceEuro},${priceDecimal}€`
+                }
+
+                game.tags.forEach((tag) => {
+                    if (tag.id === "9547") entry.windowsCompatibility = true
+                    if (tag.id === "9548") entry.macCompatibility = true
+                })
+                if (gameDetails.querySelector('li[data-testid="metadata-platform-windows"]') !== null) {
+                    entry.windowsCompatibility = true
+                }
+                if (gameDetails.querySelector('li[data-testid="metadata-platform-mac"]') !== null) {
+                    entry.macCompatibility = true
+                }
+
+                let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value
+                let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value
+                if (developer !== undefined) {
+                    entry.developer = developer
+                }
+                if (publisher !== undefined) {
+                    entry.publisher = publisher
+                }
+
+
                 entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('utc').toISO()
                 entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('utc').toISO()
                 if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
