@@ -82,7 +82,6 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             else if (cleanedNote === "mit schwein") meal.isPork = true
             else if (cleanedNote === "mit fisch") meal.isFish = true
             else if (cleanedNote === "mit alkohol") meal.isAlcoholic = true
-            else if (cleanedNote === "vgt") yadBot.sendMessageToOwner(`\`\`\`JSON\n${JSON.stringify(entry)}\`\`\``)
             else {
                 let fixedAdditive = note.trim()
                 if (fixedAdditive.substring(fixedAdditive.length - 1) === "*") fixedAdditive = fixedAdditive.substring(0, fixedAdditive.length - 1)
