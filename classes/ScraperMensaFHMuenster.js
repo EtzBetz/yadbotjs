@@ -6,6 +6,11 @@ import files from './Files.js';
 
 class ScraperMensaFHMuenster extends WebsiteScraper {
 
+    async shouldExecute() {
+        let weekday = luxon.DateTime.local().minus({hours: 6}).weekday
+        return !(weekday === 7);
+    }
+
     parseWebsiteContentToJSON(scrapeInfo) {
         let menu = {}
         let data = scrapeInfo.response.data

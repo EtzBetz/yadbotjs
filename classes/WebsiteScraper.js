@@ -102,62 +102,69 @@ export class WebsiteScraper {
     }
 
     async timeIntervalBody() {
-        this.log(`Fetching and parsing website...`)
         let scrapeInfo = {}
-        try {
-            scrapeInfo.url = await this.getScrapingUrl(scrapeInfo)
-        } catch (e) {
-            yadBot.sendMessageToOwner(`Error 1 while trying to get scraping url in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
-        }
-        try {
-            scrapeInfo.response = await this.requestWebsite(scrapeInfo.url)
-        } catch (e) {
-            yadBot.sendMessageToOwner(`Error 2 while requesting website in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
-        }
-        scrapeInfo.content = []
-        try {
-            let jsonContents = await this.parseWebsiteContentToJSON(scrapeInfo)
-            for (let jsonContent of jsonContents) {
-                scrapeInfo.content.push({
-                    json: jsonContent
-                })
-            }
-        } catch (e) {
-            yadBot.sendMessageToOwner(`Error 3 while parsing response to JSON in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
-        }
-        this.filterNewContent(scrapeInfo)
-        let newContentCount = 0
-        for (let entry of scrapeInfo.content) {
-            if (entry.newData === true) newContentCount++
-        }
-        if (newContentCount >= 1) this.log(`Found entries: ${scrapeInfo.content.length}, New entries: ${newContentCount}`)
-        if (yadBot.getBot().user === null) {
-            this.log('Bot is not yet online, not sending messages..')
-            // todo: the loop is never ending, fix somehow.
-            while (yadBot.getBot().user === null) {
-            }
-            this.log('Bot is now online! Sending messages..')
-        }
-        scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction())
-        if (newContentCount >= 1) this.log(`Generating ${newContentCount} embed(s)...`)
-        for (let content of scrapeInfo.content) {
+        if (await this.shouldExecute()) {
+            this.log(`Fetching and parsing website...`)
             try {
-                if (content.newData === true) {
-                    content.embed = (this.filterEmbedLength(await this.getEmbed(content)))
-                    content.components = await this.getComponents(content)
+                scrapeInfo.url = await this.getScrapingUrl(scrapeInfo)
+            } catch (e) {
+                yadBot.sendMessageToOwner(`Error 1 while trying to get scraping url in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+            }
+            try {
+                scrapeInfo.response = await this.requestWebsite(scrapeInfo.url)
+            } catch (e) {
+                yadBot.sendMessageToOwner(`Error 2 while requesting website in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+            }
+            scrapeInfo.content = []
+            try {
+                let jsonContents = await this.parseWebsiteContentToJSON(scrapeInfo)
+                for (let jsonContent of jsonContents) {
+                    scrapeInfo.content.push({
+                        json: jsonContent
+                    })
                 }
             } catch (e) {
-                yadBot.sendMessageToOwner(`Error 4 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                yadBot.sendMessageToOwner(`Error 3 while parsing response to JSON in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
             }
-        }
-        if (newContentCount >= 1) {
-            try {
-                await this.sendEmbedMessages(scrapeInfo)
-            } catch (e) {
-                yadBot.sendMessageToOwner(`Error 5 while sending embeds in"${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+            this.filterNewContent(scrapeInfo)
+            let newContentCount = 0
+            for (let entry of scrapeInfo.content) {
+                if (entry.newData === true) newContentCount++
             }
+            if (newContentCount >= 1) this.log(`Found entries: ${scrapeInfo.content.length}, New entries: ${newContentCount}`)
+            if (yadBot.getBot().user === null) {
+                this.log('Bot is not yet online, not sending messages..')
+                // todo: the loop is never ending, fix somehow.
+                while (yadBot.getBot().user === null) {
+                }
+                this.log('Bot is now online! Sending messages..')
+            }
+            scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction())
+            if (newContentCount >= 1) this.log(`Generating ${newContentCount} embed(s)...`)
+            for (let content of scrapeInfo.content) {
+                try {
+                    if (content.newData === true) {
+                        content.embed = (this.filterEmbedLength(await this.getEmbed(content)))
+                        content.components = await this.getComponents(content)
+                    }
+                } catch (e) {
+                    yadBot.sendMessageToOwner(`Error 4 while generating embeds and filtering length in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                }
+            }
+            if (newContentCount >= 1) {
+                try {
+                    await this.sendEmbedMessages(scrapeInfo)
+                } catch (e) {
+                    yadBot.sendMessageToOwner(`Error 5 while sending embeds in"${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
+                }
+            }
+        } else {
+            this.log(`Cancelling current execution.`)
         }
+    }
 
+    async shouldExecute() {
+        return true
     }
 
     async requestWebsite(url) {
