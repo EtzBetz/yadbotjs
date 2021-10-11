@@ -85,7 +85,7 @@ export default async (interaction) => {
                             }
                             await interaction.editReply({
                                 embeds: [{
-                                    title: 'Beilagenauswahl',
+                                    title: 'Beilagen',
                                     description: sideDishesString,
                                     color: EmbedColors.GREEN
                                 }], ephemeral: true
@@ -93,9 +93,10 @@ export default async (interaction) => {
                             break
                         case "additives":
                             let additivesString = ""
-                            for (const additive of data[data.length - 1].additives.sort()) {
+                            let additives = data[data.length - 1].additives.sort()
+                            for (const additiveIndex in additives) {
                                 if (additivesString !== "") additivesString += "\n"
-                                additivesString += additive
+                                additivesString += `\`${additiveIndex}\`: ` + additives[additiveIndex][0].toUpperCase() + additives[additiveIndex].substring(1)
                             }
                             await interaction.editReply({
                                 embeds: [{

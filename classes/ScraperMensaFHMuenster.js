@@ -13,33 +13,36 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         let menu = {}
-        let data = scrapeInfo.response.data
 
-        menu.title = ""
         menu.date = luxon.DateTime.local().minus({hours: 6}).toFormat('yyyy-MM-dd')
         menu.meals = []
         menu.side_dishes = []
         menu.additives = []
         menu.infos = []
 
-        data.forEach(entry => {
-            if (entry.category.toLowerCase().includes("info")) { // infos
-                menu.infos.push({'text': entry.name.trim()})
+        let data = scrapeInfo.response.data.days.find((entry) => {
+            return entry['iso-date'] === menu.date
+        })
+
+        data.categories.forEach(category => {
+            if (category.name.toLowerCase().includes("info")) { // infos
+                menu.infos.push({'text': category.meals[0].name.trim().replace(/­/g, '')})
             } else if (
-                entry.category.toLowerCase().includes("menü") ||
-                entry.category.toLowerCase().includes("tagesaktion") // meals
+                category.name.toLowerCase().includes("menü") ||
+                category.name.toLowerCase().includes("tagesaktion") // meals
             ) {
-                let meal = this.parseMeal(entry)
+                let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
+                if (meal.length > 1) yadBot.sendMessageToOwner("meal in meals parsing is more than one!")
+                meal = meal[0]
                 let dishNumArr = ['eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn']
                 for (const dishNum in dishNumArr) {
-                    if (entry.category.toLowerCase().includes(dishNumArr[dishNum])) {
+                    if (category.name.toLowerCase().includes(dishNumArr[dishNum])) {
                         meal.side_dishes_num = parseInt(dishNum, 10) + 1
                         break
                     }
                 }
                 if (meal.side_dishes_num === undefined) meal.side_dishes_num = 0
-                meal.price = entry.prices.students.toLocaleString('de-DE')
-                if (!meal.price.includes(",")) meal.price += ',00'
+                meal.price = (category.meals[0].pricing['for'][0] / 100).toLocaleString('de-DE')
                 meal.price = meal.price.padEnd(4, '0')
                 menu.meals.push(meal)
                 for (const additive of meal.additives) {
@@ -49,16 +52,18 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                 }
             } else if (
                 (
-                    entry.category.toLowerCase().includes("beilage") &&
-                    !entry.category.toLowerCase().includes("beilagen")
+                    category.name.toLowerCase().includes("beilage") &&
+                    !category.name.toLowerCase().includes("beilagen")
                 ) ||
-                entry.category.toLowerCase().includes("tagesdessert") // side_dishes
+                category.name.toLowerCase().includes("tagesdessert") // side_dishes
             ) {
-                let sideDish = this.parseMeal(entry)
-                menu.side_dishes.push(sideDish)
-                for (const additive of sideDish.additives) {
-                    if (!menu.additives.includes(additive)) {
-                        menu.additives.push(additive)
+                let sideDishes = this.parseCategory(category, scrapeInfo.response.data.filters)
+                menu.side_dishes.push(...sideDishes)
+                for (const sideDish of sideDishes) {
+                    for (const additive of sideDish.additives) {
+                        if (!menu.additives.includes(additive)) {
+                            menu.additives.push(additive)
+                        }
                     }
                 }
             }
@@ -66,36 +71,57 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
         return [menu]
     }
 
-    getScrapingUrl() {
-        const url = files.readJson(this.getScraperConfigPath(), 'scraping_url', true, 'ENTER SCRAPING URL HERE')
-        const todayDate = luxon.DateTime.local().minus({hours: 6}).toFormat('yyyy-MM-dd')
-        return url.replace(/:date:/, todayDate)
-    }
-
-    parseMeal(entry) {
+    parseCategory(category, filters) {
         // todo: double isBlabla parameters are overwritten for some reason
+        let parsedCategory = []
+        for (const meal of category.meals) {
+            let parsedMeal = {}
+            parsedMeal.title = meal.name.trim().replace(/­/g, '')
+            parsedMeal.additives = []
 
-        let meal = {}
-        meal.title = entry.name.trim()
-        meal.additives = []
-        for (const note of entry.notes) {
-            let cleanedNote = note.toLowerCase().trim()
-            if (cleanedNote === "vegetarisch") meal.isVegetarian = true
-            else if (cleanedNote === "vegan") meal.isVegan = true
-            else if (cleanedNote === "mit geflügel") meal.isChicken = true
-            else if (cleanedNote === "mit rind") meal.isBeef = true
-            else if (cleanedNote === "mit schwein") meal.isPork = true
-            else if (cleanedNote === "mit fisch") meal.isFish = true
-            else if (cleanedNote === "mit alkohol") meal.isAlcoholic = true
-            else {
-                let fixedAdditive = note.trim()
-                if (fixedAdditive.substring(fixedAdditive.length - 1) === "*") fixedAdditive = fixedAdditive.substring(0, fixedAdditive.length - 1)
-                if (!meal.additives.includes(fixedAdditive)) {
-                    meal.additives.push(fixedAdditive)
+            for (const filterCategory in filters) {
+                for (const filterIndex in filters[filterCategory].attributes) {
+                    let filter = 1 << parseInt(filterIndex, 10)
+                    // noinspection JSBitwiseOperatorUsage
+                    if (filter & meal.filters[filterCategory]) {
+                        let filter = filters[filterCategory].attributes[filterIndex].key.toLowerCase().trim()
+                        switch (filter) {
+                            case "vegan":
+                                parsedMeal.isVegan = true
+                                break
+                            case "vegetarisch":
+                                parsedMeal.isVegetarian = true
+                                break
+                            case "schwein":
+                                parsedMeal.isPork = true
+                                break
+                            case "gefluegel":
+                                parsedMeal.isChicken = true
+                                break
+                            case "rind":
+                                parsedMeal.isBeef = true
+                                break
+                            case "fisch":
+                                parsedMeal.isFish = true
+                                break
+                            case "alkohol":
+                                parsedMeal.isAlcoholic = true
+                                break
+                            default:
+                                const knownAdditives = [
+                                    'antioxidationsmittel', 'farbstoff', 'geschmacksverstaerker', 'konservierungsstoffe', 'ei', 'gluten', 'milch', 'weizen',
+                                    'geschwefelt', 'soja', 'phosphat', 'senf', 'dinkel', 'hafer', 'haselnuss', 'mandeln', 'schalenfruechte', 'sellerie', 'weizen'
+                                ]
+                                if (!knownAdditives.includes(filter)) yadBot.sendMessageToOwner(`New filter in Mensa Scraper: ${filter}`)
+                                if (!parsedMeal.additives.includes(filter)) parsedMeal.additives.push(filter)
+                                break
+                        }
+                    }
                 }
             }
+            parsedCategory.push(parsedMeal)
         }
-        return meal
+        return parsedCategory
     }
 
     parseMealStringEmoji(meal) {
@@ -168,17 +194,18 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             new Discord.MessageActionRow({
                 components: [
                     new Discord.MessageButton({
-                        label: `Beilagenauswahl`,
+                        label: `Beilagen`,
                         customId: `mensafh::side_dishes::${content.json.date}`,
                         style: Discord.Constants.MessageButtonStyles.PRIMARY,
                     }),
                     new Discord.MessageButton({
-                        label: `Zusatzstoffe`,
+                        label: `Zusatzstoffe (bald)`,
                         customId: `mensafh::additives::${content.json.date}`,
+                        disabled: true,
                         style: Discord.Constants.MessageButtonStyles.SECONDARY,
                     }),
                     new Discord.MessageButton({
-                        label: "❤️ Spenden",
+                        label: "Spenden",
                         style: Discord.Constants.MessageButtonStyles.LINK,
                         url: "https://paypal.me/raphaelbetz"
                     }),
