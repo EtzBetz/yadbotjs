@@ -213,10 +213,10 @@ class ScraperMovieReleases extends WebsiteScraper {
         // 4  Digital
         // 5  Physical
         // 6  TV
-        if (content.releases?.length > 0) {
+        if (content.json.releases?.length > 0) {
             let usString = ""
             let deString = ""
-            for (const countryRelease of content.releases) {
+            for (const countryRelease of content.json.releases) {
                 let releases = countryRelease.release_dates
                 releases.sort((releaseA, releaseB) => {
                     let dateA = parseInt(luxon.DateTime.fromISO(releaseA.date).toFormat('yyyyMMdd'), 10)
