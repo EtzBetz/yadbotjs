@@ -29,7 +29,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                 menu.infos.push({'text': category.meals[0].name.trim().replace(/­/g, '')})
             } else if (
                 category.name.toLowerCase().includes("menü") ||
-                category.name.toLowerCase().includes("tagesaktion") // meals
+                category.name.toLowerCase().includes("tagesaktion") ||
+                category.name.toLowerCase().includes("eintopf") // meals
             ) {
                 let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
                 if (meal.length > 1) yadBot.sendMessageToOwner("meal in meals parsing is more than one!")
@@ -66,6 +67,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                         }
                     }
                 }
+            } else {
+                yadBot.sendMessageToOwner(`category in mensafh scraper is not detected as info, meals or side dish: '${category.name.toLowerCase()}'`)
             }
         })
         return [menu]
