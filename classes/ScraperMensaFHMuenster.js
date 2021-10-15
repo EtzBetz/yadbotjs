@@ -44,8 +44,12 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                     }
                 }
                 if (meal.side_dishes_num === undefined) meal.side_dishes_num = 0
-                meal.price = (category.meals[0].pricing['for'][0] / 100).toLocaleString('de-DE')
-                meal.price = meal.price.padEnd(4, '0')
+                if (category.meals[0].pricing !== undefined) {
+                    meal.price = (category.meals[0].pricing['for'][0] / 100).toLocaleString('de-DE')
+                    meal.price = meal.price.padEnd(4, '0')
+                } else {
+                    meal.price = null
+                }
                 menu.meals.push(meal)
                 for (const additive of meal.additives) {
                     if (!menu.additives.includes(additive)) {
@@ -168,7 +172,9 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             if (mealsString !== "") mealsString += "\n\n"
             mealsString += this.parseMealStringEmoji(meal)
             mealsString += `**${meal.title}**\n`
-            mealsString += `Preis: ${meal.price}€\n`
+            mealsString += "Preis: "
+            mealsString += meal.price !== null ? `${meal.price}€` : "Nicht angegeben"
+            mealsString += "\n"
             mealsString += `Beilagen: ${meal.side_dishes_num === 0 ? '-' : meal.side_dishes_num}`
         }
 
