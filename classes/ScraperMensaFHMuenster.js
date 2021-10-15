@@ -30,6 +30,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             } else if (
                 category.name.toLowerCase().includes("menü") ||
                 category.name.toLowerCase().includes("tagesaktion") ||
+                category.name.toLowerCase().includes("grillstation") ||
                 category.name.toLowerCase().includes("eintopf") // meals
             ) {
                 let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
