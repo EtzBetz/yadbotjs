@@ -24,7 +24,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             return entry['iso-date'] === menu.date
         })
 
-        data.categories.forEach(category => {
+        data?.categories.forEach(category => {
             if (category.name.toLowerCase().includes("info")) { // infos
                 menu.infos.push({'text': category.meals[0].name.trim().replace(/­/g, '')})
             } else if (
@@ -76,7 +76,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                 yadBot.sendMessageToOwner(`category in mensafh scraper is not detected as info, meals or side dish: '${category.name.toLowerCase()}'`)
             }
         })
-        return [menu]
+        if (menu.meals.length > 0 || menu.meals.side_dishes) return [menu]
+        return []
     }
 
     parseCategory(category, filters) {
