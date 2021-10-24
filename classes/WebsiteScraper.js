@@ -609,10 +609,38 @@ export class WebsiteScraper {
                 return {error: true, data: 'Message channel type was unknown.'}
             case "DM":
                 let subscriptionResult = this.toggleSubscriptionInFile(interaction.user.id, false)
+                let sendTestMessageResult = true
                 if (subscriptionResult) {
-                    return {
-                        error: false,
-                        data: `You have been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
+                    try {
+                        let testMessage = await interaction.user.send({
+                            embeds: [new Discord.MessageEmbed({
+                                title: 'Test Message',
+                                description: `You can safely ignore this message, I am just testing if it is possible to send you a direct message.`,
+                                color: EmbedColors.GREEN,
+                            })]
+                        })
+                        await testMessage.edit({
+                            embeds: [new Discord.MessageEmbed({
+                                title: 'Test Message',
+                                description: `You can safely ignore this message, I am just testing if it is possible to send you a direct message.\n*I now tried to edit it, which has worked. Nice!*`,
+                                color: EmbedColors.GREEN,
+                            })]
+                        })
+                        await testMessage.delete();
+                    } catch (e) {
+                        sendTestMessageResult = false
+                        this.toggleSubscriptionInFile(interaction.user.id, false)
+                    }
+                    if (sendTestMessageResult) {
+                        return {
+                            error: false,
+                            data: `You have been **added** to the subscribers list of scraper **${this.constructor.name}**.`,
+                        }
+                    } else {
+                        return {
+                            error: true,
+                            data: `You have **not** been added to the subscribers list of scraper **${this.constructor.name}**.\nThis is because I was not able to send you a private message. Make sure to turn off the following Setting:\n\`User settings > Privacy & Security > Allow Direct Messages from Server members\``,
+                        }
                     }
                 } else {
                     return {
@@ -620,6 +648,7 @@ export class WebsiteScraper {
                         data: `You have been **removed** from the subscribers list of scraper **${this.constructor.name}**.`,
                     }
                 }
+                break
             case "GUILD_TEXT":
             case "GUILD_NEWS":
                 if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
@@ -641,11 +670,13 @@ export class WebsiteScraper {
                         data: `You need admin permissions on this server to be able to manage subscriptions.`,
                     }
                 }
+                break
             default:
                 return {
                     error: true,
                     data: `Unknown type of channel.`,
                 }
+                break
         }
     }
 
