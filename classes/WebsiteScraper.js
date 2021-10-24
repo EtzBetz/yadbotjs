@@ -608,7 +608,7 @@ export class WebsiteScraper {
             case "UNKNOWN":
                 return {error: true, data: 'Message channel type was unknown.'}
             case "DM":
-                let subscriptionResult = this.toggleSubscriptionInFile(interactionChannel.id, false)
+                let subscriptionResult = this.toggleSubscriptionInFile(interaction.user.id, false)
                 if (subscriptionResult) {
                     return {
                         error: false,
