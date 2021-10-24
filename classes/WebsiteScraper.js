@@ -281,7 +281,7 @@ export class WebsiteScraper {
                             components: contentEntry.components
                         })
                             .catch(e => {
-                                yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}`)
+                                yadBot.sendMessageToOwner(`error with guild ${embedTargetChannel?.guild?.id} channel ${embedTargetChannel?.id}. also notified guild admins`)
                                 this.sendMissingAccessToGuildAdmins(embedTargetChannel.guild.id)
                                 console.dir(e)
                             })
