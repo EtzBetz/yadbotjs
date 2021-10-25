@@ -91,6 +91,7 @@ class ScraperBlackBoard extends WebsiteScraper {
                     // }
 
                     let linkText = linkContainer.textContent.trim()
+                    linkText = linkText.replace(/\s{2,}/g, " ")
                     let linkAddress = linkContainer.querySelector('a').href?.trim()
                     if (linkAddress.substring(0, 1) === '/') {
                         linkAddress = 'https://www.fh-muenster.de' + linkAddress
