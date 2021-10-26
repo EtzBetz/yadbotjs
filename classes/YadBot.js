@@ -57,22 +57,22 @@ class YadBot {
         this.bot.once('ready', async () => {
             // todo: build in waiting for the main bot to come online (interval in scrapers?)
             this.scrapers = [
-                ScraperBlackBoard,
-                ScraperMensaFHMuenster,
-                ScraperFreeEpicGames,
                 ScraperFreeSteamGames,
                 ScraperFreeUbisoftGames,
-                ScraperGuildWars2News,
+                ScraperFreeEpicGames,
+                ScraperFreeUEAssets,
                 ScraperTeamspeakBadges,
-                ScraperMovieReleases,
-                ScraperXRelReleases,
+                ScraperBlackBoard,
+                ScraperMensaFHMuenster,
+                ScraperLab4Inf,
+                ScraperNetzwerkprogrammierung,
                 ScraperInterfaceInGameGames,
                 ScraperInterfaceInGameArticles,
-                ScraperTSBThreadWatch,
                 ScraperCanIUseNews,
-                ScraperFreeUEAssets,
-                ScraperLab4Inf,
-                ScraperNetzwerkprogrammierung
+                ScraperMovieReleases,
+                ScraperGuildWars2News,
+                ScraperXRelReleases,
+                ScraperTSBThreadWatch,
             ]
             await this.bindCommands()
             await this.bindEvents()
