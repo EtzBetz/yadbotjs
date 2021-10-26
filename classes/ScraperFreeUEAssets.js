@@ -90,7 +90,7 @@ class ScraperFreeUEAssets extends WebsiteScraper {
         if (content.json.platformCompatibility !== undefined) {
             let platformText = ""
             for (const platformData of content.json.platformCompatibility) {
-                platformText += `\n - ${platformData.value}`
+                platformText += `\n- ${platformData.value}`
             }
 
             embed.fields.push({
