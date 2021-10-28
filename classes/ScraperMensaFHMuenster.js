@@ -120,7 +120,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                                 const knownAdditives = [
                                     'antioxidationsmittel', 'farbstoff', 'geschmacksverstaerker', 'konservierungsstoffe', 'ei', 'gluten', 'milch', 'weizen',
                                     'geschwefelt', 'soja', 'phosphat', 'senf', 'dinkel', 'hafer', 'haselnuss', 'mandeln', 'schalenfruechte', 'sellerie',
-                                    'suessungsmittel', 'sesam', 'phenylalaninquelle'
+                                    'suessungsmittel', 'sesam', 'phenylalaninquelle', 'roggen', 'gerste'
                                 ]
                                 if (!knownAdditives.includes(filter)) yadBot.sendMessageToOwner(`New filter in Mensa Scraper: ${filter}`)
                                 if (!parsedMeal.additives.includes(filter)) parsedMeal.additives.push(filter)
