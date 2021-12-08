@@ -46,6 +46,9 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                 if (meal.side_dishes_num === undefined) meal.side_dishes_num = 0
                 if (category.meals[0].pricing !== undefined) {
                     meal.price = (category.meals[0].pricing['for'][0] / 100).toLocaleString('de-DE')
+                    if (!meal.price.includes(",")) {
+                        meal.price += ","
+                    }
                     meal.price = meal.price.padEnd(4, '0')
                 } else {
                     meal.price = null
