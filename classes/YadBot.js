@@ -143,16 +143,15 @@ class YadBot {
             await this.bot.commands.set(commandData.name, command.default)
             commandsDataArr.push(commandData)
         }
-        if (files.readJson(this.getYadConfigPath(), 'prod', false, false)) {
-            this.bot.application.commands.set(commandsDataArr)
-                .then((commandResult) => {
-                })
-        } else {
+        if (!files.readJson(this.getYadConfigPath(), 'prod', false, false)) {
             let testServer = files.readJson(this.getYadConfigPath(), 'test_server', true, 'ENTER TEST SERVER ID HERE')
             this.bot.guilds.cache.get(testServer)?.commands.set(commandsDataArr)
                 .then((commandResult) => {
                 })
         }
+        this.bot.application.commands.set(commandsDataArr)
+            .then((commandResult) => {
+            })
     }
 
     async bindEvents() {
