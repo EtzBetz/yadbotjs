@@ -27,7 +27,7 @@ class ScraperFreeUEAssets extends WebsiteScraper {
                 entry.authorName = asset.seller.name
                 entry.date = asset.effectiveDate
 
-                if (asset.seller?.financeCheckExempted !== true) {
+                if (!asset.customAttributes?.BuyLink?.type) {
                     elements.push(entry)
                 }
             }
