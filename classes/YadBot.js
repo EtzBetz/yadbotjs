@@ -17,6 +17,7 @@ import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.js'
 import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js'
 import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import ScraperFreeUEAssets from './ScraperFreeUEAssets.js'
+import ScraperWearOSWatchfaces from './ScraperWearOSWatchfaces.js';
 import {log, debugLog} from '../index'
 import files from './Files.js'
 import activityTypes from '../constants/ActivityTypes.js'
@@ -73,6 +74,7 @@ class YadBot {
                 ScraperGuildWars2News,
                 ScraperXRelReleases,
                 ScraperTSBThreadWatch,
+                ScraperWearOSWatchfaces,
             ]
             await this.bindCommands()
             await this.bindEvents()
