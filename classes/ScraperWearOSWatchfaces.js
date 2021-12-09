@@ -14,8 +14,8 @@ class ScraperWearOSWatchfaces extends WebsiteScraper {
             entry.author = thread.data.author
             entry.url = thread.data.permalink
             if (thread.data.media_metadata !== undefined) {
-                console.log(Object.keys(thread.data.media_metadata)[0])
-                console.log(thread.data.media_metadata[imgKey].p[thread.data.media_metadata[imgKey].p.length - 1].u)
+                let imgKey = Object.keys(thread.data.media_metadata)[0]
+                let image = thread.data.media_metadata[imgKey].p[thread.data.media_metadata[imgKey].p.length - 1].u
                 entry.image = image.replaceAll("amp;", "")
             } else if (thread.data.preview?.images !== undefined) {
                 let image = thread.data.preview.images[0].source.url
