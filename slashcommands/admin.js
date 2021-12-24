@@ -5,12 +5,12 @@ import files from '../classes/Files.js'
 import EmbedColors from '../constants/EmbedColors.js';
 
 export default {
-    enabled: true,
+    enabled: false,
     onlyAdmin: true,
     getData() {
         return {
             name: 'admin',
-            description: "Various commands to manage scrapers globally (ADMINS ONLY).",
+            description: "Various commands for internal usage (ADMINS ONLY).",
             options: [
                 {
                     name: "status",
