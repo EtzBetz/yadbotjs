@@ -1,8 +1,8 @@
 import fs from 'fs'
 import Discord from 'discord.js'
 import ScraperBlackBoard from './ScraperBlackBoard.js'
-import ScraperLab4Inf from './ScraperLab4Inf.js'
-import ScraperNetzwerkprogrammierung from './ScraperNetzwerkprogrammierung.js'
+// import ScraperLab4Inf from './ScraperLab4Inf.js'
+// import ScraperNetzwerkprogrammierung from './ScraperNetzwerkprogrammierung.js'
 // import ScraperRechnernetze from './ScraperRechnernetze.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
 import ScraperFreeEpicGames from './ScraperFreeEpicGames'
@@ -65,8 +65,6 @@ class YadBot {
                 ScraperTeamspeakBadges,
                 ScraperBlackBoard,
                 ScraperMensaFHMuenster,
-                ScraperLab4Inf,
-                ScraperNetzwerkprogrammierung,
                 ScraperInterfaceInGameGames,
                 ScraperInterfaceInGameArticles,
                 ScraperCanIUseNews,
