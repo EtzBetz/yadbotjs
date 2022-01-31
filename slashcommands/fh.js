@@ -19,7 +19,7 @@ export default {
                     type: 'SUB_COMMAND',
                     options: [{
                         name: "card-number",
-                        description: "Your FH Münster Card ID.",
+                        description: "A FH Münster Card ID.",
                         type: "INTEGER",
                         required: false
                     }]
@@ -30,7 +30,7 @@ export default {
                     type: 'SUB_COMMAND',
                     options: [{
                         name: "card-number",
-                        description: "Your FH Münster Card ID.",
+                        description: "A FH Münster Card ID.",
                         type: "INTEGER",
                         required: true
                     }]
@@ -93,7 +93,7 @@ export default {
 
                     await interaction.editReply({
                         embeds: [{
-                            description: `Dein Guthaben beträgt: **${balance.toString().substring(0, balance.toString().length - 2)},${balance.toString().substring(balance.toString().length - 2)}€**`,
+                            description: `Dein Guthaben beträgt: **${balance.toString().substring(0, balance.toString().length - 2).padStart(1, '0')},${balance.toString().substring(balance.toString().length - 2)}€**`,
                             color: EmbedColors.GREEN,
                             author: {
                                 name: 'Fachhochschule Münster',
