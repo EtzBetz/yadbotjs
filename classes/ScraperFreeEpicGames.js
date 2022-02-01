@@ -99,7 +99,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         startDate = luxon.DateTime.fromISO(content.json.startDate).setZone('utc')
         endDate = luxon.DateTime.fromISO(content.json.endDate).setZone('utc')
 
-        descriptionString = `**Free** in Epic Games Store until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}.`
+        descriptionString = `Promotion runs out <t:${endDate.toSeconds()}:R>.`
 
         let osString = ""
 
@@ -134,7 +134,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         if (startDate !== undefined) {
             embed.fields.push({
                 "name": "Start Date",
-                "value": `${startDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(startDate.toFormat("d"), 10))}, ${startDate.toFormat('HH:mm')} UTC`,
+                "value": `<t:${startDate.toSeconds()}:f>`,
                 "inline": true
             })
         }
@@ -142,7 +142,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         if (endDate !== undefined) {
             embed.fields.push({
                 "name": "End Date",
-                "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')} UTC`,
+                "value": `<t:${endDate.toSeconds()}:f>`,
                 "inline": true
             })
         }

@@ -1,6 +1,6 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 import luxon from 'luxon'
 
 class ScraperInterfaceInGameGames extends WebsiteScraper {
@@ -53,7 +53,7 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
                 'fields': [
                     {
                         'name': 'Release date',
-                        'value': luxon.DateTime.fromISO(content.json.date).toFormat('MMMM d, yyyy'),
+                        'value': `<t:${luxon.DateTime.fromISO(content.json.date).toSeconds()}:D>`,
                         inline: true
                     },
                     {

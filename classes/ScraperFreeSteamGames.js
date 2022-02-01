@@ -162,7 +162,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
             embed.fields.push(
                 {
                     'name': 'Release Date',
-                    'value': luxon.DateTime.fromISO(content.json.date).toFormat('d. LLLL yyyy', {locale: "de"}),
+                    'value': `<t:${luxon.DateTime.fromISO(content.json.date).toSeconds}:D>`,
                     'inline': true,
                 },
             )

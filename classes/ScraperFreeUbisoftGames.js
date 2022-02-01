@@ -168,7 +168,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
 
         if (content.json.endDate !== undefined) {
             endDate = luxon.DateTime.fromISO(content.json.endDate)
-            descriptionString = `**Free** until ${endDate.toFormat("MMMM")} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))} in Ubisoft Store.`
+            descriptionString = `Promotion runs out <t:${endDate.toSeconds()}:R>.`
         } else {
             descriptionString = `Currently **free** in Ubisoft Store.`
         }
@@ -191,9 +191,11 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         )
 
         if (content.json.startDate !== undefined) {
+            startDate = luxon.DateTime.fromISO(content.json.startDate)
+
             embed.fields.push({
                 "name": "Start Date",
-                "value": `${luxon.DateTime.fromISO(content.json.startDate).toFormat('MMMM')} ${yadBot.ordinal(parseInt(luxon.DateTime.fromISO(content.json.startDate).toFormat("d"), 10))}, ${luxon.DateTime.fromISO(content.json.startDate).toFormat('HH:mm')}`,
+                "value": `<t:${startDate.toSeconds()}:f>`,
                 "inline": true
             })
         }
@@ -201,7 +203,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         if (content.json.endDate !== undefined) {
             embed.fields.push({
                 "name": "End Date",
-                "value": `${endDate.toFormat('MMMM')} ${yadBot.ordinal(parseInt(endDate.toFormat("d"), 10))}, ${endDate.toFormat('HH:mm')}`,
+                "value": `<t:${endDate.toSeconds()}:f>`,
                 "inline": true
             })
         } else {
