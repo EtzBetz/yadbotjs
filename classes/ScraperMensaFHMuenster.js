@@ -219,12 +219,12 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                         customId: `mensafh::side_dishes::${content.json.date}`,
                         style: Discord.Constants.MessageButtonStyles.PRIMARY,
                     }),
-                    new Discord.MessageButton({
-                        label: `Zusatzstoffe (bald)`,
-                        customId: `mensafh::additives::${content.json.date}`,
-                        disabled: true,
-                        style: Discord.Constants.MessageButtonStyles.SECONDARY,
-                    }),
+                    // new Discord.MessageButton({
+                    //     label: `Zusatzstoffe (bald)`,
+                    //     customId: `mensafh::additives::${content.json.date}`,
+                    //     disabled: true,
+                    //     style: Discord.Constants.MessageButtonStyles.SECONDARY,
+                    // }),
                     new Discord.MessageButton({
                         label: "Spenden",
                         style: Discord.Constants.MessageButtonStyles.LINK,
