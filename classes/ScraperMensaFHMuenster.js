@@ -3,6 +3,7 @@ import * as Discord from 'discord.js'
 import {WebsiteScraper} from './WebsiteScraper'
 import yadBot from './YadBot.js'
 import files from './Files.js';
+import axios from 'axios';
 
 class ScraperMensaFHMuenster extends WebsiteScraper {
 
@@ -209,6 +210,11 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             new Discord.MessageActionRow({
                 components: [
                     new Discord.MessageButton({
+                        label: `Guthaben abfragen`,
+                        customId: `mensafh::balance::message`,
+                        style: Discord.Constants.MessageButtonStyles.PRIMARY,
+                    }),
+                    new Discord.MessageButton({
                         label: `Beilagen`,
                         customId: `mensafh::side_dishes::${content.json.date}`,
                         style: Discord.Constants.MessageButtonStyles.PRIMARY,
@@ -236,6 +242,38 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
         return this.sortJsonByIsoDateAndTitleProperty
     }
 
+    async getBalanceByCardId(interaction, cardId) {
+        let balanceResponse = await axios({
+            method: 'get',
+            url: `https://api.topup.klarna.com/api/v1/STW_MUNSTER/cards/${cardId}/balance`,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
+            },
+            responseType: 'text/json'
+        })
+            .catch(async (e) => {
+                return {
+                    success: false,
+                    status_code: -1
+                }
+            })
+
+        if (balanceResponse?.status === 200) {
+            const balance = balanceResponse.data.balance
+            return {
+                success: true,
+                status_code: 1,
+                raw_balance: balanceResponse.data.balance,
+                formatted_balance: `${balance.toString().substring(0, balance.toString().length - 2).padStart(1, '0')},${balance.toString().substring(balance.toString().length - 2)}€`,
+                card_id: balanceResponse.data.cardId,
+                university_id: balanceResponse.data.universityId,
+            }
+        } else
+            return {
+                success: false,
+                status_code: -2
+            }
+    }
 
 }
 

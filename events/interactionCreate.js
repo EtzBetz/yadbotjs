@@ -64,21 +64,74 @@ export default async (interaction) => {
             switch (interactionCommand[0]) {
                 case "mensafh":
                     let mensaFhScraper = yadBot.scrapers.find(scraper => scraper.constructor.name === "ScraperMensaFHMuenster")
-                    let data = files.readJson(`${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`, 'data', false)
-                    if (data === undefined) {
-                        await interaction.editReply({
-                            embeds: [{
-                                title: 'Fehler',
-                                description: 'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
-                                color: EmbedColors.RED
-                            }], ephemeral: true
-                        })
-                        break
-                    }
+                    let dishData
+
                     switch (interactionCommand[1]) {
+                        case "balance":
+                            const userStoredCardNumber = files.readJson(
+                                yadBot.getCommandConfigPath('fh'),
+                                interaction.user.id,
+                                false,
+                                false
+                            )
+                            if (userStoredCardNumber === false) {
+                                await interaction.editReply({
+                                    embeds: [{
+                                        title: "Keine Kartennummer hinterlegt",
+                                        description: `Ich kann leider deine Kartennummer nicht finden.\nKeine Nummer: keine Auskunft. So sind die Regeln.\n\n**Tipp:**Mit \`/fh cardnumber <Kartennummer>\` kannst du deine Kartennummer bei mir hinterlegen.`,
+                                        color: EmbedColors.RED
+                                    }],
+                                    ephemeral: true
+                                })
+                                return
+                            }
+
+                            const balanceObj = await mensaFhScraper.getBalanceByCardId(interaction, userStoredCardNumber)
+                            if (balanceObj.success === false) {
+                                await interaction.editReply({
+                                    embeds: [{
+                                        title: "Ein Fehler ist aufgetreten",
+                                        description: `Hast du vielleicht eine ungültige Kartennummer bei mir hinterlegt?\nVersuche es ansonsten in einigen Minuten noch einmal.\n\n**Tipp:** Das Hinterlegen deiner Kartennummer funktioniert mit \`/fh cardnumber <Kartennummer>\`.`,
+                                        color: EmbedColors.RED,
+                                        author: {
+                                            name: 'Fachhochschule Münster',
+                                            url: 'https://fh-muenster.de',
+                                            icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
+                                        },
+                                    }],
+                                    ephemeral: true
+                                })
+                                return
+                            }
+
+                            await interaction.editReply({
+                                embeds: [{
+                                    description: `Dein Guthaben beträgt: **${balanceObj.formatted_balance}**`,
+                                    color: EmbedColors.GREEN,
+                                    author: {
+                                        name: 'Fachhochschule Münster',
+                                        url: 'https://fh-muenster.de',
+                                        icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
+                                    },
+                                }],
+                                ephemeral: true
+                            })
+                            break
                         case "side_dishes":
+                            dishData = files.readJson(`${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`, 'data', false)
+                            if (dishData === undefined) {
+                                await interaction.editReply({
+                                    embeds: [{
+                                        title: 'Fehler',
+                                        description: 'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
+                                        color: EmbedColors.RED
+                                    }],
+                                    ephemeral: true
+                                })
+                                return
+                            }
                             let sideDishesString = ""
-                            for (const sideDish of data[data.length - 1].side_dishes) {
+                            for (const sideDish of dishData[dishData.length - 1].side_dishes) {
                                 if (sideDishesString !== "") sideDishesString += "\n"
                                 sideDishesString += `-${mensaFhScraper.parseMealStringEmoji(sideDish)}`
                                 sideDishesString += `${sideDish.title}`
@@ -92,8 +145,19 @@ export default async (interaction) => {
                             })
                             break
                         case "additives":
+                            dishData = files.readJson(`${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`, 'data', false)
+                            if (dishData === undefined) {
+                                await interaction.editReply({
+                                    embeds: [{
+                                        title: 'Fehler',
+                                        description: 'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
+                                        color: EmbedColors.RED
+                                    }], ephemeral: true
+                                })
+                                return
+                            }
                             let additivesString = ""
-                            let additives = data[data.length - 1].additives.sort()
+                            let additives = dishData[dishData.length - 1].additives.sort()
                             for (const additiveIndex in additives) {
                                 if (additivesString !== "") additivesString += "\n"
                                 additivesString += `\`${additiveIndex}\`: ` + additives[additiveIndex][0].toUpperCase() + additives[additiveIndex].substring(1)

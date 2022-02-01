@@ -41,16 +41,16 @@ export default {
     async execute(interaction) {
         switch (interaction.options.getSubcommand()) {
             case "balance":
-                let enteredNumber = interaction.options.getInteger('card-number')
+                let enteredCardId = interaction.options.getInteger('card-number')
                 await interaction.deferReply({ephemeral: true})
-                if (enteredNumber === null) {
-                    enteredNumber = files.readJson(
+                if (enteredCardId === null) {
+                    enteredCardId = files.readJson(
                         yadBot.getCommandConfigPath(this.getData().name),
                         interaction.user.id,
                         false,
                         false
                     )
-                    if (enteredNumber === false) {
+                    if (enteredCardId === false) {
                         await interaction.editReply({
                             embeds: [{
                                 title: "Keine Kartennummer hinterlegt oder angegeben",
@@ -59,42 +59,19 @@ export default {
                             }],
                             ephemeral: true
                         })
-                        break
+                        return
                     }
                 }
-                // todo: check validity of number
 
-                let balanceResponse = await axios({
-                    method: 'get',
-                    url: `https://api.topup.klarna.com/api/v1/STW_MUNSTER/cards/${enteredNumber}/balance`,
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
-                    },
-                    responseType: 'text/json'
-                })
-                    .catch(async (e) => {
-                        await interaction.editReply({
-                            embeds: [{
-                                title: "Ein Fehler ist aufgetreten",
-                                description: `Hast du vielleicht eine ungültige Kartennummer eingegeben?\nVersuch es ansonsten in einigen Minuten noch einmal.\n\n**Tipp:** Du kannst mit \`/${this.getData().name} cardnumber <Kartennummer>\`\ndeine Kartennummer hinterlegen, um sie nicht jedes mal eingeben zu müssen.`,
-                                color: EmbedColors.RED,
-                                author: {
-                                    name: 'Fachhochschule Münster',
-                                    url: 'https://fh-muenster.de',
-                                    icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
-                                },
-                            }],
-                            ephemeral: true
-                        })
-                    })
+                let mensaFhScraper = yadBot.scrapers.find(scraper => scraper.constructor.name === "ScraperMensaFHMuenster")
+                const balanceObj = await mensaFhScraper.getBalanceByCardId(interaction, enteredCardId)
 
-                if (balanceResponse?.status === 200) {
-                    const balance = balanceResponse.data.balance
-
+                if (balanceObj.success === false) {
                     await interaction.editReply({
                         embeds: [{
-                            description: `Dein Guthaben beträgt: **${balance.toString().substring(0, balance.toString().length - 2).padStart(1, '0')},${balance.toString().substring(balance.toString().length - 2)}€**`,
-                            color: EmbedColors.GREEN,
+                            title: "Ein Fehler ist aufgetreten",
+                            description: `Hast du vielleicht eine ungültige Kartennummer eingegeben?\nVersuch es ansonsten in einigen Minuten noch einmal.\n\n**Tipp:** Du kannst mit \`/${this.getData().name} cardnumber <Kartennummer>\`\ndeine Kartennummer hinterlegen, um sie nicht jedes mal eingeben zu müssen.`,
+                            color: EmbedColors.RED,
                             author: {
                                 name: 'Fachhochschule Münster',
                                 url: 'https://fh-muenster.de',
@@ -103,7 +80,21 @@ export default {
                         }],
                         ephemeral: true
                     })
+                    return
                 }
+
+                await interaction.editReply({
+                    embeds: [{
+                        description: `Dein Guthaben beträgt: **${balanceObj.formatted_balance}**`,
+                        color: EmbedColors.GREEN,
+                        author: {
+                            name: 'Fachhochschule Münster',
+                            url: 'https://fh-muenster.de',
+                            icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
+                        },
+                    }],
+                    ephemeral: true
+                })
                 break
             case "cardnumber":
                 await interaction.deferReply({ephemeral: true})
