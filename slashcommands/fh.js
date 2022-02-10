@@ -86,13 +86,23 @@ export default {
                 await interaction.editReply({
                     embeds: [{
                         description: `Dein Guthaben beträgt: **${balanceObj.formatted_balance}**`,
-                        color: EmbedColors.GREEN,
                         author: {
                             name: 'Fachhochschule Münster',
                             url: 'https://fh-muenster.de',
                             icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
                         },
                     }],
+                    components: [
+                        new Discord.MessageActionRow({
+                            components: [
+                                new Discord.MessageButton({
+                                    label: `Guthaben aufladen`,
+                                    url: 'https://topup.klarna.com/stw_munster',
+                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                }),
+                            ]
+                        })
+                    ],
                     ephemeral: true
                 })
                 break
