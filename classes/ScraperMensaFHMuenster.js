@@ -32,7 +32,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                 category.name.toLowerCase().includes("menü") ||
                 category.name.toLowerCase().includes("tagesaktion") ||
                 category.name.toLowerCase().includes("grillstation") ||
-                category.name.toLowerCase().includes("eintopf") // meals
+                category.name.toLowerCase().includes("eintopf") ||
+                category.name.toLowerCase().includes("jubiläumsangebot") // meals
             ) {
                 let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
                 if (meal.length > 1) yadBot.sendMessageToOwner("meal in meals parsing is more than one!")
