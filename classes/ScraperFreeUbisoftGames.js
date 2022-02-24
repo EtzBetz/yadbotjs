@@ -89,7 +89,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
 
     async requestWebsite(url) {
         return await axios({
-            method: 'get',
+            method: files.readJson(this.getScraperConfigPath(), 'http_method', false, 'get'),
             url: url,
             headers: {
                 'User-Agent': this.getUserAgent(),

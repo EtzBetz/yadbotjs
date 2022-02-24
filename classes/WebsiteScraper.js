@@ -15,23 +15,6 @@ export class WebsiteScraper {
         this.setup()
     }
 
-    getUserAgent() {
-        return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
-    }
-
-    getExpectedResponseType() {
-        return 'text/html'
-    }
-
-    async getScrapingUrl(scrapeInfo) {
-        return files.readJson(
-            this.getScraperConfigPath(),
-            'scraping_url',
-            true,
-            'ENTER SCRAPING URL HERE',
-        )
-    }
-
     getScrapingInterval() {
         return files.readJson(
             this.getScraperConfigPath(),
@@ -167,11 +150,40 @@ export class WebsiteScraper {
         return true
     }
 
+    getUserAgent() {
+        return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
+    }
+
+    getExpectedResponseType() {
+        return 'text/html'
+    }
+
+    getContentType() {
+        return ''
+    }
+
+    getRequestBody() {
+        return ''
+    }
+
+    async getScrapingUrl(scrapeInfo) {
+        return files.readJson(
+            this.getScraperConfigPath(),
+            'scraping_url',
+            true,
+            'ENTER SCRAPING URL HERE',
+        )
+    }
+
     async requestWebsite(url) {
         return await axios({
-            method: 'get',
+            method: files.readJson(this.getScraperConfigPath(), 'http_method', false, 'get'),
             url: url,
-            headers: {'User-Agent': this.getUserAgent()},
+            headers: {
+                'User-Agent': this.getUserAgent(),
+                'Content-Type': this.getContentType()
+            },
+            data: this.getRequestBody(),
             responseType: this.getExpectedResponseType(),
             raxConfig: {
                 retry: 5,
