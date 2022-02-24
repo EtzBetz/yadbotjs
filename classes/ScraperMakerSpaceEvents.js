@@ -16,7 +16,6 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
         let dateTime = luxon.DateTime.local()
         for (let i = 0; i < 6; i++) {
             let data = `limitMonth=${parseInt(dateTime.toFormat('M'), 10) - 1}&limitYear=${dateTime.toFormat('y')}&lastMonth=${parseInt(dateTime.toFormat('M'), 10) + 3}&lastYear=${dateTime.toFormat('y')}`
-            console.log(data)
             responses.push(await this.customRequestWebsite(url, data))
             dateTime = dateTime.plus({months: 1})
         }
@@ -43,7 +42,6 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         let elements = []
-        console.log(Object.keys(scrapeInfo))
         for (const response of scrapeInfo.response) {
             const page = new jsdom.JSDOM(response.data).window.document
             let entities = page.querySelectorAll(".veranstaltungsblock table tr")
@@ -55,10 +53,6 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
                 let entryTitle = entity.children[1].querySelector('strong').textContent.trim()
                 let entryLink = entity.children[1].querySelector('a').href.trim()
                 let entryFillState = entity.children[2].querySelector('div > div.pBar > div.level').getAttribute('data-width').trim()
-                console.log(entryDate)
-                console.log(entryTitle)
-                console.log(entryLink)
-                console.log(entryFillState)
 
                 let entry = {
                     title: entryTitle,
