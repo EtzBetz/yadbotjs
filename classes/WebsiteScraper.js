@@ -159,7 +159,7 @@ export class WebsiteScraper {
     }
 
     getContentType() {
-        return ''
+        return 'text/html; charset=UTF-8'
     }
 
     getRequestBody() {
@@ -177,7 +177,7 @@ export class WebsiteScraper {
 
     async requestWebsite(url) {
         return await axios({
-            method: files.readJson(this.getScraperConfigPath(), 'http_method', false, 'get'),
+            method: files.readJson(this.getScraperConfigPath(), 'http_method', false, 'GET'),
             url: url,
             headers: {
                 'User-Agent': this.getUserAgent(),
