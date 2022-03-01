@@ -66,7 +66,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                     category.name.toLowerCase().includes("beilage") &&
                     !category.name.toLowerCase().includes("beilagen")
                 ) ||
-                category.name.toLowerCase().includes("tagesdessert") // side_dishes
+                category.name.toLowerCase().includes("tagesdessert") ||
+                category.name.toLowerCase().includes("dessert extra") // side_dishes
             ) {
                 let sideDishes = this.parseCategory(category, scrapeInfo.response.data.filters)
                 menu.side_dishes.push(...sideDishes)
