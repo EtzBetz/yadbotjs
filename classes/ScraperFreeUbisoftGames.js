@@ -119,6 +119,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
                 case "freegame":
                 case "gametrial":
                 case "freeweekend":
+                case "freeweek":
                 case "beta":
                 case "dlc":
                     break
@@ -131,6 +132,8 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             if (
                 (game.placement === "freeevents" && game.type === "freegame") ||
                 (game.placement === "freeevents" && game.type === "beta") ||
+                (game.placement === "freeevents" && game.type === "freeweekend") ||
+                (game.placement === "freeevents" && game.type === "freeweek") ||
                 (game.placement === "freeevents" && game.type === "dlc")
             ) {
                 entry.title = game.title
