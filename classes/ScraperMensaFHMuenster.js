@@ -33,7 +33,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                 category.name.toLowerCase().includes("tagesaktion") ||
                 category.name.toLowerCase().includes("grillstation") ||
                 category.name.toLowerCase().includes("eintopf") ||
-                category.name.toLowerCase().includes("jubiläumsangebot") // meals
+                category.name.toLowerCase().includes("jubiläumsangebot") ||
+                category.name.toLowerCase().includes("speisenangebot") // meals
             ) {
                 let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
                 if (meal.length > 1) yadBot.sendMessageToOwner("meal in meals parsing is more than one!")
@@ -67,7 +68,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                     !category.name.toLowerCase().includes("beilagen")
                 ) ||
                 category.name.toLowerCase().includes("tagesdessert") ||
-                category.name.toLowerCase().includes("dessert extra") // side_dishes
+                category.name.toLowerCase().includes("dessert extra") ||
+                category.name.toLowerCase().includes("dessert") // side_dishes
             ) {
                 let sideDishes = this.parseCategory(category, scrapeInfo.response.data.filters)
                 menu.side_dishes.push(...sideDishes)
