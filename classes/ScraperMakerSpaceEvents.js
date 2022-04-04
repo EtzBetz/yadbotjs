@@ -52,7 +52,7 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
                 let entryDate = entity.children[0].textContent.trim()
                 let entryTitle = entity.children[1].querySelector('strong').textContent.trim()
                 let entryLink = entity.children[1].querySelector('a').href.trim()
-                let entryFillState = entity.children[2].querySelector('div > div.pBar > div.level').getAttribute('data-width').trim()
+                let entryFillState = entity.children[2]?.querySelector('div > div.pBar > div.level')?.getAttribute('data-width')?.trim()
 
                 let entry = {
                     title: entryTitle,
@@ -82,7 +82,7 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
             {
                 "title": content.json.title,
                 "url": link,
-                "description": `Datum: **${content.json.date}**\nAnmeldungen: **${content.json.fillstate}%**`,
+                "description": `Datum: **${content.json.date}**\nAnmeldungen: **${content.json.fillstate === undefined ? 'Gesperrt' : `${content.json.fillstate}%`}**`,
                 "author": {
                     "name": "MakerSpace Steinfurt",
                     "url": await this.getScrapingUrl(),
