@@ -42,28 +42,29 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         let elements = []
-        for (const response of scrapeInfo.response) {
-            const page = new jsdom.JSDOM(response.data).window.document
-            let entities = page.querySelectorAll(".veranstaltungsblock table tr")
-            this.log(`Parsing ${entities.length} entries...`)
+        if (scrapeInfo.response !== undefined) {
+            for (const response of scrapeInfo.response) {
+                const page = new jsdom.JSDOM(response.data).window.document
+                let entities = page.querySelectorAll(".veranstaltungsblock table tr")
+                this.log(`Parsing ${entities.length} entries...`)
 
-            entities.forEach((entity, index) => {
+                entities.forEach((entity, index) => {
 
-                let entryDate = entity.children[0].textContent.trim()
-                let entryTitle = entity.children[1].querySelector('strong').textContent.trim()
-                let entryLink = entity.children[1].querySelector('a').href.trim()
-                let entryFillState = entity.children[2]?.querySelector('div > div.pBar > div.level')?.getAttribute('data-width')?.trim()
+                    let entryDate = entity.children[0].textContent.trim()
+                    let entryTitle = entity.children[1].querySelector('strong').textContent.trim()
+                    let entryLink = entity.children[1].querySelector('a').href.trim()
+                    let entryFillState = entity.children[2]?.querySelector('div > div.pBar > div.level')?.getAttribute('data-width')?.trim()
 
-                let entry = {
-                    title: entryTitle,
-                    date: entryDate,
-                    link: entryLink,
-                    fillstate: entryFillState,
-                }
+                    let entry = {
+                        title: entryTitle,
+                        date: entryDate,
+                        link: entryLink,
+                        fillstate: entryFillState,
+                    }
 
-                elements.push(entry)
-            })
-
+                    elements.push(entry)
+                })
+            }
         }
         return elements
     }
