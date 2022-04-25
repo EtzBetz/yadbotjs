@@ -71,16 +71,26 @@ export default async (interaction) => {
                             const userStoredCardNumber = files.readJson(
                                 yadBot.getCommandConfigPath('fh'),
                                 interaction.user.id,
-                                false,
                                 false
                             )
-                            if (userStoredCardNumber === false) {
+                            if (userStoredCardNumber === undefined) {
                                 await interaction.editReply({
                                     embeds: [{
                                         title: "Keine Kartennummer hinterlegt",
                                         description: `Ich kann leider deine Kartennummer nicht finden.\nKeine Nummer: keine Auskunft. So sind die Regeln.\n\n**Tipp:**Mit \`/fh cardnumber <Kartennummer>\` kannst du deine Kartennummer bei mir hinterlegen.`,
                                         color: EmbedColors.RED
                                     }],
+                                    components: [
+                                        new Discord.MessageActionRow({
+                                            components: [
+                                                new Discord.MessageButton({
+                                                    label: `Guthaben aufladen`,
+                                                    url: 'https://topup.klarna.com/stw_munster',
+                                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                                }),
+                                            ]
+                                        })
+                                    ],
                                     ephemeral: true
                                 })
                                 return
@@ -99,6 +109,17 @@ export default async (interaction) => {
                                             icon_url: 'https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg',
                                         },
                                     }],
+                                    components: [
+                                        new Discord.MessageActionRow({
+                                            components: [
+                                                new Discord.MessageButton({
+                                                    label: `Guthaben aufladen`,
+                                                    url: 'https://topup.klarna.com/stw_munster',
+                                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                                }),
+                                            ]
+                                        })
+                                    ],
                                     ephemeral: true
                                 })
                                 return
