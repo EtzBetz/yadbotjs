@@ -9,7 +9,7 @@ class ScraperBlackBoard extends WebsiteScraper {
     parseWebsiteContentToJSON(scrapeInfo) {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
-        let entities = page.querySelectorAll('div.clearfix > div[style] > div[style]')
+        let entities = page.querySelectorAll('div.clearfix > div[style] > div')
         this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((entity, index) => {
