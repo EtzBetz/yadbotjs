@@ -32,18 +32,9 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 }
                 entry.imageUrl = encodeURI(entry.imageUrl)
 
-                let slug
-                if (game.productSlug !== undefined && game.productSlug !== null) {
-                    const slashPosition = game.productSlug.toString().indexOf('/')
-                    if (slashPosition !== -1) {
-                        slug = game.productSlug.toString().substring(0, slashPosition)
-                    } else {
-                        slug = game.productSlug.toString()
-                    }
-                } else {
-                    slug = game.urlSlug
-                }
-                entry.slug = slug
+                entry.slug = game.offerMappings.find((mapping) => {
+                    return mapping.pageType === "productHome"
+                }).pageSlug
 
                 let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
                 const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
