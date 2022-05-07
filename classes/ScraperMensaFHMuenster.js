@@ -28,60 +28,49 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
         data?.categories.forEach(category => {
             if (category.name.toLowerCase().includes("info")) { // infos
                 menu.infos.push({'text': category.meals[0].name.trim().replace(/­/g, '')})
-            } else if (
-                category.name.toLowerCase().includes("menü") ||
-                category.name.toLowerCase().includes("tagesaktion") ||
-                category.name.toLowerCase().includes("grillstation") ||
-                category.name.toLowerCase().includes("eintopf") ||
-                category.name.toLowerCase().includes("jubiläumsangebot") ||
-                category.name.toLowerCase().includes("speisenangebot") // meals
-            ) {
-                let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
-                if (meal.length > 1) yadBot.sendMessageToOwner("meal in meals parsing is more than one!")
-                meal = meal[0]
-                let dishNumArr = ['eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn']
-                for (const dishNum in dishNumArr) {
-                    if (category.name.toLowerCase().includes(dishNumArr[dishNum])) {
-                        meal.side_dishes_num = parseInt(dishNum, 10) + 1
-                        break
+            } else {
+                for (const mealIndex in category.meals) {
+                    let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
+                    meal = meal[mealIndex]
+                    if (category.meals[0].pricing !== undefined) {
+                        meal.price = (category.meals[mealIndex].pricing['for'][0] / 100).toLocaleString('de-DE')
+                        if (!meal.price.includes(",")) {
+                            meal.price += ","
+                        }
+                        meal.price = meal.price.padEnd(4, '0')
+                    } else {
+                        meal.price = null
                     }
-                }
-                if (meal.side_dishes_num === undefined) meal.side_dishes_num = 0
-                if (category.meals[0].pricing !== undefined) {
-                    meal.price = (category.meals[0].pricing['for'][0] / 100).toLocaleString('de-DE')
-                    if (!meal.price.includes(",")) {
-                        meal.price += ","
-                    }
-                    meal.price = meal.price.padEnd(4, '0')
-                } else {
-                    meal.price = null
-                }
-                menu.meals.push(meal)
-                for (const additive of meal.additives) {
-                    if (!menu.additives.includes(additive)) {
-                        menu.additives.push(additive)
-                    }
-                }
-            } else if (
-                (
-                    category.name.toLowerCase().includes("beilage") &&
-                    !category.name.toLowerCase().includes("beilagen")
-                ) ||
-                category.name.toLowerCase().includes("tagesdessert") ||
-                category.name.toLowerCase().includes("dessert extra") ||
-                category.name.toLowerCase().includes("dessert") // side_dishes
-            ) {
-                let sideDishes = this.parseCategory(category, scrapeInfo.response.data.filters)
-                menu.side_dishes.push(...sideDishes)
-                for (const sideDish of sideDishes) {
-                    for (const additive of sideDish.additives) {
+                    menu.meals.push(meal)
+                    for (const additive of meal.additives) {
                         if (!menu.additives.includes(additive)) {
                             menu.additives.push(additive)
                         }
                     }
+
+                    if (
+                        category.name.toLowerCase().includes("menü") ||
+                        category.name.toLowerCase().includes("tagesaktion") ||
+                        category.name.toLowerCase().includes("grillstation") ||
+                        category.name.toLowerCase().includes("eintopf") ||
+                        category.name.toLowerCase().includes("jubiläumsangebot") ||
+                        category.name.toLowerCase().includes("speisenangebot") // meals
+                    ) {
+                        meal.isPrimary = true
+                    } else if (
+                        (
+                            category.name.toLowerCase().includes("beilage") &&
+                            !category.name.toLowerCase().includes("beilagen")
+                        ) ||
+                        category.name.toLowerCase().includes("tagesdessert") ||
+                        category.name.toLowerCase().includes("dessert extra") ||
+                        category.name.toLowerCase().includes("dessert") // side_dishes
+                    ) {
+                        meal.isPrimary = false
+                    } else {
+                        yadBot.sendMessageToOwner(`category in mensafh scraper is not detected as info, meals or side dish: '${category.name.toLowerCase()}'`)
+                    }
                 }
-            } else {
-                yadBot.sendMessageToOwner(`category in mensafh scraper is not detected as info, meals or side dish: '${category.name.toLowerCase()}'`)
             }
         })
         if (menu.meals.length > 0 || menu.meals.side_dishes) return [menu]
@@ -175,26 +164,35 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
 
     getEmbed(content) {
         let mealsString = ""
+        let sideDishesString = ""
         let infosString = ""
-
-        for (const meal of content.json.meals) {
-            if (mealsString !== "") mealsString += "\n\n"
-            mealsString += this.parseMealStringEmoji(meal)
-            mealsString += `**${meal.title}**\n`
-            mealsString += "Preis: "
-            mealsString += meal.price !== null ? `${meal.price}€` : "Nicht angegeben"
-            mealsString += "\n"
-            mealsString += `Beilagen: ${meal.side_dishes_num === 0 ? '-' : meal.side_dishes_num}`
-        }
 
         for (const info of content.json.infos) {
             if (infosString !== "") infosString += "\n\n"
             infosString += `**INFORMATION**\n${info.text}`
         }
 
+        for (const meal of content.json.meals) {
+            if (!meal.isPrimary) continue
+            if (mealsString !== "") mealsString += "\n\n"
+            mealsString += this.parseMealStringEmoji(meal)
+            mealsString += `**${meal.title}**\n`
+            mealsString += "Preis: "
+            mealsString += meal.price !== null ? `${meal.price}€` : "Nicht angegeben"
+        }
+
+        for (const sideDish of content.json.meals) {
+            if (sideDish.isPrimary) continue
+            if (sideDishesString !== "") sideDishesString += "\n\n"
+            sideDishesString += this.parseMealStringEmoji(sideDish)
+            sideDishesString += `**${sideDish.title}**\n`
+            sideDishesString += "Preis: "
+            sideDishesString += sideDish.price !== null ? `${sideDish.price}€` : "Nicht angegeben"
+        }
+
         let embed = new Discord.MessageEmbed(
             {
-                "description": `${mealsString}\n\n\n${infosString}`,
+                "description": `${infosString}\n\n\n**Hauptgerichte**:\n${mealsString}\n\n\n**Beilagen**:\n${sideDishesString}`,
                 "author": {
                     "name": `Mensaplan FH Münster (${luxon.DateTime.fromFormat(content.json.date, 'yyyy-MM-dd').toFormat('dd.MM.yy')})`,
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
@@ -218,11 +216,11 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                         customId: `mensafh::balance::message`,
                         style: Discord.Constants.MessageButtonStyles.PRIMARY,
                     }),
-                    new Discord.MessageButton({
-                        label: `Beilagen`,
-                        customId: `mensafh::side_dishes::${content.json.date}`,
-                        style: Discord.Constants.MessageButtonStyles.PRIMARY,
-                    }),
+                    // new Discord.MessageButton({
+                    //     label: `Beilagen`,
+                    //     customId: `mensafh::side_dishes::${content.json.date}`,
+                    //     style: Discord.Constants.MessageButtonStyles.PRIMARY,
+                    // }),
                     // new Discord.MessageButton({
                     //     label: `Zusatzstoffe (bald)`,
                     //     customId: `mensafh::additives::${content.json.date}`,
