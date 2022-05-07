@@ -34,7 +34,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
                 entry.slug = game.offerMappings.find((mapping) => {
                     return mapping.pageType === "productHome"
-                }).pageSlug
+                })?.pageSlug
 
                 let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
                 const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
