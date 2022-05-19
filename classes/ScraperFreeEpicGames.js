@@ -42,6 +42,14 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 entry.slug = game.catalogNs.mappings.find((mapping) => {
                     return mapping.pageType === "productHome"
                 })?.pageSlug
+                if (entry.slug === undefined) {
+                    entry.slug = game.offerMappings?.find((mapping) => {
+                        return mapping.pageType === "productHome"
+                    })?.pageSlug
+                }
+                if (entry.slug === undefined) {
+                    entry.slug = game.productSlug
+                }
 
                 const originalPrice = game.price?.totalPrice?.originalPrice?.toString().padStart(3, '0')
                 const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
@@ -56,7 +64,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                     if (tag.id === "9547") entry.windowsCompatibility = true
                     if (tag.id === "9548") entry.macCompatibility = true
                 })
-                
+
                 elements.push(entry)
             }
         }
