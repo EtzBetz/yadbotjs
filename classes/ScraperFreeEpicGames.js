@@ -25,6 +25,13 @@ class ScraperFreeEpicGames extends WebsiteScraper {
 
             if (freePromotion !== undefined) {
                 let entry = {}
+
+                entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('utc').toISO()
+                entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('utc').toISO()
+                if (luxon.DateTime.fromISO(entry.startDate).diffNow() >= 0) {
+                    continue
+                }
+
                 entry.title = game.title
                 entry.imageUrl = game.keyImages?.find(image => image.type === "DieselStoreFrontWide")?.url
                 if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
@@ -32,17 +39,15 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 }
                 entry.imageUrl = encodeURI(entry.imageUrl)
 
-                entry.slug = game.offerMappings.find((mapping) => {
+                entry.slug = game.catalogNs.mappings.find((mapping) => {
                     return mapping.pageType === "productHome"
                 })?.pageSlug
 
-                let gameDetailsPageResponse = await this.requestWebsite(`https://www.epicgames.com/store/us/p/${entry.slug}`)
-                const gameDetails = new jsdom.JSDOM(gameDetailsPageResponse.data).window.document
-                let originalPrice = gameDetails.querySelector('div[data-component="PDPDiscountedFromPrice"]')?.textContent.trim()
-                originalPrice = originalPrice?.substring(1)
-                let decimalIndex = originalPrice?.indexOf(".")
-                const priceEuro = originalPrice?.substring(0, decimalIndex)
-                const priceDecimal = originalPrice?.substring(decimalIndex + 1)
+                const originalPrice = game.price?.totalPrice?.originalPrice?.toString().padStart(3, '0')
+                const decimalCount = parseInt(game.price?.totalPrice?.currencyInfo?.decimals, 10)
+                const decimalPosition = originalPrice?.length - (decimalCount || 2)
+                const priceEuro = originalPrice?.substring(0, decimalPosition)
+                const priceDecimal = originalPrice?.substring(originalPrice?.length - decimalCount)
                 if (priceEuro !== undefined && priceDecimal !== undefined) {
                     entry.originalPrice = `${priceEuro},${priceDecimal}€`
                 }
@@ -51,28 +56,8 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                     if (tag.id === "9547") entry.windowsCompatibility = true
                     if (tag.id === "9548") entry.macCompatibility = true
                 })
-                if (gameDetails.querySelector('li[data-testid="metadata-platform-windows"]') !== null) {
-                    entry.windowsCompatibility = true
-                }
-                if (gameDetails.querySelector('li[data-testid="metadata-platform-mac"]') !== null) {
-                    entry.macCompatibility = true
-                }
-
-                let developer = game.customAttributes?.find(attribute => attribute.key === "developerName")?.value
-                let publisher = game.customAttributes?.find(attribute => attribute.key === "publisherName")?.value
-                if (developer !== undefined) {
-                    entry.developer = developer
-                }
-                if (publisher !== undefined) {
-                    entry.publisher = publisher
-                }
-
-
-                entry.startDate = luxon.DateTime.fromISO(freePromotion.startDate).setZone('utc').toISO()
-                entry.endDate = luxon.DateTime.fromISO(freePromotion.endDate).setZone('utc').toISO()
-                if (luxon.DateTime.fromISO(entry.startDate).diffNow() < 0) {
-                    elements.push(entry)
-                }
+                
+                elements.push(entry)
             }
         }
         this.log(`Parsed ${elements.length} entries...`)
