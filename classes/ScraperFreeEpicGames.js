@@ -65,6 +65,8 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                     if (tag.id === "9548") entry.macCompatibility = true
                 })
 
+                entry.type = game.offerType
+
                 elements.push(entry)
             }
         }
@@ -93,11 +95,21 @@ class ScraperFreeEpicGames extends WebsiteScraper {
             osString += "macOS"
         }
 
+        let storeUrl = "https://www.epicgames.com/store/us/"
+        switch (content.json.type.toLowerCase()) {
+            case "bundle":
+                storeUrl += "bundles/"
+                break
+            default:
+                storeUrl += "p/"
+                break
+        }
+
         let embed = new Discord.MessageEmbed(
             {
                 "title": content.json.title,
                 "description": descriptionString,
-                "url": `https://www.epicgames.com/store/us/p/${content.json.slug}`,
+                "url": `${storeUrl}${content.json.slug}`,
                 "author": {
                     "name": "Epic Games Store",
                     "url": "https://www.epicgames.com/store/us/free-games",
