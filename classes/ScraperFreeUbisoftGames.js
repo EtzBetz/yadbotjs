@@ -116,6 +116,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
                     yadBot.sendMessageToOwner(JSON.stringify(game))
             }
             switch (game.type) {
+                case "free2play":
                 case "freegame":
                 case "gametrial":
                 case "freeweekend":
