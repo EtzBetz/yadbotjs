@@ -159,10 +159,11 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         }
 
         if (content.json.date !== undefined) {
+            let date = luxon.DateTime.fromISO(content.json.date).setZone('utc')
             embed.fields.push(
                 {
                     'name': 'Release Date',
-                    'value': `<t:${luxon.DateTime.fromISO(content.json.date).toSeconds}:D>`,
+                    'value': `<t:${date.toSeconds()}:D>`,
                     'inline': true,
                 },
             )
