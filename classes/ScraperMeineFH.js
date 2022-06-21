@@ -25,9 +25,9 @@ class ScraperMeineFH extends WebsiteScraper {
             let commaIndex2 = date.indexOf(' Uhr');
             entry.datetime = luxon.DateTime.fromFormat(date.substring(commaIndex1 + 2, commaIndex2), "dd.LL.yyyy, H:mm")
 
-            console.log(entry.datetime.toISO())
-            console.log(entry.title)
-            console.log(entry.text)
+            // console.log(entry.datetime.toISO())
+            // console.log(entry.title)
+            // console.log(entry.text)
 
             if (entry.datetime !== null && entry.text !== null && entry.title !== null) news.push(entry)
         })
