@@ -18,8 +18,12 @@ class ScraperMeineFH extends WebsiteScraper {
         entities.forEach((entity, index) => {
             let entry = {}
             let date = entity.querySelector("p:first-of-type").textContent
-            entry.title = entity.querySelector("h1").textContent
-            entry.text = entity.querySelector("p:last-of-type").textContent
+            entry.title = entity.querySelector("h1:first-of-type").textContent.trim()
+            entry.text = entity.textContent.trim()
+
+            let titleIndex = entry.text.indexOf(entry.title)
+            entry.text = entry.text.substring(titleIndex + entry.title.length)
+            console.log(entry.text)
 
             let commaIndex1 = date.indexOf(',');
             let commaIndex2 = date.indexOf(' Uhr');
@@ -29,7 +33,12 @@ class ScraperMeineFH extends WebsiteScraper {
             // console.log(entry.title)
             // console.log(entry.text)
 
-            if (entry.datetime !== null && entry.text !== null && entry.title !== null) news.push(entry)
+            if (entry.datetime !== null &&
+                entry.text !== null &&
+                entry.text !== "" &&
+                entry.title !== null &&
+                entry.title !== ""
+            ) news.push(entry)
         })
 
         return news
