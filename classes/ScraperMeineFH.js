@@ -27,13 +27,13 @@ class ScraperMeineFH extends WebsiteScraper {
 
             let commaIndex1 = date.indexOf(',');
             let commaIndex2 = date.indexOf(' Uhr');
-            entry.datetime = luxon.DateTime.fromFormat(date.substring(commaIndex1 + 2, commaIndex2), "dd.LL.yyyy, H:mm")
+            entry.date = luxon.DateTime.fromFormat(date.substring(commaIndex1 + 2, commaIndex2), "dd.LL.yyyy, H:mm")
 
-            // console.log(entry.datetime.toISO())
+            // console.log(entry.date.toISO())
             // console.log(entry.title)
             // console.log(entry.text)
 
-            if (entry.datetime !== null &&
+            if (entry.date !== null &&
                 entry.text !== null &&
                 entry.text !== "" &&
                 entry.title !== null &&
@@ -45,7 +45,7 @@ class ScraperMeineFH extends WebsiteScraper {
     }
 
     generateFileName(json) {
-        let fileName = `${json.datetime}`
+        let fileName = `${json.date}`
         return this.generateSlugFromString(fileName) + '.json'
     }
 
@@ -53,7 +53,7 @@ class ScraperMeineFH extends WebsiteScraper {
         let embed = new Discord.MessageEmbed(
             {
                 "title": content.json.title.trim(),
-                "description": `${content.json.datetime}\n\n${content.json.text.trim()}`,
+                "description": `${content.json.date}\n\n${content.json.text.trim()}`,
                 "author": {
                     "name": 'Fachhochschule Münster',
                     "url": 'https://meinefh.de',
@@ -79,47 +79,12 @@ class ScraperMeineFH extends WebsiteScraper {
                     }),
                 ]
             })
-
-
         ]
 
     }
 
     getSortingFunction() {
         return this.sortJsonByIsoDateAndTitleProperty
-    }
-
-    async getBalanceByCardId(interaction, cardId) {
-        let balanceResponse = await axios({
-            method: 'get',
-            url: `https://api.topup.klarna.com/api/v1/STW_MUNSTER/cards/${cardId}/balance`,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.69 Safari/537.36'
-            },
-            responseType: 'text/json'
-        })
-            .catch(async (e) => {
-                return {
-                    success: false,
-                    status_code: -1
-                }
-            })
-
-        if (balanceResponse?.status === 200) {
-            const balance = balanceResponse.data.balance
-            return {
-                success: true,
-                status_code: 1,
-                raw_balance: balanceResponse.data.balance,
-                formatted_balance: `${balance.toString().substring(0, balance.toString().length - 2).padStart(1, '0')},${balance.toString().substring(balance.toString().length - 2)}€`,
-                card_id: balanceResponse.data.cardId,
-                university_id: balanceResponse.data.universityId,
-            }
-        } else
-            return {
-                success: false,
-                status_code: -2
-            }
     }
 
 }
