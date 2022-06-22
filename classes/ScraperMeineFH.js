@@ -23,7 +23,6 @@ class ScraperMeineFH extends WebsiteScraper {
 
             let titleIndex = entry.text.indexOf(entry.title)
             entry.text = entry.text.substring(titleIndex + entry.title.length)
-            console.log(entry.text)
 
             let commaIndex1 = date.indexOf(',');
             let commaIndex2 = date.indexOf(' Uhr');
