@@ -12,13 +12,13 @@ class ScraperMeineFH extends WebsiteScraper {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let news = []
 
-        let entities = page.querySelectorAll("html > body > div > div")
+        let entities = page.querySelectorAll("article")
         this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((entity, index) => {
             let entry = {}
-            let date = entity.querySelector("p:first-of-type").textContent
-            entry.title = entity.querySelector("h1:first-of-type").textContent.trim()
+            let date = entity.querySelector(".collapse-heading").textContent.trim()
+            entry.title = entity.querySelector(".collapse-body > h2").textContent.trim()
             entry.text = entity.textContent.trim()
 
             let titleIndex = entry.text.indexOf(entry.title)
@@ -26,7 +26,7 @@ class ScraperMeineFH extends WebsiteScraper {
 
             let commaIndex1 = date.indexOf(',');
             let commaIndex2 = date.indexOf(' Uhr');
-            entry.date = luxon.DateTime.fromFormat(date.substring(commaIndex1 + 2, commaIndex2), "dd.LL.yyyy, H:mm")
+            entry.date = luxon.DateTime.fromFormat(date.substring(commaIndex1 + 2, commaIndex2), "dd.LL.yy, HH:mm")
 
             // console.log(entry.date.toISO())
             // console.log(entry.title)
@@ -52,7 +52,7 @@ class ScraperMeineFH extends WebsiteScraper {
         let embed = new Discord.MessageEmbed(
             {
                 "title": content.json.title.trim(),
-                "description": `${content.json.date}\n\n${content.json.text.trim()}`,
+                "description": `${luxon.DateTime.fromISO(content.json.date).toFormat("dd.LL.yy, HH:mm")}\n\n${content.json.text.trim()}`,
                 "author": {
                     "name": 'Fachhochschule Münster',
                     "url": 'https://meinefh.de',
