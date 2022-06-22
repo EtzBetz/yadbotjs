@@ -1,5 +1,5 @@
 import yadBot from '../classes/YadBot.js'
-import config from '../config.json'
+import config from '../config.json' assert {type: "json"}
 import Discord from 'discord.js'
 import files from '../classes/Files.js'
 import EmbedColors from '../constants/EmbedColors.js';

@@ -14,14 +14,18 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
+    "bufferutil": "^4.0.6",
     "diff": "^5.0.0",
-    "discord.js": "^13.0.1",
+    "discord.js": "^13.8.0",
     "edit-json-file": "^1.4.1",
+    "erlpack": "github:discord/erlpack",
     "eslint": "^7.7.0",
     "jsdom": "^16.4.0",
     "luxon": "^1.25.0",
     "retry-axios": "^2.4.0",
-    "xml2js": "^0.4.23"
+    "utf-8-validate": "^5.0.9",
+    "xml2js": "^0.4.23",
+    "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

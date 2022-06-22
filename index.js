@@ -1,6 +1,6 @@
 import yadBot from './classes/YadBot.js'
 import luxon from 'luxon'
-import config from './config.json'
+import config from './config.json' assert {type: "json"}
 import axios from 'axios';
 import rax from 'retry-axios'
 

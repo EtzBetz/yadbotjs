@@ -1,6 +1,6 @@
 import Discord from "discord.js"
 import yadBot from '../classes/YadBot.js'
-import config from '../config.json'
+import config from '../config.json' assert {type: "json"}
 
 export default {
     name: 'ship',
@@ -17,7 +17,7 @@ export default {
                 message.mentions.users.size === 1 &&
                 yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]) ===
                 message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))?.id
-            ){
+            ) {
                 userToHandle = message.mentions.users.get(yadBot.getUserSnowflakeFromMentionString(args[mentionArgumentIndex]))
             }
 
@@ -43,19 +43,22 @@ export default {
                                 .then(guildMember => {
                                     if (args[0] === "add") {
                                         guildMember.roles.add(serverRole, 'Given by Yad command as SC Ship')
-                                        message.channel.send({embeds: [new Discord.MessageEmbed({
-                                            title: "Role added",
-                                            color: 0x4CAF50,
-                                            description: `The ship-role "${serverRole.name}" was given to ${guildMember.toString()}.`
-                                        })]})
-                                    }
-                                    else if (args[0] === "remove") {
+                                        message.channel.send({
+                                            embeds: [new Discord.MessageEmbed({
+                                                title: "Role added",
+                                                color: 0x4CAF50,
+                                                description: `The ship-role "${serverRole.name}" was given to ${guildMember.toString()}.`
+                                            })]
+                                        })
+                                    } else if (args[0] === "remove") {
                                         guildMember.roles.remove(serverRole, 'Removed by Yad command as SC Ship')
-                                        message.channel.send({embeds: [new Discord.MessageEmbed({
-                                            title: "Role removed",
-                                            color: 0x4CAF50,
-                                            description: `The ship-role "${serverRole.name}" has been removed from ${guildMember.toString()}'s ship-list.`
-                                        })]})
+                                        message.channel.send({
+                                            embeds: [new Discord.MessageEmbed({
+                                                title: "Role removed",
+                                                color: 0x4CAF50,
+                                                description: `The ship-role "${serverRole.name}" has been removed from ${guildMember.toString()}'s ship-list.`
+                                            })]
+                                        })
                                     }
                                 })
                         }
@@ -133,13 +136,15 @@ export default {
                             })
                         })
 
-                        message.channel.send({embeds: [new Discord.MessageEmbed({
-                            "author": {
-                                "name": `All Ships and Vehicles`,
-                                "icon_url": guild.iconURL({dynamic: true} )
-                            },
-                            description: `**Ships:**\n${shipString}\n\n**Vehicles:**\n${vehicleString}`
-                        })]})
+                        message.channel.send({
+                            embeds: [new Discord.MessageEmbed({
+                                "author": {
+                                    "name": `All Ships and Vehicles`,
+                                    "icon_url": guild.iconURL({dynamic: true})
+                                },
+                                description: `**Ships:**\n${shipString}\n\n**Vehicles:**\n${vehicleString}`
+                            })]
+                        })
                     })
 
 
@@ -171,22 +176,24 @@ export default {
                                     }
                                 })
 
-                                message.channel.send({embeds: [new Discord.MessageEmbed({
-                                    "author": {
-                                        "name": `${userToHandle.username}'s Ships and Vehicles`,
-                                        "icon_url": userToHandle.avatarURL({dynamic: true} )
-                                    },
-                                    fields: [
-                                        {
-                                            "name": "Ships",
-                                            "value": shipList !== "" ? shipList : "Owns no ship yet."
+                                message.channel.send({
+                                    embeds: [new Discord.MessageEmbed({
+                                        "author": {
+                                            "name": `${userToHandle.username}'s Ships and Vehicles`,
+                                            "icon_url": userToHandle.avatarURL({dynamic: true})
                                         },
-                                        {
-                                            "name": "Vehicles",
-                                            "value": vehicleList !== "" ? vehicleList : "Owns no vehicle yet."
-                                        },
-                                    ]
-                                })]})
+                                        fields: [
+                                            {
+                                                "name": "Ships",
+                                                "value": shipList !== "" ? shipList : "Owns no ship yet."
+                                            },
+                                            {
+                                                "name": "Vehicles",
+                                                "value": vehicleList !== "" ? vehicleList : "Owns no vehicle yet."
+                                            },
+                                        ]
+                                    })]
+                                })
 
                             })
                     })
