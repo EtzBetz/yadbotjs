@@ -72,6 +72,11 @@ class ScraperMeineFH extends WebsiteScraper {
             new Discord.MessageActionRow({
                 components: [
                     new Discord.MessageButton({
+                        label: "meinefh.de",
+                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        url: "https://www.meinefh.de/"
+                    }),
+                    new Discord.MessageButton({
                         label: "Spenden",
                         style: Discord.Constants.MessageButtonStyles.LINK,
                         url: "https://paypal.me/raphaelbetz"
