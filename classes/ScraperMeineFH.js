@@ -24,11 +24,11 @@ class ScraperMeineFH extends WebsiteScraper {
             let titleIndex = entry.text.indexOf(entry.title)
             entry.text = entry.text.substring(titleIndex + entry.title.length)
 
-            let commaIndex1 = date.indexOf(',');
-            let commaIndex2 = date.indexOf(' Uhr');
-            entry.date = luxon.DateTime.fromFormat(date.substring(commaIndex1 + 2, commaIndex2), "dd.LL.yy, HH:mm")
+            let textIndex = date.indexOf(' Uhr');
+            entry.date = luxon.DateTime.fromFormat(date.substring(0, textIndex), "dd.LL.yy, HH:mm")
 
             // console.log(entry.date.toISO())
+            // console.log(entry.date)
             // console.log(entry.title)
             // console.log(entry.text)
 
