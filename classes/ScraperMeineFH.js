@@ -52,7 +52,7 @@ class ScraperMeineFH extends WebsiteScraper {
         let embed = new Discord.MessageEmbed(
             {
                 "title": content.json.title.trim(),
-                "description": `${luxon.DateTime.fromISO(content.json.date).toFormat("dd.LL.yy, HH:mm")}\n\n${content.json.text.trim()}`,
+                "description": `${luxon.DateTime.fromISO(content.json.date).toFormat("dd.LL.yy, HH:mm")}\n\n${Discord.Util.escapeMarkdown(content.json.text.trim())}`,
                 "author": {
                     "name": 'Fachhochschule Münster',
                     "url": 'https://meinefh.de',
