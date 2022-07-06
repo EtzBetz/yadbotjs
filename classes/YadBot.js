@@ -76,9 +76,7 @@ class YadBot {
                 ScraperXRelReleases,
                 ScraperTSBThreadWatch,
                 ScraperWearOSWatchfaces,
-                ScraperMakerSpaceEvents,
-                ScraperMeineFH,
-                ScraperMeineFHETI
+                ScraperMakerSpaceEvents
             ]
             await this.bindCommands()
             await this.bindEvents()
