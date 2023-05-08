@@ -19,8 +19,6 @@ import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import ScraperFreeUEAssets from './ScraperFreeUEAssets.js'
 import ScraperWearOSWatchfaces from './ScraperWearOSWatchfaces.js';
 import ScraperMakerSpaceEvents from './ScraperMakerSpaceEvents.js';
-import ScraperMeineFH from './ScraperMeineFH.js';
-import ScraperMeineFHETI from './ScraperMeineFHETI.js';
 import {log, debugLog} from '../index'
 import files from './Files.js'
 import activityTypes from '../constants/ActivityTypes.js'
