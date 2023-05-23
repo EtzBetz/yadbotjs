@@ -15,24 +15,24 @@ export default {
                 {
                     name: "status",
                     description: "Show statuses of all scrapers.",
-                    type: 'SUB_COMMAND'
+                    type: Discord.ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: "toggle",
                     description: "Toggle a specific scraper globally.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "scraper-name",
                             description: "Scraper to toggle",
-                            type: "STRING",
+                            type: Discord.ApplicationCommandOptionType.String,
                             choices: yadBot.getScraperChoiceData(),
                             required: true
                         },
                         {
                             name: "status",
                             description: "Status which to toggle to",
-                            type: "INTEGER",
+                            type: Discord.ApplicationCommandOptionType.Integer,
                             choices: [
                                 {
                                     name: "Off",
@@ -50,12 +50,12 @@ export default {
                 {
                     name: "notify",
                     description: "Notifies all subscribers of the specified scraper that there is a temporary problem.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "scraper-name",
                             description: "Scraper of which the subscribers should be notified",
-                            type: "STRING",
+                            type: Discord.ApplicationCommandOptionType.String,
                             choices: yadBot.getScraperChoiceData(),
                             required: true
                         }
@@ -64,25 +64,25 @@ export default {
                 {
                     name: "send",
                     description: "Sends a specified scraper embed to a specified channel.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "scraper-name",
                             description: "Scraper to which the embed belongs to.",
-                            type: "STRING",
+                            type: Discord.ApplicationCommandOptionType.String,
                             choices: yadBot.getScraperChoiceData(),
                             required: true
                         },
                         {
                             name: "file-name",
                             description: "Filename of the embed to parse and send.",
-                            type: "STRING",
+                            type: Discord.ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: "target-channel",
                             description: "Channel which to send the embed to.",
-                            type: "CHANNEL",
+                            type: Discord.ApplicationCommandOptionType.Channel,
                             required: true
                         }
                     ]
@@ -90,12 +90,12 @@ export default {
                 {
                     name: "list-subscribers",
                     description: "List all subscribers of a specific Scraper.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "scraper-name",
                             description: "Scraper to which the embed belongs to.",
-                            type: "STRING",
+                            type: Discord.ApplicationCommandOptionType.String,
                             choices: yadBot.getScraperChoiceData(),
                             required: true
                         }
@@ -104,7 +104,7 @@ export default {
                 {
                     name: "list-guilds",
                     description: "List all guilds the bot is joined currently.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: []
                 }
             ]

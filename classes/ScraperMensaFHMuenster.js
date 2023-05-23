@@ -190,7 +190,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
             sideDishesString += sideDish.price !== null ? `${sideDish.price}€` : "Nicht angegeben"
         }
 
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "description": `${infosString}\n\n\n**Hauptgerichte**:\n${mealsString}\n\n\n**Beilagen**:\n${sideDishesString}`,
                 "author": {
@@ -209,27 +209,27 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
 
     getComponents(content) {
         return [
-            new Discord.MessageActionRow({
+            new Discord.ActionRowBuilder({
                 components: [
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `Guthaben abfragen`,
                         customId: `mensafh::balance::message`,
-                        style: Discord.Constants.MessageButtonStyles.PRIMARY,
+                        style: Discord.ButtonStyle.PRIMARY,
                     }),
-                    // new Discord.MessageButton({
+                    // new Discord.ButtonBuilder({
                     //     label: `Beilagen`,
                     //     customId: `mensafh::side_dishes::${content.json.date}`,
-                    //     style: Discord.Constants.MessageButtonStyles.PRIMARY,
+                    //     style: Discord.ButtonStyle.PRIMARY,
                     // }),
-                    // new Discord.MessageButton({
+                    // new Discord.ButtonBuilder({
                     //     label: `Zusatzstoffe (bald)`,
                     //     customId: `mensafh::additives::${content.json.date}`,
                     //     disabled: true,
-                    //     style: Discord.Constants.MessageButtonStyles.SECONDARY,
+                    //     style: Discord.ButtonStyle.SECONDARY,
                     // }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: "Spenden",
-                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        style: Discord.ButtonStyle.LINK,
                         url: "https://paypal.me/raphaelbetz"
                     }),
                 ]

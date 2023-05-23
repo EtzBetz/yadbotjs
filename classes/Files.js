@@ -26,7 +26,7 @@ class Files {
             fs.accessSync(path, fs.constants.R_OK | fs.constants.W_OK | fs.constants.X_OK)
         } catch (e) {
             try {
-                fs.mkdirSync(path, { recursive: true })
+                fs.mkdirSync(path, {recursive: true})
                 fs.accessSync(path, fs.constants.R_OK | fs.constants.W_OK | fs.constants.X_OK)
             } catch (e) {
                 console.error(e)

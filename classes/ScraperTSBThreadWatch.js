@@ -62,7 +62,7 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "description": `**#${content.json.postId}**:\n\`\`\`text\n${content.json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,
                 "url": `${this.getScrapingUrl()}`,

@@ -81,12 +81,12 @@ export default async (interaction) => {
                                         color: EmbedColors.RED
                                     }],
                                     components: [
-                                        new Discord.MessageActionRow({
+                                        new Discord.ActionRowBuilder({
                                             components: [
-                                                new Discord.MessageButton({
+                                                new Discord.ButtonBuilder({
                                                     label: `Guthaben aufladen`,
                                                     url: 'https://topup.klarna.com/stw_munster',
-                                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                                    style: Discord.ButtonStyle.LINK,
                                                 }),
                                             ]
                                         })
@@ -110,12 +110,12 @@ export default async (interaction) => {
                                         },
                                     }],
                                     components: [
-                                        new Discord.MessageActionRow({
+                                        new Discord.ActionRowBuilder({
                                             components: [
-                                                new Discord.MessageButton({
+                                                new Discord.ButtonBuilder({
                                                     label: `Guthaben aufladen`,
                                                     url: 'https://topup.klarna.com/stw_munster',
-                                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                                    style: Discord.ButtonStyle.LINK,
                                                 }),
                                             ]
                                         })
@@ -136,12 +136,12 @@ export default async (interaction) => {
                                     },
                                 }],
                                 components: [
-                                    new Discord.MessageActionRow({
+                                    new Discord.ActionRowBuilder({
                                         components: [
-                                            new Discord.MessageButton({
+                                            new Discord.ButtonBuilder({
                                                 label: `Guthaben aufladen`,
                                                 url: 'https://topup.klarna.com/stw_munster',
-                                                style: Discord.Constants.MessageButtonStyles.LINK,
+                                                style: Discord.ButtonStyle.LINK,
                                             }),
                                         ]
                                     })

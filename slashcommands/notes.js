@@ -16,27 +16,27 @@ export default {
                 {
                     name: "list",
                     description: "Show your notes list.",
-                    type: 'SUB_COMMAND'
+                    type: Discord.ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: "add",
                     description: "Add a note to your notes list.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "note",
                         description: "Note to add",
-                        type: "STRING",
+                        type: Discord.ApplicationCommandOptionType.String,
                         required: true
                     }]
                 },
                 {
                     name: "remove",
                     description: "Remove a note from your notes list.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "note-number",
                         description: "Index-number of the note to remove",
-                        type: "INTEGER",
+                        type: Discord.ApplicationCommandOptionType.Integer,
                         required: true
                     }]
                 }

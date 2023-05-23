@@ -79,7 +79,7 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
         if (link.substring(0, 1) === "/") {
             link = "https://www.fh-muenster.de" + link
         }
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "url": link,

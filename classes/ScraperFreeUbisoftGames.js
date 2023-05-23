@@ -177,7 +177,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             descriptionString = `Currently **free** in Ubisoft Store.`
         }
 
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": descriptionString,

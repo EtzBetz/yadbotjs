@@ -43,7 +43,7 @@ class ScraperFreeUEAssets extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": `${content.json.isFeatured ? "**[FEATURED]**\n" : ""}${content.json.isTimeLimited ? "**[TIMED OFFER]**\n" : ""}\n${content.json.description}`,

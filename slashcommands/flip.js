@@ -10,7 +10,7 @@ export default {
             description: "Formats the given text into ǝsɐɔ dᴉlɟ.",
             options: [{
                 name: 'input',
-                type: 'STRING',
+                type: Discord.ApplicationCommandOptionType.String,
                 description: 'The text which you want to be pǝddᴉlɟ.',
                 required: true,
             }],

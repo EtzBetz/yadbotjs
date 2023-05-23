@@ -147,7 +147,7 @@ class ScraperMovieReleases extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 'title': content.json.title,
                 'description': this.generateDescriptionString(content.json.tagline, content.json.description, content.json.imdbId, content.json.id),
@@ -282,19 +282,19 @@ class ScraperMovieReleases extends WebsiteScraper {
 
     getComponents(content) {
         if (content.json.xRelId !== undefined) {
-            let actionRow = new Discord.MessageActionRow({
+            let actionRow = new Discord.ActionRowBuilder({
                 components: [
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `Subscribe to xREL Releases for '${content.json.xRelTitle}'`,
                         customId: `xrel::subscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
                         style: 'PRIMARY',
                     }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `Unsubscribe`,
                         customId: `xrel::unsubscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
                         style: 'DANGER',
                     }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `xREL Release Page`,
                         url: content.json.xRelLink,
                         style: 'LINK',
@@ -307,9 +307,9 @@ class ScraperMovieReleases extends WebsiteScraper {
         }
 
 
-        // new Discord.MessageActionRow({
+        // new Discord.ActionRowBuilder({
         //     components: [
-        //         new Discord.MessageButton({
+        //         new Discord.ButtonBuilder({
         //             label: "Google",
         //             style: 'LINK',
         //             url: "https://google.de/"

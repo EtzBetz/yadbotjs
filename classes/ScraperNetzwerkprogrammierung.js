@@ -48,7 +48,7 @@ class ScraperNetzwerkprogrammierung extends WebsiteScraper {
         }
         fileName = fileName.split("").reverse().join("")
 
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "description": `Neue Datei zum Download:\n[${fileName} (.${fileType})](${content.json.link})`,
                 "author": {

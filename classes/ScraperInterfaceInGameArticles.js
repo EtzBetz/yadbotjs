@@ -1,6 +1,6 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper'
 
 class ScraperInterfaceInGameArticles extends WebsiteScraper {
 
@@ -35,7 +35,7 @@ class ScraperInterfaceInGameArticles extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 'title': `New Article: ${content.json.title}`,
                 'description': content.json.subtitle,

@@ -14,11 +14,11 @@ export default {
                 {
                     name: "subscribe",
                     description: "Toggle subscription to a specific scraper for this channel.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "scraper-name",
                         description: "Scraper to subscribe this channel to.",
-                        type: "STRING",
+                        type: Discord.ApplicationCommandOptionType.String,
                         required: true,
                         choices: yadBot.getScraperChoiceData()
                     }]
@@ -26,7 +26,7 @@ export default {
                 {
                     name: "list",
                     description: "Show a list of all available scrapers.",
-                    type: 'SUB_COMMAND'
+                    type: Discord.ApplicationCommandOptionType.Subcommand
                 }
             ]
         }

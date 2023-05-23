@@ -25,7 +25,7 @@ class ScraperMeineFHETI extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "description": `Es gibt neue Infos vom Fachbereich ETI.`,
                 "author": {
@@ -41,16 +41,16 @@ class ScraperMeineFHETI extends WebsiteScraper {
 
     getComponents(content) {
         return [
-            new Discord.MessageActionRow({
+            new Discord.ActionRowBuilder({
                 components: [
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: "meinefh.de ETI",
-                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        style: Discord.ButtonStyle.LINK,
                         url: "https://www.meinefh.de/fbinfos.php?fb=ETI"
                     }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: "Spenden",
-                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        style: Discord.ButtonStyle.LINK,
                         url: "https://paypal.me/raphaelbetz"
                     }),
                 ]

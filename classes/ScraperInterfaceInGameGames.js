@@ -37,7 +37,7 @@ class ScraperInterfaceInGameGames extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 'title': 'A new game interface has been added!',
                 'description': `${content.json.title}\'s interface has been added.`,

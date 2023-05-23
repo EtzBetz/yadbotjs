@@ -369,7 +369,7 @@ export class WebsiteScraper {
     }
 
     getEmbed(content) {
-        return new Discord.MessageEmbed({
+        return new Discord.EmbedBuilder({
             title: 'Preview Embed',
             description: `Website title: "${content.json.title}"`,
             color: EmbedColors.GREEN,
@@ -380,11 +380,11 @@ export class WebsiteScraper {
     getComponents(content) {
         return []
 
-        // new Discord.MessageActionRow({
+        // new Discord.ActionRowBuilder({
         //     components: [
-        //         new Discord.MessageButton({
+        //         new Discord.ButtonBuilder({
         //             label: "Google",
-        //             style: Discord.Constants.MessageButtonStyles.LINK,
+        //             style: Discord.ButtonStyle.LINK,
         //             url: "https://google.de/"
         //         }),
         //     ]
@@ -420,14 +420,14 @@ export class WebsiteScraper {
 
     getUpdateEmbed() {
         this.log(`Generating Update-embed...`)
-        return new Discord.MessageEmbed({
+        return new Discord.EmbedBuilder({
             title: `Update`,
             description: `Yad has been updated, some embeds will eventually be resent!`
         })
     }
 
     sendMissingAccessToGuildAdmins(guildId) {
-        const noticeEmbed = new Discord.MessageEmbed({
+        const noticeEmbed = new Discord.EmbedBuilder({
             title: `Notice`,
             description: `New data is available from ${this.constructor.name}, but I can't send it to your specified channel. Eventually I have been kicked or I do not have permissions to send in that channel?`,
             color: EmbedColors.ORANGE,
@@ -445,7 +445,7 @@ export class WebsiteScraper {
     }
 
     async sendUnreliableEmbedToSubscribers() {
-        const updateEmbed = new Discord.MessageEmbed({
+        const updateEmbed = new Discord.EmbedBuilder({
             title: `Notice`,
             description: `New data is available from this scraper (${this.constructor.name}), but due to changes in the received data, Yad can not process it without error.\nYou can visit the page [here](${await this.getScrapingUrl()}) to inform yourself about changes.\nThis issue will be worked on as soon as possible and the owner knows about it.`,
             color: EmbedColors.ORANGE,
@@ -492,25 +492,25 @@ export class WebsiteScraper {
         // TODO: eventually use filterActive to display or send hint about filtering
         let filterActive = false
 
-        if (embed?.title?.length > TITLE_LIMIT) {
+        if (embed.data?.title?.length > TITLE_LIMIT) {
             filterActive = true
-            this.log(`Title limit has been exceeded in current embed "${embed.title.substring(0, 50)}"!`)
-            embed.title = this.cutStringAddDots(embed.title, TITLE_LIMIT)
+            this.log(`Title limit has been exceeded in current embed "${embed.data.title.substring(0, 50)}"!`)
+            embed.data.title = this.cutStringAddDots(embed.data.title, TITLE_LIMIT)
         }
-        if (embed?.description?.length > DESCRIPTION_LIMIT) {
+        if (embed.data?.description?.length > DESCRIPTION_LIMIT) {
             filterActive = true
-            this.log(`Description limit has been exceeded in current embed "${embed.description.substring(0, 50)}"!`)
-            embed.description = this.cutStringAddDots(embed.description, DESCRIPTION_LIMIT)
+            this.log(`Description limit has been exceeded in current embed "${embed.data.description.substring(0, 50)}"!`)
+            embed.data.description = this.cutStringAddDots(embed.data.description, DESCRIPTION_LIMIT)
         }
         if (embed?.fields?.length > FIELDS_COUNT_LIMIT) {
             filterActive = true
-            this.log(`Fields count limit has been exceeded in current embed "${embed.title.substring(0, 50)}": ${embed.fields.length}!`)
-            let numOfCutFields = embed.fields.length - FIELDS_COUNT_LIMIT
-            embed.fields.splice(-1, numOfCutFields)
+            this.log(`Fields count limit has been exceeded in current embed "${embed.data.title.substring(0, 50)}": ${embed.data.fields.length}!`)
+            let numOfCutFields = embed.data.fields.length - FIELDS_COUNT_LIMIT
+            embed.data.fields.splice(-1, numOfCutFields)
 
-            embed.footer.text += `\nSYSTEM MESSAGE: ${numOfCutFields} fields have been cut to be able to send this message.`
+            embed.data.footer.text += `\nSYSTEM MESSAGE: ${numOfCutFields} fields have been cut to be able to send this message.`
         }
-        embed?.fields?.forEach((field, index) => {
+        embed.data?.fields?.forEach((field, index) => {
             if (field.name?.length > FIELDS_NAME_LIMIT) {
                 filterActive = true
                 this.log(`Field name limit has been exceeded in current embed "${index}(${field.name.substring(0, 50)})"!`)
@@ -522,59 +522,59 @@ export class WebsiteScraper {
                 field.value = this.cutStringAddDots(field.value, FIELDS_VALUE_LIMIT)
             }
         })
-        if (embed?.footer?.text?.length > FOOTER_TEXT_LIMIT) {
+        if (embed.data?.footer?.text?.length > FOOTER_TEXT_LIMIT) {
             filterActive = true
-            this.log(`Footer text limit has been exceeded in current embed "${embed.footer.text.substring(0, 50)}"!`)
-            embed.footer.text = this.cutStringAddDots(embed.footer.text, FOOTER_TEXT_LIMIT)
+            this.log(`Footer text limit has been exceeded in current embed "${embed.data.footer.text.substring(0, 50)}"!`)
+            embed.data.footer.text = this.cutStringAddDots(embed.data.footer.text, FOOTER_TEXT_LIMIT)
         }
-        if (embed?.author?.name?.length > AUTHOR_NAME_LIMIT) {
+        if (embed.data?.author?.name?.length > AUTHOR_NAME_LIMIT) {
             filterActive = true
-            this.log(`Author name limit has been exceeded in current embed "${embed.author.name.substring(0, 50)}"!`)
-            embed.author.name = this.cutStringAddDots(embed.author.name, AUTHOR_NAME_LIMIT)
+            this.log(`Author name limit has been exceeded in current embed "${embed.data.author.name.substring(0, 50)}"!`)
+            embed.data.author.name = this.cutStringAddDots(embed.data.author.name, AUTHOR_NAME_LIMIT)
         }
 
 
         if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
             filterActive = true
-            this.log(`Total characters limit has been exceeded in current embed "${embed.title?.substring(0, 50)}:${embed.description?.substring(0, 50)}"!`)
-            if (embed.footer.text.length >= 1) {
+            this.log(`Total characters limit has been exceeded in current embed "${embed.data.title?.substring(0, 50)}:${embed.data.description?.substring(0, 50)}"!`)
+            if (embed.data.footer.text.length >= 1) {
                 this.log(`Cutting footer!`)
                 let newFooterLength =
-                    (embed.footer.text.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
-                embed.footer.text = this.cutStringAddDots(embed.footer.text, newFooterLength)
+                    (embed.data.footer.text.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
+                embed.data.footer.text = this.cutStringAddDots(embed.data.footer.text, newFooterLength)
             }
 
             if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
-                if (embed.author.name.length >= 1) {
+                if (embed.data.author.name.length >= 1) {
                     this.log(`Cutting author!`)
                     let newAuthorLength =
-                        (embed.author.name.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
-                    embed.author.name = this.cutStringAddDots(embed.author.name, newAuthorLength)
+                        (embed.data.author.name.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
+                    embed.data.author.name = this.cutStringAddDots(embed.data.author.name, newAuthorLength)
                 }
 
                 if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
-                    if (embed.title.length >= 1) {
+                    if (embed.data.title.length >= 1) {
                         this.log(`Cutting title!`)
                         let newTitleLength =
-                            (embed.title.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
-                        embed.title = this.cutStringAddDots(embed.title, newTitleLength)
+                            (embed.data.title.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
+                        embed.data.title = this.cutStringAddDots(embed.data.title, newTitleLength)
                     }
                 }
 
                 if (this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT) {
-                    if (embed.description.length >= 1) {
+                    if (embed.data.description.length >= 1) {
                         this.log(`Cutting description!`)
                         let newDescriptionLength =
-                            (embed.description.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
-                        embed.description = this.cutStringAddDots(embed.description, newDescriptionLength)
+                            (embed.data.description.length) - (this.getTotalCharactersLengthFromEmbed(embed) - TOTAL_CHARACTERS_LIMIT)
+                        embed.data.description = this.cutStringAddDots(embed.data.description, newDescriptionLength)
                     }
 
                     while (
                         this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT ||
-                        embed.fields.length === 1
+                        embed.data.fields.length === 1
                         ) {
                         this.log(`Cutting last field!`)
-                        embed.fields.pop()
+                        embed.data.fields.pop()
                     }
                 }
             }
@@ -585,13 +585,13 @@ export class WebsiteScraper {
 
     getTotalCharactersLengthFromEmbed(embed) {
         let totalCharactersLength = 0
-        if (embed.title?.length !== undefined) totalCharactersLength += embed.title?.length
-        if (embed.description?.length !== undefined) totalCharactersLength += embed.description?.length
-        if (embed.footer?.text?.length !== undefined) totalCharactersLength += embed.footer?.text?.length
-        if (embed.author?.name?.length !== undefined) totalCharactersLength += embed.author?.name?.length
+        if (embed.data.title?.length !== undefined) totalCharactersLength += embed.data.title?.length
+        if (embed.data.description?.length !== undefined) totalCharactersLength += embed.data.description?.length
+        if (embed.data.footer?.text?.length !== undefined) totalCharactersLength += embed.data.footer?.text?.length
+        if (embed.data.author?.name?.length !== undefined) totalCharactersLength += embed.data.author?.name?.length
 
         let totalFieldsCharactersLength = 0
-        embed.fields.forEach((field, index) => {
+        embed.data.fields?.forEach((field, index) => {
             totalFieldsCharactersLength += (field.name?.length + field.value?.length)
         })
 
@@ -616,23 +616,22 @@ export class WebsiteScraper {
             interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {cache: true, force: true})
         }
 
+        console.log(interactionChannel.type)
         switch (interactionChannel.type) {
-            case "UNKNOWN":
-                return {error: true, data: 'Message channel type was unknown.'}
-            case "DM":
+            case Discord.ChannelType.DM:
                 let subscriptionResult = this.toggleSubscriptionInFile(interaction.user.id, false)
                 let sendTestMessageResult = true
                 if (subscriptionResult) {
                     try {
                         let testMessage = await interaction.user.send({
-                            embeds: [new Discord.MessageEmbed({
+                            embeds: [new Discord.EmbedBuilder({
                                 title: 'Test Message',
                                 description: `You can safely ignore this message, I am just testing if it is possible to send you a direct message.`,
                                 color: EmbedColors.GREEN,
                             })]
                         })
                         await testMessage.edit({
-                            embeds: [new Discord.MessageEmbed({
+                            embeds: [new Discord.EmbedBuilder({
                                 title: 'Test Message',
                                 description: `You can safely ignore this message, I am just testing if it is possible to send you a direct message.\n*I now tried to edit it, which has worked. Nice!*`,
                                 color: EmbedColors.GREEN,
@@ -661,9 +660,9 @@ export class WebsiteScraper {
                     }
                 }
                 break
-            case "GUILD_TEXT":
-            case "GUILD_NEWS":
-                if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+            case Discord.ChannelType.GuildText:
+            case Discord.ChannelType.GuildNews:
+                if (interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator)) {
                     let subscriptionResult = this.toggleSubscriptionInFile(interactionChannel.id, true)
                     if (subscriptionResult) {
                         return {
