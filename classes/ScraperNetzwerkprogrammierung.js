@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import jsdom from 'jsdom'
 
 class ScraperNetzwerkprogrammierung extends WebsiteScraper {

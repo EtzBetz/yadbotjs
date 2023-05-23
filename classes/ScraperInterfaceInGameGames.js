@@ -1,6 +1,6 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import luxon from 'luxon'
 
 class ScraperInterfaceInGameGames extends WebsiteScraper {

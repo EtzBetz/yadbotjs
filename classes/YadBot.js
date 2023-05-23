@@ -5,7 +5,7 @@ import ScraperBlackBoard from './ScraperBlackBoard.js'
 // import ScraperNetzwerkprogrammierung from './ScraperNetzwerkprogrammierung.js'
 // import ScraperRechnernetze from './ScraperRechnernetze.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
-import ScraperFreeEpicGames from './ScraperFreeEpicGames'
+import ScraperFreeEpicGames from './ScraperFreeEpicGames.js'
 import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
 import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
 import ScraperGuildWars2News from './ScraperGuildWars2News.js'
@@ -18,7 +18,7 @@ import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import ScraperFreeUEAssets from './ScraperFreeUEAssets.js'
 import ScraperWearOSWatchfaces from './ScraperWearOSWatchfaces.js';
 import ScraperMakerSpaceEvents from './ScraperMakerSpaceEvents.js';
-import {log, debugLog} from '../index'
+import {log, debugLog} from '../index.js'
 import files from './Files.js'
 import * as diff from 'diff';
 import EmbedColors from '../constants/EmbedColors.js';
