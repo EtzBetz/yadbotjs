@@ -3,7 +3,8 @@ import editJsonFile from 'edit-json-file'
 
 class Files {
 
-    constructor() {}
+    constructor() {
+    }
 
     cutLastEntityFromPath(path) {
         return path.substring(0, path.lastIndexOf('/'))

@@ -1,9 +1,6 @@
 import fs from 'fs'
 import Discord, {ActivityType, GatewayIntentBits, Events} from 'discord.js'
 import ScraperBlackBoard from './ScraperBlackBoard.js'
-// import ScraperLab4Inf from './ScraperLab4Inf.js'
-// import ScraperNetzwerkprogrammierung from './ScraperNetzwerkprogrammierung.js'
-// import ScraperRechnernetze from './ScraperRechnernetze.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
 import ScraperFreeEpicGames from './ScraperFreeEpicGames.js'
 import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
@@ -16,7 +13,6 @@ import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.js'
 import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js'
 import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import ScraperFreeUEAssets from './ScraperFreeUEAssets.js'
-import ScraperWearOSWatchfaces from './ScraperWearOSWatchfaces.js';
 import ScraperMakerSpaceEvents from './ScraperMakerSpaceEvents.js';
 import {log, debugLog} from '../index.js'
 import files from './Files.js'
