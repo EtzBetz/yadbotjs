@@ -5,9 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node --experimental-json-modules index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run-watch-server": "nodemon --experimental-specifier-resolution=node --experimental-json-modules --ignore './scraperFiles/' --ignore './commandFiles/' --ignore './config.json' --ignore './notes/' index.js",
+    "run-watch": "nodemon --ignore './scraperFiles/' --ignore './commandFiles/' --ignore './config.json' --ignore './notes/' index.js",
     "dev": "npm run run-watch-server"
   },
   "author": "",
