@@ -1,5 +1,5 @@
 import fs from 'fs'
-import Discord, {ActivityType, GatewayIntentBits, Events} from 'discord.js'
+import {Client, ActivityType, GatewayIntentBits, Events, Collection} from 'discord.js'
 import ScraperBlackBoard from './ScraperBlackBoard.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
 import ScraperFreeEpicGames from './ScraperFreeEpicGames.js'
@@ -22,70 +22,87 @@ import EmbedColors from '../constants/EmbedColors.js';
 class YadBot {
 
     constructor() {
-        const intents = new Discord.IntentsBitField([
-            Discord.IntentsBitField.Flags.Guilds,
-            Discord.IntentsBitField.Flags.GuildMembers,
-            Discord.IntentsBitField.Flags.GuildModeration,
-            Discord.IntentsBitField.Flags.GuildEmojisAndStickers,
-            Discord.IntentsBitField.Flags.GuildIntegrations,
-            Discord.IntentsBitField.Flags.GuildWebhooks,
-            Discord.IntentsBitField.Flags.GuildInvites,
-            Discord.IntentsBitField.Flags.GuildVoiceStates,
-            // Discord.IntentsBitField.Flags.GuildPresences,
-            Discord.IntentsBitField.Flags.GuildMessages,
-            Discord.IntentsBitField.Flags.GuildMessageReactions,
-            Discord.IntentsBitField.Flags.GuildMessageTyping,
-            Discord.IntentsBitField.Flags.DirectMessages,
-            Discord.IntentsBitField.Flags.DirectMessageReactions,
-            Discord.IntentsBitField.Flags.DirectMessageTyping,
-            // Discord.IntentsBitField.Flags.MessageContent,
-            Discord.IntentsBitField.Flags.GuildScheduledEvents,
-            Discord.IntentsBitField.Flags.AutoModerationConfiguration,
-            Discord.IntentsBitField.Flags.AutoModerationExecution
-        ]);
-        this.bot = new Discord.Client({
-            intents: intents,
+        let activityTypeToSet
+        let activityTextToSet = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
+        switch (files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, 'playing')) {
+            case 'playing':
+                activityTypeToSet = ActivityType.Playing
+                break
+            case 'streaming':
+                activityTypeToSet = ActivityType.Streaming
+                break
+            case 'listening':
+                activityTypeToSet = ActivityType.Listening
+                break
+            case 'watching':
+                activityTypeToSet = ActivityType.Watching
+                break
+            case 'custom':
+                activityTypeToSet = ActivityType.Custom
+                break
+            case 'competing':
+                activityTypeToSet = ActivityType.Competing
+                break
+        }
+
+        this.bot = new Client({
+            intents: [
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildModeration,
+                GatewayIntentBits.GuildEmojisAndStickers,
+                GatewayIntentBits.GuildIntegrations,
+                GatewayIntentBits.GuildWebhooks,
+                GatewayIntentBits.GuildInvites,
+                GatewayIntentBits.GuildVoiceStates,
+                // GatewayIntentBits.GuildPresences,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
+                GatewayIntentBits.GuildMessageTyping,
+                GatewayIntentBits.DirectMessages,
+                GatewayIntentBits.DirectMessageReactions,
+                GatewayIntentBits.DirectMessageTyping,
+                // GatewayIntentBits.MessageContent,
+                GatewayIntentBits.GuildScheduledEvents,
+                GatewayIntentBits.AutoModerationConfiguration,
+                GatewayIntentBits.AutoModerationExecution
+            ],
             partials: [
                 'CHANNEL'
-            ]
+            ],
+            presence: {
+                activities: [{type: activityTypeToSet, name: activityTextToSet}]
+            }
         })
 
-        this.bot.commands = new Discord.Collection()
+        this.bot.commands = new Collection()
         this.commandFiles = []
         this.eventFiles = []
         this.scrapers = []
 
-        this.bot.once('ready', async () => {
+        this.bot.once(Events.ClientReady, async () => {
             // todo: build in waiting for the main bot to come online (interval in scrapers?)
-            /*            this.scrapers = [
-                            ScraperFreeSteamGames,
-                            ScraperFreeUbisoftGames,
-                            ScraperFreeEpicGames,
-                            ScraperFreeUEAssets,
-                            ScraperTeamspeakBadges,
-                            ScraperBlackBoard,
-                            ScraperMensaFHMuenster,
-                            ScraperInterfaceInGameGames,
-                            ScraperInterfaceInGameArticles,
-                            ScraperCanIUseNews,
-                            ScraperMovieReleases,
-                            ScraperGuildWars2News,
-                            ScraperTSBThreadWatch,
-                            ScraperWearOSWatchfaces,
-                            ScraperMakerSpaceEvents
-                        ]*/
-            // await this.bindCommands()
-            // await this.bindEvents()
+            this.scrapers = [
+                ScraperFreeSteamGames,
+                ScraperFreeUbisoftGames,
+                ScraperFreeEpicGames,
+                ScraperFreeUEAssets,
+                ScraperTeamspeakBadges,
+                ScraperBlackBoard,
+                ScraperMensaFHMuenster,
+                ScraperInterfaceInGameGames,
+                ScraperInterfaceInGameArticles,
+                ScraperCanIUseNews,
+                ScraperMovieReleases,
+                ScraperGuildWars2News,
+                ScraperTSBThreadWatch,
+                ScraperMakerSpaceEvents
+            ]
+//             // await this.bindCommands()
+//             // await this.bindEvents()
             log(`-------------------------------`)
-            log('I\'m online! Setting presence...')
-
-            let customActivityState = files.readJson(this.getYadConfigPath(), 'set_custom_activity', false, true)
-            if (customActivityState) {
-                // let customActivityType = files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, activityTypes.PLAYING)
-                let customActivityText = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
-                this.bot.user.setActivity(customActivityText, {type: ActivityType.PLAYING})
-            }
-            log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
+            log(`I'm online as "${this.bot.user.tag}"!`)
+            log(`I see ${this.bot.guilds.cache.size} guild(s) and ${this.bot.users.cache.size} user(s):`)
             this.bot.guilds.cache.forEach(guild => {
                 log(` - ${guild.name}\t( ${guild.id} )`)
             })
@@ -93,41 +110,8 @@ class YadBot {
 
         })
 
-        // this.bot.rest.on('response', (event) => {
-        //     console.log("response")
-        //     console.log(event)
-        // });
-        //
-        // this.bot.rest.on('invalidRequestWarning', (event) => {
-        //     console.log("invalidRequestWarning")
-        //     console.log(event)
-        // });
-        //
-        // this.bot.rest.on('rateLimited', (event) => {
-        //     console.log("rateLimited")
-        //     console.log(event)
-        // });
-
-        this.bot.on(Events.Debug, (event) => {
-            // console.log("Debug")
-            console.log(event)
-        });
-
-        this.bot.on(Events.Error, (event) => {
-            // console.log("Error")
-            console.log(event)
-        });
-
-        this.bot.on(Events.ShardError, (event) => {
-            // console.log("ShardError")
-            console.log(event)
-        });
-
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
-        this.getBot().login(botToken).then(r => {
-            console.log("DEBUG6")
-            console.log(r)
-        })
+        this.bot.login(botToken).then()
         this.exitBindings()
     }
 
