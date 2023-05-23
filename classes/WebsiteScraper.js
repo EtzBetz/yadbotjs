@@ -2,11 +2,12 @@ import * as rax from 'retry-axios'
 import axios from 'axios'
 import * as Discord from 'discord.js'
 import yadBot from './YadBot.js'
-import {debugLog, errorLog, log, red, reset} from '../index.js'
+import {debugLog, errorLog, log} from '../index.js'
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import files from './Files.js'
 import EmbedColors from '../constants/EmbedColors.js';
+import * as TerminalColors from '../constants/TerminalColors.js';
 
 export class WebsiteScraper {
 
@@ -45,15 +46,15 @@ export class WebsiteScraper {
     }
 
     log(...message) {
-        log(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
+        log(`${TerminalColors.red}[${this.constructor.name.substring(7)}]${TerminalColors.reset}\t${message}`)
     }
 
     debugLog(...message) {
-        debugLog(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
+        debugLog(`${TerminalColors.red}[${this.constructor.name.substring(7)}]${TerminalColors.reset}\t${message}`)
     }
 
     errorLog(...message) {
-        errorLog(`${red}[${this.constructor.name.substring(7)}]${reset}\t${message}`)
+        errorLog(`${TerminalColors.red}[${this.constructor.name.substring(7)}]${TerminalColors.reset}\t${message}`)
     }
 
     setup() {
