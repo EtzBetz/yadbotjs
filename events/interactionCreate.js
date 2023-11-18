@@ -1,6 +1,6 @@
 import Discord from "discord.js"
-import yadBot from '../classes/YadBot'
-import EmbedColors from '../constants/EmbedColors';
+import yadBot from '../classes/YadBot.js'
+import EmbedColors from '../constants/EmbedColors.js';
 import files from '../classes/Files.js';
 
 export default async (interaction) => {

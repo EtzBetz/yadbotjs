@@ -22,7 +22,7 @@ import EmbedColors from '../constants/EmbedColors.js';
 class YadBot {
 
     constructor() {
-        /*let activityTypeToSet
+        let activityTypeToSet
         let activityTextToSet = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
         switch (files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, 'playing')) {
             case 'playing':
@@ -43,36 +43,36 @@ class YadBot {
             case 'competing':
                 activityTypeToSet = ActivityType.Competing
                 break
-        }*/
+        }
 
         this.bot = new Client({
             intents: [
                 GatewayIntentBits.Guilds,
-                //     GatewayIntentBits.GuildMembers,
-                //     GatewayIntentBits.GuildModeration,
-                //     GatewayIntentBits.GuildEmojisAndStickers,
-                //     GatewayIntentBits.GuildIntegrations,
-                //     GatewayIntentBits.GuildWebhooks,
-                //     GatewayIntentBits.GuildInvites,
-                //     GatewayIntentBits.GuildVoiceStates,
-                //     // GatewayIntentBits.GuildPresences,
-                //     GatewayIntentBits.GuildMessages,
-                //     GatewayIntentBits.GuildMessageReactions,
-                //     GatewayIntentBits.GuildMessageTyping,
-                //     GatewayIntentBits.DirectMessages,
-                //     GatewayIntentBits.DirectMessageReactions,
-                //     GatewayIntentBits.DirectMessageTyping,
-                //     // GatewayIntentBits.MessageContent,
-                //     GatewayIntentBits.GuildScheduledEvents,
-                //     GatewayIntentBits.AutoModerationConfiguration,
-                //     GatewayIntentBits.AutoModerationExecution
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildModeration,
+                GatewayIntentBits.GuildEmojisAndStickers,
+                GatewayIntentBits.GuildIntegrations,
+                GatewayIntentBits.GuildWebhooks,
+                GatewayIntentBits.GuildInvites,
+                GatewayIntentBits.GuildVoiceStates,
+                // GatewayIntentBits.GuildPresences,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
+                GatewayIntentBits.GuildMessageTyping,
+                GatewayIntentBits.DirectMessages,
+                GatewayIntentBits.DirectMessageReactions,
+                GatewayIntentBits.DirectMessageTyping,
+                // GatewayIntentBits.MessageContent,
+                GatewayIntentBits.GuildScheduledEvents,
+                GatewayIntentBits.AutoModerationConfiguration,
+                GatewayIntentBits.AutoModerationExecution
             ],
-            // partials: [
-            //     'CHANNEL'
-            // ],
-            // presence: {
-            //     activities: [{type: activityTypeToSet, name: activityTextToSet}]
-            // }
+            partials: [
+                'CHANNEL'
+            ],
+            presence: {
+                activities: [{type: activityTypeToSet, name: activityTextToSet}]
+            }
         })
 
         this.bot.commands = new Collection()
@@ -98,8 +98,8 @@ class YadBot {
                 ScraperTSBThreadWatch,
                 ScraperMakerSpaceEvents
             ]
-//             // await this.bindCommands()
-//             // await this.bindEvents()
+            await this.bindCommands()
+            await this.bindEvents()
             log(`-------------------------------`)
             log(`I'm online as "${this.bot.user.tag}"!`)
             log(`I see ${this.bot.guilds.cache.size} guild(s) and ${this.bot.users.cache.size} user(s):`)
