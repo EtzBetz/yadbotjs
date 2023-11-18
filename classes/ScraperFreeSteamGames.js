@@ -139,43 +139,43 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         )
 
         if (content.json.finalPrice !== undefined && content.json.discountType !== "gift") {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Discounted Price',
                     'value': `**${content.json.finalPrice}**`,
                     'inline': true,
-                },
+                }]
             )
         }
 
         if (content.json.originalPrice !== undefined) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Original Price',
                     'value': `~~${content.json.originalPrice}~~`,
                     'inline': true,
-                },
+                }]
             )
         }
 
         if (content.json.date !== undefined) {
             let date = luxon.DateTime.fromISO(content.json.date).setZone('utc')
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Release Date',
                     'value': `<t:${date.toSeconds()}:D>`,
                     'inline': true,
-                },
+                }]
             )
         }
 
         if (content.json.dateRaw !== undefined) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Release Date',
                     'value': content.json.dateRaw,
                     'inline': true,
-                },
+                }]
             )
         }
 

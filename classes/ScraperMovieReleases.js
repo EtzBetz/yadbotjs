@@ -160,50 +160,50 @@ class ScraperMovieReleases extends WebsiteScraper {
         )
 
         if (content.json.genres?.length > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Genres',
                     'value': this.generateGenreString(content.json.genres),
                     'inline': false,
-                }
+                }]
             )
         }
 
         if (content.json.producers.length > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Produzenten',
                     'value': this.generateProducerString(content.json.producers),
                     'inline': false,
-                },
+                }]
             )
         }
 
         if (content.json.duration !== undefined && content.json.duration > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Dauer',
                     'value': this.generateDurationString(content.json.duration),
                     'inline': false,
-                },
+                }]
             )
         } else {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Dauer',
                     'value': "???",
                     'inline': false,
-                },
+                }]
             )
         }
 
         if (content.json.budget !== undefined && content.json.budget > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Budget',
                     'value': this.generateBudgetString(content.json.budget),
                     'inline': false,
-                },
+                }]
             )
         }
 
@@ -260,19 +260,19 @@ class ScraperMovieReleases extends WebsiteScraper {
                 }
             }
             if (usString !== "") {
-                embed.fields.push(
+                embed.addFields([
                     {
                         'name': 'US-Release(s)',
                         'value': usString,
-                    }
+                    }]
                 )
             }
             if (deString !== "") {
-                embed.fields.push(
+                embed.addFields([
                     {
                         'name': 'DE-Release(s)',
                         'value': deString,
-                    }
+                    }]
                 )
             }
         }

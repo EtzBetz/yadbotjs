@@ -197,25 +197,25 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         if (content.json.startDate !== undefined) {
             startDate = luxon.DateTime.fromISO(content.json.startDate)
 
-            embed.fields.push({
+            embed.addFields([{
                 "name": "Start Date",
                 "value": `<t:${startDate.toSeconds()}:f>`,
                 "inline": true
-            })
+            }])
         }
 
         if (content.json.endDate !== undefined) {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "End Date",
                 "value": `<t:${endDate.toSeconds()}:f>`,
                 "inline": true
-            })
+            }])
         } else {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "End Date",
                 "value": `Unknown`,
                 "inline": true
-            })
+            }])
         }
 
         return embed

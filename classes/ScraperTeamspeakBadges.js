@@ -7,7 +7,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
     parseWebsiteContentToJSON(scrapeInfo) {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
-        let entities = page.querySelectorAll("#main-outlet > div:nth-child(2) > div.post > p")
+        let entities = page.querySelectorAll("#main-outlet #post_1 > div.post > p")
         this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((element, index) => {

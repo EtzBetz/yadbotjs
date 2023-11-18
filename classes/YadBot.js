@@ -4,13 +4,13 @@ import ScraperBlackBoard from './ScraperBlackBoard.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
 import ScraperFreeEpicGames from './ScraperFreeEpicGames.js'
 import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
-import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
+import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js' //not confirmed working
 import ScraperGuildWars2News from './ScraperGuildWars2News.js'
 import ScraperTeamspeakBadges from './ScraperTeamspeakBadges.js'
 import ScraperMovieReleases from './ScraperMovieReleases.js'
 import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.js'
 import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.js'
-import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js'
+import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js' //not confirmed working
 import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import ScraperFreeUEAssets from './ScraperFreeUEAssets.js'
 import ScraperMakerSpaceEvents from './ScraperMakerSpaceEvents.js';
@@ -22,7 +22,7 @@ import EmbedColors from '../constants/EmbedColors.js';
 class YadBot {
 
     constructor() {
-        let activityTypeToSet
+        /*let activityTypeToSet
         let activityTextToSet = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
         switch (files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, 'playing')) {
             case 'playing':
@@ -43,36 +43,36 @@ class YadBot {
             case 'competing':
                 activityTypeToSet = ActivityType.Competing
                 break
-        }
+        }*/
 
         this.bot = new Client({
             intents: [
                 GatewayIntentBits.Guilds,
-                GatewayIntentBits.GuildMembers,
-                GatewayIntentBits.GuildModeration,
-                GatewayIntentBits.GuildEmojisAndStickers,
-                GatewayIntentBits.GuildIntegrations,
-                GatewayIntentBits.GuildWebhooks,
-                GatewayIntentBits.GuildInvites,
-                GatewayIntentBits.GuildVoiceStates,
-                // GatewayIntentBits.GuildPresences,
-                GatewayIntentBits.GuildMessages,
-                GatewayIntentBits.GuildMessageReactions,
-                GatewayIntentBits.GuildMessageTyping,
-                GatewayIntentBits.DirectMessages,
-                GatewayIntentBits.DirectMessageReactions,
-                GatewayIntentBits.DirectMessageTyping,
-                // GatewayIntentBits.MessageContent,
-                GatewayIntentBits.GuildScheduledEvents,
-                GatewayIntentBits.AutoModerationConfiguration,
-                GatewayIntentBits.AutoModerationExecution
+                //     GatewayIntentBits.GuildMembers,
+                //     GatewayIntentBits.GuildModeration,
+                //     GatewayIntentBits.GuildEmojisAndStickers,
+                //     GatewayIntentBits.GuildIntegrations,
+                //     GatewayIntentBits.GuildWebhooks,
+                //     GatewayIntentBits.GuildInvites,
+                //     GatewayIntentBits.GuildVoiceStates,
+                //     // GatewayIntentBits.GuildPresences,
+                //     GatewayIntentBits.GuildMessages,
+                //     GatewayIntentBits.GuildMessageReactions,
+                //     GatewayIntentBits.GuildMessageTyping,
+                //     GatewayIntentBits.DirectMessages,
+                //     GatewayIntentBits.DirectMessageReactions,
+                //     GatewayIntentBits.DirectMessageTyping,
+                //     // GatewayIntentBits.MessageContent,
+                //     GatewayIntentBits.GuildScheduledEvents,
+                //     GatewayIntentBits.AutoModerationConfiguration,
+                //     GatewayIntentBits.AutoModerationExecution
             ],
-            partials: [
-                'CHANNEL'
-            ],
-            presence: {
-                activities: [{type: activityTypeToSet, name: activityTextToSet}]
-            }
+            // partials: [
+            //     'CHANNEL'
+            // ],
+            // presence: {
+            //     activities: [{type: activityTypeToSet, name: activityTextToSet}]
+            // }
         })
 
         this.bot.commands = new Collection()
@@ -110,8 +110,26 @@ class YadBot {
 
         })
 
+        this.bot.on(Events.Debug, async (event) => {
+            console.log(event)
+        })
+
+        this.bot.on(Events.Error, async (event) => {
+            console.log(event)
+        })
+
+        this.bot.on(Events.ShardError, async (event) => {
+            console.log(event)
+        })
+
+        this.bot.on(Events.Raw, async (event) => {
+            console.log(event)
+        })
+
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
-        this.bot.login(botToken).then()
+        this.bot.login(botToken).then(() => {
+
+        })
         this.exitBindings()
     }
 
@@ -357,11 +375,11 @@ class YadBot {
         }
 
         for (let i = 0; i < 26; i++) {
-            embed.fields.push({
+            embed.addFields([{
                 name: this.getDiffString(oldEmbed.fields[i]?.name, newEmbed.fields[i]?.name),
                 value: this.getDiffString(oldEmbed.fields[i]?.value, newEmbed.fields[i]?.value),
                 inline: (oldEmbed.fields[i]?.inline && newEmbed.fields[i]?.inline) || newEmbed.fields[i]?.inline
-            })
+            }])
         }
 
         for (let i = 25; i > 0; i--) {

@@ -586,13 +586,13 @@ export class WebsiteScraper {
 
     getTotalCharactersLengthFromEmbed(embed) {
         let totalCharactersLength = 0
-        if (embed.data.title?.length !== undefined) totalCharactersLength += embed.data.title?.length
-        if (embed.data.description?.length !== undefined) totalCharactersLength += embed.data.description?.length
-        if (embed.data.footer?.text?.length !== undefined) totalCharactersLength += embed.data.footer?.text?.length
-        if (embed.data.author?.name?.length !== undefined) totalCharactersLength += embed.data.author?.name?.length
+        if (embed.title?.length !== undefined) totalCharactersLength += embed.title?.length
+        if (embed.description?.length !== undefined) totalCharactersLength += embed.description?.length
+        if (embed.footer?.text?.length !== undefined) totalCharactersLength += embed.footer?.text?.length
+        if (embed.author?.name?.length !== undefined) totalCharactersLength += embed.author?.name?.length
 
         let totalFieldsCharactersLength = 0
-        embed.data.fields?.forEach((field, index) => {
+        embed.fields?.forEach((field, index) => {
             totalFieldsCharactersLength += (field.name?.length + field.value?.length)
         })
 

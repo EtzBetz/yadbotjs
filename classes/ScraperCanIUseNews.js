@@ -111,11 +111,10 @@ class ScraperCanIUseNews extends WebsiteScraper {
         )
 
         if (urlString !== "") {
-            console.log(embed)
-            embed.data.fields.push({
+            embed.addFields([{
                 "name": "Link(s)",
                 "value": urlString
-            })
+            }])
         }
 
         return embed

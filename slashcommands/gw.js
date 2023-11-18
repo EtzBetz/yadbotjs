@@ -82,10 +82,10 @@ export default {
                     }
                 })
 
-                let progressEmbed = {
+                let progressEmbed = new Discord.EmbedBuilder({
                     title: "Your raid progress for this week",
                     fields: []
-                }
+                })
 
                 let contentResponse = await axios({
                     method: 'get',
@@ -134,7 +134,7 @@ export default {
                             }
                             data.value += `\n`
                         })
-                        progressEmbed.fields.push(data)
+                        progressEmbed.addFields([data])
                     }
                 }
 
