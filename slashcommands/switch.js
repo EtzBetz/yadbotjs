@@ -8,7 +8,7 @@ export default {
             description: "Formats the given text into sWiTcH cAsE.",
             options: [{
                 name: 'input',
-                type: 'STRING',
+                type: Discord.ApplicationCommandOptionType.String,
                 description: 'The text which you want to be sWiTcHeD.',
                 required: true,
             }],

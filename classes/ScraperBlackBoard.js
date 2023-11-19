@@ -1,7 +1,7 @@
 import jsdom from 'jsdom'
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import yadBot from './YadBot.js'
 
 class ScraperBlackBoard extends WebsiteScraper {
@@ -37,7 +37,7 @@ class ScraperBlackBoard extends WebsiteScraper {
                             console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
                             console.log(entityParagraph.tagName.toLowerCase())
                             console.log('NEW PARAGRAPH ELEMENT NOT IMPLEMENTED!')
-                            yadBot.sendMessageToOwner(new Discord.MessageEmbed({
+                            yadBot.sendMessageToOwner(new Discord.EmbedBuilder({
                                 description: `Unimplemented element <${entityParagraph.tagName.toLowerCase()}> in BlackBoard scraper!`
                             }))
                     }
@@ -170,7 +170,7 @@ class ScraperBlackBoard extends WebsiteScraper {
         })
         linkIndex = 0 // aftercare for later re-use
 
-        paragraphString = (Discord.Util.escapeMarkdown(paragraphString))
+        paragraphString = (Discord.escapeMarkdown(paragraphString))
 
         const regexLinkHints = new RegExp(`(${linkHintPrefix}\\d+${linkHintPostfix})`, 'gm')
         paragraphString = paragraphString.replace(regexLinkHints, () => {
@@ -226,9 +226,9 @@ class ScraperBlackBoard extends WebsiteScraper {
         }
         footerString += dateObj.toFormat('dd.MM.yyyy')
 
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
-                title: content.json.title !== undefined ? Discord.Util.escapeMarkdown(content.json.title) : 'Neuer Aushang',
+                title: content.json.title !== undefined ? Discord.escapeMarkdown(content.json.title) : 'Neuer Aushang',
                 description: paragraphString,
                 url: this.buildUrl(content),
                 footer: {

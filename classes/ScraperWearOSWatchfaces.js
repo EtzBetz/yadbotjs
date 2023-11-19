@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import yadBot from './YadBot.js';
 import jsdom from 'jsdom';
 
@@ -35,7 +35,7 @@ class ScraperWearOSWatchfaces extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": `(from ${content.json.author})`,

@@ -17,11 +17,11 @@ export default async (message) => {
                 message.fetchReference()
                     .then(referenceMessage => {
                         if (referenceMessage.author.id !== botId) {
-                            message.channel.send({embeds: [new Discord.MessageEmbed({title: `Hey!`})]}) // TODO: provide array of messages to randomly select from
+                            message.channel.send({embeds: [new Discord.EmbedBuilder({title: `Hey!`})]}) // TODO: provide array of messages to randomly select from
                         }
                     })
             } else {
-                message.channel.send({embeds: [new Discord.MessageEmbed({title: `Hey!`})]}) // TODO: provide array of messages to randomly select from
+                message.channel.send({embeds: [new Discord.EmbedBuilder({title: `Hey!`})]}) // TODO: provide array of messages to randomly select from
             }
         }
     }

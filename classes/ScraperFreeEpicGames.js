@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import yadBot from './YadBot.js';
 import jsdom from 'jsdom';
 
@@ -105,7 +105,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 break
         }
 
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": descriptionString,
@@ -120,35 +120,35 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         )
 
         if (content.json.originalPrice !== undefined) {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "Original Price",
                 "value": `~~${content.json.originalPrice}~~`,
                 "inline": true
-            })
+            }])
         }
 
         if (startDate !== undefined) {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "Start Date",
                 "value": `<t:${startDate.toSeconds()}:f>`,
                 "inline": true
-            })
+            }])
         }
 
         if (endDate !== undefined) {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "End Date",
                 "value": `<t:${endDate.toSeconds()}:f>`,
                 "inline": true
-            })
+            }])
         }
 
         if (osString !== "") {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "Platform(s)",
                 "value": osString,
                 "inline": true
-            })
+            }])
         }
 
         if (content.json.imageUrl !== undefined) {
@@ -158,22 +158,22 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         }
 
         if (content.json.developer !== undefined) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     "name": "Developer",
                     "value": `${content.json.developer}`,
                     "inline": true
-                }
+                }]
             )
         }
 
         if (content.json.publisher !== undefined) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     "name": "Publisher",
                     "value": `${content.json.publisher}`,
                     "inline": true
-                }
+                }]
             )
         }
 

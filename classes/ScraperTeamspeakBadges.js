@@ -1,19 +1,24 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 
 class ScraperTeamspeakBadges extends WebsiteScraper {
 
     parseWebsiteContentToJSON(scrapeInfo) {
         const page = new jsdom.JSDOM(scrapeInfo.response.data).window.document
         let elements = []
-        let entities = page.querySelectorAll("#main-outlet > div:nth-child(2) > div.post > p")
+        let entities = page.querySelectorAll("#main-outlet #post_1 > div.post > p")
         this.log(`Parsing ${entities.length} entries...`)
 
         entities.forEach((element, index) => {
             const entry = this.parseBadgeInfo(element.textContent.trim())
-            // console.log(entry)
-            elements.push(entry)
+            if (entry.title !== undefined ||
+                entry.note !== undefined ||
+                entry.unlock !== undefined ||
+                entry.expiration !== undefined
+            ) {
+                elements.push(entry)
+            }
         })
 
         return elements
@@ -42,15 +47,20 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
         //      "unlimited"
         //      "Never"
 
-        const regexBadges = /Name:\s*(.+)\s*\((.+)\)\nGUID:\s*\S*\nBadge code:\s*(.+)\s*\(.*?: (.+)\S*\)/gmi
+        const regexTitleAndName = /Name:\s*(.+)\s*\((.+)\)/gmi
+        const regexCode = /Badge code:\s*(\S+)\s*/gmi
+        const regexDate = /\(.*?: (.+)\S*\)/gmi
         // const regexBadges = /Name:\s*(.+)\s*\((.+)\)\nGUID:\s*\S*\nBadge code:\s*(.+)\s*\(.*?: (\d{1,2}\.\d{1,2}\.\d{2,4})\S*\)/gmi
 
-        const result = regexBadges.exec(this.filterFakeWhitespace(sourceString))
+        const titleNameResult = regexTitleAndName.exec(this.filterFakeWhitespace(sourceString))
+        const codeResult = regexCode.exec(this.filterFakeWhitespace(sourceString))
+        const dateResult = regexDate.exec(this.filterFakeWhitespace(sourceString))
+        // console.log(dateResult)
         return {
-            title: result[1]?.trim(),
-            note: result[2]?.trim(),
-            unlock: result[3]?.trim(),
-            expiration: result[4]?.trim(),
+            title: titleNameResult[1]?.trim(),
+            note: titleNameResult[2]?.trim(),
+            unlock: codeResult[1]?.trim(),
+            expiration: dateResult?.[1]?.trim()
         }
     }
 
@@ -66,7 +76,7 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
     }
 
     async getEmbed(content) {
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "title": "New Teamspeak Badge available!",
                 "description": "A new Badge was listed on the Forums.\nUnlock it [here](https://www.myteamspeak.com/userarea/badges/redeem) or in your Teamspeak application!",

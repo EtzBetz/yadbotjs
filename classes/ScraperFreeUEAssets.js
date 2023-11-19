@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import yadBot from './YadBot.js';
 import jsdom from 'jsdom';
 
@@ -43,7 +43,7 @@ class ScraperFreeUEAssets extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": `${content.json.isFeatured ? "**[FEATURED]**\n" : ""}${content.json.isTimeLimited ? "**[TIMED OFFER]**\n" : ""}\n${content.json.description}`,
@@ -60,18 +60,22 @@ class ScraperFreeUEAssets extends WebsiteScraper {
             }
         )
 
-        embed.fields.push({
-            "name": "Author",
-            "value": `${content.json.authorName}`,
-            "inline": true
-        })
+        embed.addFields([
+            {
+                "name": "Author",
+                "value": `${content.json.authorName}`,
+                "inline": true
+            }
+        ])
 
         if (content.json.ratingAverage !== undefined) {
-            embed.fields.push({
-                "name": "Rating",
-                "value": `${content.json.ratingAverage} (${content.json.ratingTotals} Votes)`,
-                "inline": true
-            })
+            embed.addFields([
+                {
+                    "name": "Rating",
+                    "value": `${content.json.ratingAverage} (${content.json.ratingTotals} Votes)`,
+                    "inline": true
+                }
+            ])
         }
 
         if (content.json.categories !== undefined && content.json.categories.length >= 1) {
@@ -79,12 +83,13 @@ class ScraperFreeUEAssets extends WebsiteScraper {
             for (const category of content.json.categories) {
                 catText += `\n[${category.name}](https://www.unrealengine.com/marketplace/en-US/content-cat/${category.path})`
             }
-
-            embed.fields.push({
-                "name": "Categories",
-                "value": catText,
-                "inline": true
-            })
+            embed.addFields([
+                {
+                    "name": "Categories",
+                    "value": catText,
+                    "inline": true
+                }
+            ])
         }
 
         if (content.json.platformCompatibility !== undefined) {
@@ -92,12 +97,13 @@ class ScraperFreeUEAssets extends WebsiteScraper {
             for (const platformData of content.json.platformCompatibility) {
                 platformText += `\n- ${platformData.value}`
             }
-
-            embed.fields.push({
-                "name": "Platform(s)",
-                "value": platformText,
-                "inline": true
-            })
+            embed.addFields([
+                {
+                    "name": "Platform(s)",
+                    "value": platformText,
+                    "inline": true
+                }
+            ])
         }
 
         if (content.json.unrealCompatibility !== undefined) {
@@ -106,13 +112,15 @@ class ScraperFreeUEAssets extends WebsiteScraper {
                 if (engineText !== "") engineText += ", "
                 engineText += `${engineVersion}`
             }
-
-            embed.fields.push({
-                "name": "UE Version(s)",
-                "value": engineText,
-                "inline": true
-            })
+            embed.addFields([
+                {
+                    "name": "UE Version(s)",
+                    "value": engineText,
+                    "inline": true
+                }
+            ])
         }
+
         return embed
     }
 

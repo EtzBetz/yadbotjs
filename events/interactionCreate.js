@@ -1,6 +1,6 @@
 import Discord from "discord.js"
-import yadBot from '../classes/YadBot'
-import EmbedColors from '../constants/EmbedColors';
+import yadBot from '../classes/YadBot.js'
+import EmbedColors from '../constants/EmbedColors.js';
 import files from '../classes/Files.js';
 
 export default async (interaction) => {
@@ -59,7 +59,7 @@ export default async (interaction) => {
         if (interaction.isButton()) {
             await interaction.deferReply({ephemeral: true})
             let interactionCommand = interaction.customId.split("::")
-            console.log(interactionCommand)
+            // console.log(interactionCommand)
 
             switch (interactionCommand[0]) {
                 case "mensafh":
@@ -81,12 +81,12 @@ export default async (interaction) => {
                                         color: EmbedColors.RED
                                     }],
                                     components: [
-                                        new Discord.MessageActionRow({
+                                        new Discord.ActionRowBuilder({
                                             components: [
-                                                new Discord.MessageButton({
+                                                new Discord.ButtonBuilder({
                                                     label: `Guthaben aufladen`,
                                                     url: 'https://topup.klarna.com/stw_munster',
-                                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                                    style: Discord.ButtonStyle.LINK,
                                                 }),
                                             ]
                                         })
@@ -110,12 +110,12 @@ export default async (interaction) => {
                                         },
                                     }],
                                     components: [
-                                        new Discord.MessageActionRow({
+                                        new Discord.ActionRowBuilder({
                                             components: [
-                                                new Discord.MessageButton({
+                                                new Discord.ButtonBuilder({
                                                     label: `Guthaben aufladen`,
                                                     url: 'https://topup.klarna.com/stw_munster',
-                                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                                    style: Discord.ButtonStyle.LINK,
                                                 }),
                                             ]
                                         })
@@ -136,12 +136,12 @@ export default async (interaction) => {
                                     },
                                 }],
                                 components: [
-                                    new Discord.MessageActionRow({
+                                    new Discord.ActionRowBuilder({
                                         components: [
-                                            new Discord.MessageButton({
+                                            new Discord.ButtonBuilder({
                                                 label: `Guthaben aufladen`,
                                                 url: 'https://topup.klarna.com/stw_munster',
-                                                style: Discord.Constants.MessageButtonStyles.LINK,
+                                                style: Discord.ButtonStyle.LINK,
                                             }),
                                         ]
                                     })

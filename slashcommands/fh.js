@@ -16,22 +16,22 @@ export default {
                 {
                     name: "balance",
                     description: "Shows the current balance of the given ID or if one is stored and none is given, the given.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "card-number",
                         description: "A FH Münster Card ID.",
-                        type: "INTEGER",
+                        type: Discord.ApplicationCommandOptionType.Integer,
                         required: false
                     }]
                 },
                 {
                     name: "cardnumber",
                     description: "Store your mensa card ID so you don't have to re-enter it every day.",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "card-number",
                         description: "A FH Münster Card ID.",
-                        type: "INTEGER",
+                        type: Discord.ApplicationCommandOptionType.Integer,
                         required: true
                     }]
                 }
@@ -93,12 +93,12 @@ export default {
                         },
                     }],
                     components: [
-                        new Discord.MessageActionRow({
+                        new Discord.ActionRowBuilder({
                             components: [
-                                new Discord.MessageButton({
+                                new Discord.ButtonBuilder({
                                     label: `Guthaben aufladen`,
                                     url: 'https://topup.klarna.com/stw_munster',
-                                    style: Discord.Constants.MessageButtonStyles.LINK,
+                                    style: Discord.ButtonStyle.Link,
                                 }),
                             ]
                         })
@@ -109,8 +109,7 @@ export default {
             case "cardnumber":
                 await interaction.deferReply({ephemeral: true})
                 let newKey = interaction.options.getInteger('card-number')
-                // todo: check validity of number
-                files.writeJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, newKey)
+                files.writeJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, newKey.toString())
                 await interaction.editReply({
                     embeds: [{
                         title: "Kartennummer für dich gespeichert",

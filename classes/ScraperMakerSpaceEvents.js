@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import jsdom from 'jsdom'
 import axios from 'axios';
 import files from './Files.js';
@@ -79,7 +79,7 @@ class ScraperMakerSpaceEvents extends WebsiteScraper {
         if (link.substring(0, 1) === "/") {
             link = "https://www.fh-muenster.de" + link
         }
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "url": link,

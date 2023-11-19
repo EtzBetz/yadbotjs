@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import jsdom from 'jsdom'
 
 class ScraperLab4Inf extends WebsiteScraper {
@@ -52,7 +52,7 @@ class ScraperLab4Inf extends WebsiteScraper {
         let lastDotIndex = fileType.indexOf('.')
         fileType = fileType.substring(0, lastDotIndex).split("").reverse().join("")
 
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "description": `Neue ${category}Datei zum Download:\n[${content.json.title} (.${fileType})](http://www.lab4inf.fh-muenster.de/${content.json.address})`,
                 "author": {

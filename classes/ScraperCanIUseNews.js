@@ -1,8 +1,8 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import { WebsiteScraper } from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 
-class ScraperCanIUseNews extends WebsiteScraper{
+class ScraperCanIUseNews extends WebsiteScraper {
 
     parseDateFromString(dateString) {
         return luxon.DateTime.fromFormat(dateString, "MMM d, yyyy").setZone('Europe/Berlin').toISO()
@@ -21,7 +21,7 @@ class ScraperCanIUseNews extends WebsiteScraper{
             let postString = descriptionString.substring(result.index + (result[0]?.length) - stringDifference)
 
             let preparedUrl = result[2]
-            if (preparedUrl.substring(0,1) === "/") preparedUrl = `https://caniuse.com${preparedUrl}`
+            if (preparedUrl.substring(0, 1) === "/") preparedUrl = `https://caniuse.com${preparedUrl}`
 
             let finalString = `${preString}[${result[3]}](${preparedUrl})${postString}`
             stringDifference += descriptionString.length - finalString.length
@@ -33,7 +33,7 @@ class ScraperCanIUseNews extends WebsiteScraper{
         let tagsResult = [...descriptionString.matchAll(tagRegex)]
         stringDifference = 0
 
-        tagsResult.forEach((result,index) => {
+        tagsResult.forEach((result, index) => {
             let preString = descriptionString.substring(0, result.index - stringDifference)
             let postString = descriptionString.substring(result.index + (result[0]?.length) - stringDifference)
             let finalString = `${preString}${result[2]}${postString}`
@@ -42,18 +42,18 @@ class ScraperCanIUseNews extends WebsiteScraper{
         })
 
         // replace encoded characters for ", &, <, >, afterwards remove all unknown encodings from text
-        descriptionString = descriptionString.replace(/(&quot;)/g,"\"").trim()
-        descriptionString = descriptionString.replace(/(&amp;)/g,"&").trim()
-        descriptionString = descriptionString.replace(/(&lt;)/g,"<").trim()
-        descriptionString = descriptionString.replace(/(&gt;)/g,">").trim()
-        descriptionString = descriptionString.replace(/(&lsquo;|&rsquo;)/g,"'").trim()
-        descriptionString = descriptionString.replace(/(&.+?;)/g,"").trim()
+        descriptionString = descriptionString.replace(/(&quot;)/g, "\"").trim()
+        descriptionString = descriptionString.replace(/(&amp;)/g, "&").trim()
+        descriptionString = descriptionString.replace(/(&lt;)/g, "<").trim()
+        descriptionString = descriptionString.replace(/(&gt;)/g, ">").trim()
+        descriptionString = descriptionString.replace(/(&lsquo;|&rsquo;)/g, "'").trim()
+        descriptionString = descriptionString.replace(/(&.+?;)/g, "").trim()
 
         // replace <br> by linebreak.
-        descriptionString = descriptionString.replace(/(<br>)/g,"\n").trim()
+        descriptionString = descriptionString.replace(/(<br>)/g, "\n").trim()
 
         // remove : at string start, if existent
-        if (descriptionString.substring(0,1) === ":") descriptionString = descriptionString.substring(1).trim()
+        if (descriptionString.substring(0, 1) === ":") descriptionString = descriptionString.substring(1).trim()
 
         return descriptionString
     }
@@ -97,7 +97,7 @@ class ScraperCanIUseNews extends WebsiteScraper{
             })
         }
 
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": content.json.description,
@@ -111,10 +111,10 @@ class ScraperCanIUseNews extends WebsiteScraper{
         )
 
         if (urlString !== "") {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "Link(s)",
                 "value": urlString
-            })
+            }])
         }
 
         return embed

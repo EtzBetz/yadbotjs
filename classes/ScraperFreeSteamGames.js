@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import files from './Files.js'
 import yadBot from './YadBot.js';
 
@@ -124,7 +124,7 @@ class ScraperFreeSteamGames extends WebsiteScraper {
                 break
         }
 
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 'title': content.json.title,
                 'description': descriptionText,
@@ -139,43 +139,43 @@ class ScraperFreeSteamGames extends WebsiteScraper {
         )
 
         if (content.json.finalPrice !== undefined && content.json.discountType !== "gift") {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Discounted Price',
                     'value': `**${content.json.finalPrice}**`,
                     'inline': true,
-                },
+                }]
             )
         }
 
         if (content.json.originalPrice !== undefined) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Original Price',
                     'value': `~~${content.json.originalPrice}~~`,
                     'inline': true,
-                },
+                }]
             )
         }
 
         if (content.json.date !== undefined) {
             let date = luxon.DateTime.fromISO(content.json.date).setZone('utc')
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Release Date',
                     'value': `<t:${date.toSeconds()}:D>`,
                     'inline': true,
-                },
+                }]
             )
         }
 
         if (content.json.dateRaw !== undefined) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Release Date',
                     'value': content.json.dateRaw,
                     'inline': true,
-                },
+                }]
             )
         }
 

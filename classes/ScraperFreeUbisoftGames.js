@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import files from './Files.js';
 import axios from 'axios';
 import yadBot from './YadBot.js';
@@ -177,7 +177,7 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
             descriptionString = `Currently **free** in Ubisoft Store.`
         }
 
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title,
                 "description": descriptionString,
@@ -197,25 +197,25 @@ class ScraperFreeUbisoftGames extends WebsiteScraper {
         if (content.json.startDate !== undefined) {
             startDate = luxon.DateTime.fromISO(content.json.startDate)
 
-            embed.fields.push({
+            embed.addFields([{
                 "name": "Start Date",
                 "value": `<t:${startDate.toSeconds()}:f>`,
                 "inline": true
-            })
+            }])
         }
 
         if (content.json.endDate !== undefined) {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "End Date",
                 "value": `<t:${endDate.toSeconds()}:f>`,
                 "inline": true
-            })
+            }])
         } else {
-            embed.fields.push({
+            embed.addFields([{
                 "name": "End Date",
                 "value": `Unknown`,
                 "inline": true
-            })
+            }])
         }
 
         return embed

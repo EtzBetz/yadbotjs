@@ -16,16 +16,16 @@ export default {
                 {
                     name: "raidprogress",
                     description: "Shows your raid boss kill progress for the current week.",
-                    type: 'SUB_COMMAND'
+                    type: Discord.ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: "apikey",
                     description: "Add your personal GW2-API-Key to the bot, so that it can show you details from your account",
-                    type: 'SUB_COMMAND',
+                    type: Discord.ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "api-key",
                         description: "Your Account's API-Key from \"account.arena.net/applications\".",
-                        type: "STRING",
+                        type: Discord.ApplicationCommandOptionType.String,
                         required: true
                     }]
                 }
@@ -82,10 +82,10 @@ export default {
                     }
                 })
 
-                let progressEmbed = {
+                let progressEmbed = new Discord.EmbedBuilder({
                     title: "Your raid progress for this week",
                     fields: []
-                }
+                })
 
                 let contentResponse = await axios({
                     method: 'get',
@@ -134,7 +134,7 @@ export default {
                             }
                             data.value += `\n`
                         })
-                        progressEmbed.fields.push(data)
+                        progressEmbed.addFields([data])
                     }
                 }
 

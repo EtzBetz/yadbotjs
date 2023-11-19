@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import files from './Files.js'
 import Json from './Json.js';
 
@@ -147,7 +147,7 @@ class ScraperMovieReleases extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 'title': content.json.title,
                 'description': this.generateDescriptionString(content.json.tagline, content.json.description, content.json.imdbId, content.json.id),
@@ -160,50 +160,50 @@ class ScraperMovieReleases extends WebsiteScraper {
         )
 
         if (content.json.genres?.length > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Genres',
                     'value': this.generateGenreString(content.json.genres),
                     'inline': false,
-                }
+                }]
             )
         }
 
         if (content.json.producers.length > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Produzenten',
                     'value': this.generateProducerString(content.json.producers),
                     'inline': false,
-                },
+                }]
             )
         }
 
         if (content.json.duration !== undefined && content.json.duration > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Dauer',
                     'value': this.generateDurationString(content.json.duration),
                     'inline': false,
-                },
+                }]
             )
         } else {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Dauer',
                     'value': "???",
                     'inline': false,
-                },
+                }]
             )
         }
 
         if (content.json.budget !== undefined && content.json.budget > 0) {
-            embed.fields.push(
+            embed.addFields([
                 {
                     'name': 'Budget',
                     'value': this.generateBudgetString(content.json.budget),
                     'inline': false,
-                },
+                }]
             )
         }
 
@@ -260,19 +260,19 @@ class ScraperMovieReleases extends WebsiteScraper {
                 }
             }
             if (usString !== "") {
-                embed.fields.push(
+                embed.addFields([
                     {
                         'name': 'US-Release(s)',
                         'value': usString,
-                    }
+                    }]
                 )
             }
             if (deString !== "") {
-                embed.fields.push(
+                embed.addFields([
                     {
                         'name': 'DE-Release(s)',
                         'value': deString,
-                    }
+                    }]
                 )
             }
         }
@@ -282,19 +282,19 @@ class ScraperMovieReleases extends WebsiteScraper {
 
     getComponents(content) {
         if (content.json.xRelId !== undefined) {
-            let actionRow = new Discord.MessageActionRow({
+            let actionRow = new Discord.ActionRowBuilder({
                 components: [
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `Subscribe to xREL Releases for '${content.json.xRelTitle}'`,
                         customId: `xrel::subscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
                         style: 'PRIMARY',
                     }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `Unsubscribe`,
                         customId: `xrel::unsubscribe::${this.generateFileName(content.json)}::${content.json.xRelId}`,
                         style: 'DANGER',
                     }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: `xREL Release Page`,
                         url: content.json.xRelLink,
                         style: 'LINK',
@@ -307,9 +307,9 @@ class ScraperMovieReleases extends WebsiteScraper {
         }
 
 
-        // new Discord.MessageActionRow({
+        // new Discord.ActionRowBuilder({
         //     components: [
-        //         new Discord.MessageButton({
+        //         new Discord.ButtonBuilder({
         //             label: "Google",
         //             style: 'LINK',
         //             url: "https://google.de/"

@@ -1,62 +1,86 @@
 import fs from 'fs'
-import Discord from 'discord.js'
+import {Client, ActivityType, GatewayIntentBits, Events, Collection} from 'discord.js'
 import ScraperBlackBoard from './ScraperBlackBoard.js'
-// import ScraperLab4Inf from './ScraperLab4Inf.js'
-// import ScraperNetzwerkprogrammierung from './ScraperNetzwerkprogrammierung.js'
-// import ScraperRechnernetze from './ScraperRechnernetze.js'
 import ScraperMensaFHMuenster from './ScraperMensaFHMuenster.js'
-import ScraperFreeEpicGames from './ScraperFreeEpicGames'
+import ScraperFreeEpicGames from './ScraperFreeEpicGames.js'
 import ScraperFreeSteamGames from './ScraperFreeSteamGames.js'
-import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js'
+import ScraperFreeUbisoftGames from './ScraperFreeUbisoftGames.js' //not confirmed working
 import ScraperGuildWars2News from './ScraperGuildWars2News.js'
 import ScraperTeamspeakBadges from './ScraperTeamspeakBadges.js'
 import ScraperMovieReleases from './ScraperMovieReleases.js'
-import ScraperXRelReleases from './ScraperXRelReleases.js'
 import ScraperInterfaceInGameGames from './ScraperInterfaceInGameGames.js'
 import ScraperInterfaceInGameArticles from './ScraperInterfaceInGameArticles.js'
-import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js'
+import ScraperTSBThreadWatch from './ScraperTSBThreadWatch.js' //not confirmed working
 import ScraperCanIUseNews from './ScraperCanIUseNews.js'
 import ScraperFreeUEAssets from './ScraperFreeUEAssets.js'
-import ScraperWearOSWatchfaces from './ScraperWearOSWatchfaces.js';
 import ScraperMakerSpaceEvents from './ScraperMakerSpaceEvents.js';
-import {log, debugLog} from '../index'
+import {log, debugLog} from '../index.js'
 import files from './Files.js'
-import activityTypes from '../constants/ActivityTypes.js'
 import * as diff from 'diff';
 import EmbedColors from '../constants/EmbedColors.js';
 
 class YadBot {
 
     constructor() {
-        this.bot = new Discord.Client({
+        let activityTypeToSet
+        let activityTextToSet = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
+        switch (files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, 'playing')) {
+            case 'playing':
+                activityTypeToSet = ActivityType.Playing
+                break
+            case 'streaming':
+                activityTypeToSet = ActivityType.Streaming
+                break
+            case 'listening':
+                activityTypeToSet = ActivityType.Listening
+                break
+            case 'watching':
+                activityTypeToSet = ActivityType.Watching
+                break
+            case 'custom':
+                activityTypeToSet = ActivityType.Custom
+                break
+            case 'competing':
+                activityTypeToSet = ActivityType.Competing
+                break
+        }
+
+        this.bot = new Client({
             intents: [
-                Discord.Intents.FLAGS.GUILDS,
-                Discord.Intents.FLAGS.GUILD_MEMBERS,
-                Discord.Intents.FLAGS.GUILD_BANS,
-                Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-                Discord.Intents.FLAGS.GUILD_INTEGRATIONS,
-                Discord.Intents.FLAGS.GUILD_WEBHOOKS,
-                Discord.Intents.FLAGS.GUILD_INVITES,
-                Discord.Intents.FLAGS.GUILD_VOICE_STATES,
-                Discord.Intents.FLAGS.GUILD_PRESENCES,
-                Discord.Intents.FLAGS.GUILD_MESSAGES,
-                Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-                Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-                Discord.Intents.FLAGS.DIRECT_MESSAGES,
-                Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-                Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildModeration,
+                GatewayIntentBits.GuildEmojisAndStickers,
+                GatewayIntentBits.GuildIntegrations,
+                GatewayIntentBits.GuildWebhooks,
+                GatewayIntentBits.GuildInvites,
+                GatewayIntentBits.GuildVoiceStates,
+                // GatewayIntentBits.GuildPresences,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
+                GatewayIntentBits.GuildMessageTyping,
+                GatewayIntentBits.DirectMessages,
+                GatewayIntentBits.DirectMessageReactions,
+                GatewayIntentBits.DirectMessageTyping,
+                // GatewayIntentBits.MessageContent,
+                GatewayIntentBits.GuildScheduledEvents,
+                GatewayIntentBits.AutoModerationConfiguration,
+                GatewayIntentBits.AutoModerationExecution
             ],
             partials: [
                 'CHANNEL'
-            ]
+            ],
+            presence: {
+                activities: [{type: activityTypeToSet, name: activityTextToSet}]
+            }
         })
 
-        this.bot.commands = new Discord.Collection()
+        this.bot.commands = new Collection()
         this.commandFiles = []
         this.eventFiles = []
         this.scrapers = []
 
-        this.bot.once('ready', async () => {
+        this.bot.once(Events.ClientReady, async () => {
             // todo: build in waiting for the main bot to come online (interval in scrapers?)
             this.scrapers = [
                 ScraperFreeSteamGames,
@@ -71,23 +95,14 @@ class YadBot {
                 ScraperCanIUseNews,
                 ScraperMovieReleases,
                 ScraperGuildWars2News,
-                ScraperXRelReleases,
                 ScraperTSBThreadWatch,
-                ScraperWearOSWatchfaces,
                 ScraperMakerSpaceEvents
             ]
             await this.bindCommands()
             await this.bindEvents()
             log(`-------------------------------`)
-            log('I\'m online! Setting presence...')
-
-            let customActivityState = files.readJson(this.getYadConfigPath(), 'set_custom_activity', false, true)
-            if (customActivityState) {
-                let customActivityType = files.readJson(this.getYadConfigPath(), 'custom_activity_type', false, activityTypes.PLAYING)
-                let customActivityText = files.readJson(this.getYadConfigPath(), 'custom_activity_text', false, ' mit Slash Commands')
-                this.bot.user.setActivity(customActivityText, {type: Discord.ActivityFlags.FLAGS.PLAY})
-            }
-            log(`I see ${this.bot.guilds.cache.size} guilds and ${this.bot.users.cache.size} users:`)
+            log(`I'm online as "${this.bot.user.tag}"!`)
+            log(`I see ${this.bot.guilds.cache.size} guild(s) and ${this.bot.users.cache.size} user(s):`)
             this.bot.guilds.cache.forEach(guild => {
                 log(` - ${guild.name}\t( ${guild.id} )`)
             })
@@ -95,8 +110,26 @@ class YadBot {
 
         })
 
+        // this.bot.on(Events.Debug, async (event) => {
+        //     console.log(event)
+        // })
+        //
+        // this.bot.on(Events.Error, async (event) => {
+        //     console.log(event)
+        // })
+        //
+        // this.bot.on(Events.ShardError, async (event) => {
+        //     console.log(event)
+        // })
+        //
+        // this.bot.on(Events.Raw, async (event) => {
+        //     console.log(event)
+        // })
+
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
-        this.getBot().login(botToken)
+        this.bot.login(botToken).then(() => {
+
+        })
         this.exitBindings()
     }
 
@@ -255,7 +288,7 @@ class YadBot {
     }
 
     mirrorDirectMessageToOwner(message) {
-        this.sendMessageToOwner(new Discord.MessageEmbed({
+        this.sendMessageToOwner(new Discord.EmbedBuilder({
             title: `DM von User`,
             description: `${message}`,
             footer: {
@@ -278,7 +311,7 @@ class YadBot {
     }
 
     getDiffEmbedFromEmbeds(oldEmbed, newEmbed) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 author: {
                     name: this.getDiffString(oldEmbed.author?.name, newEmbed.author?.name),
@@ -342,11 +375,11 @@ class YadBot {
         }
 
         for (let i = 0; i < 26; i++) {
-            embed.fields.push({
+            embed.addFields([{
                 name: this.getDiffString(oldEmbed.fields[i]?.name, newEmbed.fields[i]?.name),
                 value: this.getDiffString(oldEmbed.fields[i]?.value, newEmbed.fields[i]?.value),
                 inline: (oldEmbed.fields[i]?.inline && newEmbed.fields[i]?.inline) || newEmbed.fields[i]?.inline
-            })
+            }])
         }
 
         for (let i = 25; i > 0; i--) {
@@ -368,9 +401,9 @@ class YadBot {
         const diffResult = diff.diffWords(oldString, newString)
         let diffString = ""
         diffResult.forEach(diffPart => {
-            if (diffPart.added) diffString += `**${Discord.Util.escapeMarkdown(diffPart.value)}**`
-            else if (diffPart.removed) diffString += `~~${Discord.Util.escapeMarkdown(diffPart.value)}~~`
-            else diffString += `${Discord.Util.escapeMarkdown(diffPart.value)}`
+            if (diffPart.added) diffString += `**${Discord.escapeMarkdown(diffPart.value)}**`
+            else if (diffPart.removed) diffString += `~~${Discord.escapeMarkdown(diffPart.value)}~~`
+            else diffString += `${Discord.escapeMarkdown(diffPart.value)}`
         })
         return diffString
     }

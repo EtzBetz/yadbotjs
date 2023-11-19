@@ -1,6 +1,6 @@
 import luxon from 'luxon'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import yadBot from './YadBot.js'
 import files from './Files.js';
 import axios from 'axios';
@@ -49,10 +49,10 @@ class ScraperMeineFH extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        let embed = new Discord.MessageEmbed(
+        let embed = new Discord.EmbedBuilder(
             {
                 "title": content.json.title.trim(),
-                "description": `${luxon.DateTime.fromISO(content.json.date).toFormat("dd.LL.yy, HH:mm")}\n\n${Discord.Util.escapeMarkdown(content.json.text.trim())}`,
+                "description": `${luxon.DateTime.fromISO(content.json.date).toFormat("dd.LL.yy, HH:mm")}\n\n${Discord.escapeMarkdown(content.json.text.trim())}`,
                 "author": {
                     "name": 'Fachhochschule Münster',
                     "url": 'https://meinefh.de',
@@ -69,16 +69,16 @@ class ScraperMeineFH extends WebsiteScraper {
 
     getComponents(content) {
         return [
-            new Discord.MessageActionRow({
+            new Discord.ActionRowBuilder({
                 components: [
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: "meinefh.de",
-                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        style: Discord.ButtonStyle.LINK,
                         url: "https://www.meinefh.de/"
                     }),
-                    new Discord.MessageButton({
+                    new Discord.ButtonBuilder({
                         label: "Spenden",
-                        style: Discord.Constants.MessageButtonStyles.LINK,
+                        style: Discord.ButtonStyle.LINK,
                         url: "https://paypal.me/raphaelbetz"
                     }),
                 ]

@@ -1,6 +1,6 @@
 import jsdom from 'jsdom'
 import * as Discord from 'discord.js'
-import {WebsiteScraper} from './WebsiteScraper'
+import {WebsiteScraper} from './WebsiteScraper.js'
 import yadBot from './YadBot.js';
 import files from './Files.js';
 
@@ -62,7 +62,7 @@ class ScraperTSBThreadWatch extends WebsiteScraper {
     }
 
     getEmbed(content) {
-        return new Discord.MessageEmbed(
+        return new Discord.EmbedBuilder(
             {
                 "description": `**#${content.json.postId}**:\n\`\`\`text\n${content.json.postText.substring(0, 1000)}\`\`\`\n**[Link](${this.getScrapingUrl()})**`,
                 "url": `${this.getScrapingUrl()}`,
