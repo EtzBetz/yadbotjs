@@ -1,0 +1,8 @@
+node_modules
+yadbot.Dockerfile
+Dockerfile
+commandFiles
+.github
+.gitignore
+.idea
+scraperFiles

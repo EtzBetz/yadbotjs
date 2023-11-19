@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  yadbot-discordjs:
+    build:
+      context: ./
+      dockerfile: yadbot.Dockerfile
+    container_name: yadbot
+    restart: always
+    volumes:
+      - type: bind
+        source: ./scraperFiles
+        target: /usr/src/app/scraperFiles
+      - type: bind
+        source: ./commandFiles
+        target: /usr/src/app/commandFiles
+      - ./config.json:/usr/src/app/config.json
