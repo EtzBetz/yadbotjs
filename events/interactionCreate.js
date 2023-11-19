@@ -59,7 +59,7 @@ export default async (interaction) => {
         if (interaction.isButton()) {
             await interaction.deferReply({ephemeral: true})
             let interactionCommand = interaction.customId.split("::")
-            console.log(interactionCommand)
+            // console.log(interactionCommand)
 
             switch (interactionCommand[0]) {
                 case "mensafh":

@@ -110,21 +110,21 @@ class YadBot {
 
         })
 
-        this.bot.on(Events.Debug, async (event) => {
-            console.log(event)
-        })
-
-        this.bot.on(Events.Error, async (event) => {
-            console.log(event)
-        })
-
-        this.bot.on(Events.ShardError, async (event) => {
-            console.log(event)
-        })
-
-        this.bot.on(Events.Raw, async (event) => {
-            console.log(event)
-        })
+        // this.bot.on(Events.Debug, async (event) => {
+        //     console.log(event)
+        // })
+        //
+        // this.bot.on(Events.Error, async (event) => {
+        //     console.log(event)
+        // })
+        //
+        // this.bot.on(Events.ShardError, async (event) => {
+        //     console.log(event)
+        // })
+        //
+        // this.bot.on(Events.Raw, async (event) => {
+        //     console.log(event)
+        // })
 
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
         this.bot.login(botToken).then(() => {

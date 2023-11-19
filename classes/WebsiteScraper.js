@@ -617,7 +617,7 @@ export class WebsiteScraper {
             interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {cache: true, force: true})
         }
 
-        console.log(interactionChannel.type)
+        // console.log(interactionChannel.type)
         switch (interactionChannel.type) {
             case Discord.ChannelType.DM:
                 let subscriptionResult = this.toggleSubscriptionInFile(interaction.user.id, false)
