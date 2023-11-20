@@ -49,23 +49,23 @@ class YadBot {
             intents: [
                 GatewayIntentBits.Guilds,
                 GatewayIntentBits.GuildMembers,
-                GatewayIntentBits.GuildModeration,
-                GatewayIntentBits.GuildEmojisAndStickers,
+                // GatewayIntentBits.GuildModeration,
+                // GatewayIntentBits.GuildEmojisAndStickers,
                 GatewayIntentBits.GuildIntegrations,
                 GatewayIntentBits.GuildWebhooks,
-                GatewayIntentBits.GuildInvites,
-                GatewayIntentBits.GuildVoiceStates,
+                // GatewayIntentBits.GuildInvites,
+                // GatewayIntentBits.GuildVoiceStates,
                 // GatewayIntentBits.GuildPresences,
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMessageReactions,
-                GatewayIntentBits.GuildMessageTyping,
+                // GatewayIntentBits.GuildMessageTyping,
                 GatewayIntentBits.DirectMessages,
                 GatewayIntentBits.DirectMessageReactions,
-                GatewayIntentBits.DirectMessageTyping,
+                // GatewayIntentBits.DirectMessageTyping,
                 // GatewayIntentBits.MessageContent,
-                GatewayIntentBits.GuildScheduledEvents,
-                GatewayIntentBits.AutoModerationConfiguration,
-                GatewayIntentBits.AutoModerationExecution
+                // GatewayIntentBits.GuildScheduledEvents,
+                // GatewayIntentBits.AutoModerationConfiguration,
+                // GatewayIntentBits.AutoModerationExecution
             ],
             partials: [
                 'CHANNEL'
