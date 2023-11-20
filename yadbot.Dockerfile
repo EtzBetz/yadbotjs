@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:18
 
 # set timezone. /etc/timezone changing seems to
 # have no effect, setting it anyway to be safe.
