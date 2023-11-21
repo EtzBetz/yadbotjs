@@ -385,7 +385,7 @@ export class WebsiteScraper {
         //     components: [
         //         new Discord.ButtonBuilder({
         //             label: "Google",
-        //             style: Discord.ButtonStyle.LINK,
+        //             style: Discord.ButtonStyle.Link,
         //             url: "https://google.de/"
         //         }),
         //     ]

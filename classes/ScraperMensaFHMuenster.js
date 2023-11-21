@@ -209,14 +209,13 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
 
     getComponents(content) {
         return [
-            new Discord.ActionRowBuilder({
-                components: [
-                    new Discord.ButtonBuilder({
-                        label: `Guthaben abfragen`,
-                        customId: `mensafh::balance::message`,
-                        style: Discord.ButtonStyle.PRIMARY,
-                    }),
-                    // new Discord.ButtonBuilder({
+            new Discord.ActionRowBuilder()
+                .addComponents([
+                    new Discord.ButtonBuilder()
+                        .setLabel(`Guthaben abfragen`)
+                        .setCustomId(`mensafh::balance::message`)
+                        .setStyle(Discord.ButtonStyle.Primary),
+                    // new Discord.ButtonBuilder({ OLD CODE!
                     //     label: `Beilagen`,
                     //     customId: `mensafh::side_dishes::${content.json.date}`,
                     //     style: Discord.ButtonStyle.PRIMARY,
@@ -227,15 +226,11 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                     //     disabled: true,
                     //     style: Discord.ButtonStyle.SECONDARY,
                     // }),
-                    new Discord.ButtonBuilder({
-                        label: "Spenden",
-                        style: Discord.ButtonStyle.LINK,
-                        url: "https://paypal.me/raphaelbetz"
-                    }),
-                ]
-            })
-
-
+                    new Discord.ButtonBuilder()
+                        .setLabel(`Spenden`)
+                        .setURL(`https://paypal.me/raphaelbetz`)
+                        .setStyle(Discord.ButtonStyle.Link),
+                ])
         ]
 
     }

@@ -41,7 +41,17 @@ export default {
     async execute(interaction) {
         switch (interaction.options.getSubcommand()) {
             case "balance":
-                let enteredCardId = interaction.options.getInteger('card-number')
+                await interaction.deferReply({ephemeral: true})
+                await interaction.editReply({
+                    embeds: [{
+                        title: "Funktion deaktiviert",
+                        description: `Da diese Funktion von der Seite der FH aktuell deaktiviert wurde, steht sie bis auf weiteres nicht zur Verfügung. Hoffentlich bald wieder :)`,
+                        color: EmbedColors.RED
+                    }],
+                    ephemeral: true
+                })
+                return
+                /*let enteredCardId = interaction.options.getInteger('card-number')
                 await interaction.deferReply({ephemeral: true})
                 if (enteredCardId === null) {
                     enteredCardId = files.readJson(
@@ -104,7 +114,7 @@ export default {
                         })
                     ],
                     ephemeral: true
-                })
+                })*/
                 break
             case "cardnumber":
                 await interaction.deferReply({ephemeral: true})

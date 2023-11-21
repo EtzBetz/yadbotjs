@@ -68,7 +68,16 @@ export default async (interaction) => {
 
                     switch (interactionCommand[1]) {
                         case "balance":
-                            const userStoredCardNumber = files.readJson(
+                            await interaction.editReply({
+                                embeds: [{
+                                    title: "Funktion deaktiviert",
+                                    description: `Da diese Funktion von der Seite der FH aktuell deaktiviert wurde, steht sie bis auf weiteres nicht zur Verfügung. Hoffentlich bald wieder :)`,
+                                    color: EmbedColors.RED
+                                }],
+                                ephemeral: true
+                            })
+                            return
+                            /*const userStoredCardNumber = files.readJson(
                                 yadBot.getCommandConfigPath('fh'),
                                 interaction.user.id,
                                 false
@@ -86,7 +95,7 @@ export default async (interaction) => {
                                                 new Discord.ButtonBuilder({
                                                     label: `Guthaben aufladen`,
                                                     url: 'https://topup.klarna.com/stw_munster',
-                                                    style: Discord.ButtonStyle.LINK,
+                                                    style: Discord.ButtonStyle.Link,
                                                 }),
                                             ]
                                         })
@@ -115,7 +124,7 @@ export default async (interaction) => {
                                                 new Discord.ButtonBuilder({
                                                     label: `Guthaben aufladen`,
                                                     url: 'https://topup.klarna.com/stw_munster',
-                                                    style: Discord.ButtonStyle.LINK,
+                                                    style: Discord.ButtonStyle.Link,
                                                 }),
                                             ]
                                         })
@@ -147,7 +156,7 @@ export default async (interaction) => {
                                     })
                                 ],
                                 ephemeral: true
-                            })
+                            })*/
                             break
                         case "side_dishes":
                             dishData = files.readJson(`${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`, 'data', false)
