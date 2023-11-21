@@ -1,5 +1,7 @@
 # Scraper Documentation
+
 ## Function Calls
+
 1. setup()
     1. When `enabled` is `true` in the scrapers config, it will run `createTimerInterval()` after 5 seconds.
 1. createTimerInterval()
@@ -13,7 +15,9 @@
     1. Runs `getEmbed()` to generate Discord embed for each generated JSON object.
     1. Runs `filterEmbedLength()` to filter length of generated embeds according to Discord's policies.
     1. Runs `sendEmbedMessages()` to send and update new content to subscribed users and guilds, when `global_send_embeds` and `send_embeds` are `true` in configs.
+
 ## `scrapeInfo` Object
+
 ```text
 {
     url: String,                    // generated from getScrapingUrl()

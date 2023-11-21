@@ -1,82 +1,102 @@
-import Discord from "discord.js"
-import yadBot from '../classes/YadBot.js'
+import Discord from 'discord.js';
+import yadBot from '../classes/YadBot.js';
 import EmbedColors from '../constants/EmbedColors.js';
 import files from '../classes/Files.js';
 
 export default async (interaction) => {
     if (interaction.isCommand()) {
-        const command = yadBot.getBot().commands.get(interaction.commandName)
-        let commandString
+        const command = yadBot.getBot().commands.get(interaction.commandName);
+        let commandString;
         try {
-            commandString = yadBot.buildCommandStringFromInteraction(interaction)
+            commandString = yadBot.buildCommandStringFromInteraction(interaction);
         } catch (e) {
-            yadBot.sendMessageToOwner(`interaction building failed.`)
+            yadBot.sendMessageToOwner(`interaction building failed.`);
         }
 
         if (!yadBot.isInteractionAuthorOwner(interaction)) {
-            let interactionChannel = interaction.channel
+            let interactionChannel = interaction.channel;
             if (interactionChannel === null) {
                 interactionChannel = await yadBot.getBot().channels.fetch(interaction.channelId, {
                     cache: true,
-                    force: true
-                })
+                    force: true,
+                });
             }
-            if (interactionChannel.type !== 'DM' && interactionChannel.type !== 'GROUP_DM' && interactionChannel.type !== 'UNKNOWN') {
-                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${commandString}' in channel '${interactionChannel.name}' in guild '${interactionChannel.guild.name}'.`)
+            if (
+                interactionChannel.type !== 'DM' &&
+                interactionChannel.type !== 'GROUP_DM' &&
+                interactionChannel.type !== 'UNKNOWN'
+            ) {
+                yadBot.sendMessageToOwner(
+                    `User ${interaction.user.username} (${interaction.user.id}) used slash-command '${commandString}' in channel '${interactionChannel.name}' in guild '${interactionChannel.guild.name}'.`,
+                );
             } else {
-                yadBot.sendMessageToOwner(`User ${interaction.user.username} (${interaction.user.id}) used slash-command '${commandString}' in DMs.`)
+                yadBot.sendMessageToOwner(
+                    `User ${interaction.user.username} (${interaction.user.id}) used slash-command '${commandString}' in DMs.`,
+                );
             }
         }
 
         if (command === undefined) {
-            yadBot.sendCommandErrorEmbed(interaction, 'Some error seems to have occurred. Looks like this command is registered, but I don\'t know what to respond.')
-            return
+            yadBot.sendCommandErrorEmbed(
+                interaction,
+                "Some error seems to have occurred. Looks like this command is registered, but I don't know what to respond.",
+            );
+            return;
         }
 
         if (!command.enabled && !yadBot.isInteractionAuthorOwner(interaction)) {
-            yadBot.sendCommandErrorEmbed(interaction, 'Sorry, this command is currently disabled. Try again later.')
-            return
+            yadBot.sendCommandErrorEmbed(interaction, 'Sorry, this command is currently disabled. Try again later.');
+            return;
         }
 
         if (command.onlyAdmin && !yadBot.isInteractionAuthorAdmin(interaction)) {
-            yadBot.sendCommandErrorEmbed(interaction, 'Sorry, this command is only available to admins of this bot.')
-            return
+            yadBot.sendCommandErrorEmbed(interaction, 'Sorry, this command is only available to admins of this bot.');
+            return;
         }
 
         if (command.onlyOwner && !yadBot.isInteractionAuthorOwner(interaction)) {
-            yadBot.sendCommandErrorEmbed(interaction, 'Sorry, this command is only available to the owner of this bot.')
-            return
+            yadBot.sendCommandErrorEmbed(
+                interaction,
+                'Sorry, this command is only available to the owner of this bot.',
+            );
+            return;
         }
 
         try {
-            command?.execute(interaction)
+            command?.execute(interaction);
         } catch (e) {
-            yadBot.sendCommandErrorEmbed(interaction, 'Some unknown error occurred. The admins have been notified.')
+            yadBot.sendCommandErrorEmbed(interaction, 'Some unknown error occurred. The admins have been notified.');
             // todo: build full command chain
-            yadBot.sendMessageToOwner(`Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${interaction.commandName}'.\n\`\`\`text\n${e.stack}\`\`\``)
+            yadBot.sendMessageToOwner(
+                `Critical error when user '${interaction.user.username}' (${interaction.user.id}) used command '${interaction.commandName}'.\n\`\`\`text\n${e.stack}\`\`\``,
+            );
         }
     } else if (interaction.isMessageComponent()) {
         if (interaction.isButton()) {
-            await interaction.deferReply({ephemeral: true})
-            let interactionCommand = interaction.customId.split("::")
+            await interaction.deferReply({ ephemeral: true });
+            let interactionCommand = interaction.customId.split('::');
             // console.log(interactionCommand)
 
             switch (interactionCommand[0]) {
-                case "mensafh":
-                    let mensaFhScraper = yadBot.scrapers.find(scraper => scraper.constructor.name === "ScraperMensaFHMuenster")
-                    let dishData
+                case 'mensafh':
+                    let mensaFhScraper = yadBot.scrapers.find(
+                        (scraper) => scraper.constructor.name === 'ScraperMensaFHMuenster',
+                    );
+                    let dishData;
 
                     switch (interactionCommand[1]) {
-                        case "balance":
+                        case 'balance':
                             await interaction.editReply({
-                                embeds: [{
-                                    title: "Funktion deaktiviert",
-                                    description: `Da diese Funktion von der Seite der FH aktuell deaktiviert wurde, steht sie bis auf weiteres nicht zur Verfügung. Hoffentlich bald wieder :)`,
-                                    color: EmbedColors.RED
-                                }],
-                                ephemeral: true
-                            })
-                            return
+                                embeds: [
+                                    {
+                                        title: 'Funktion deaktiviert',
+                                        description: `Da diese Funktion von der Seite der FH aktuell deaktiviert wurde, steht sie bis auf weiteres nicht zur Verfügung. Hoffentlich bald wieder :)`,
+                                        color: EmbedColors.RED,
+                                    },
+                                ],
+                                ephemeral: true,
+                            });
+                            return;
                             /*const userStoredCardNumber = files.readJson(
                                 yadBot.getCommandConfigPath('fh'),
                                 interaction.user.id,
@@ -157,87 +177,117 @@ export default async (interaction) => {
                                 ],
                                 ephemeral: true
                             })*/
-                            break
-                        case "side_dishes":
-                            dishData = files.readJson(`${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`, 'data', false)
+                            break;
+                        case 'side_dishes':
+                            dishData = files.readJson(
+                                `${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`,
+                                'data',
+                                false,
+                            );
                             if (dishData === undefined) {
                                 await interaction.editReply({
-                                    embeds: [{
-                                        title: 'Fehler',
-                                        description: 'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
-                                        color: EmbedColors.RED
-                                    }],
-                                    ephemeral: true
-                                })
-                                return
+                                    embeds: [
+                                        {
+                                            title: 'Fehler',
+                                            description:
+                                                'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
+                                            color: EmbedColors.RED,
+                                        },
+                                    ],
+                                    ephemeral: true,
+                                });
+                                return;
                             }
-                            let sideDishesString = ""
+                            let sideDishesString = '';
                             for (const sideDish of dishData[dishData.length - 1].side_dishes) {
-                                if (sideDishesString !== "") sideDishesString += "\n"
-                                sideDishesString += `-${mensaFhScraper.parseMealStringEmoji(sideDish)}`
-                                sideDishesString += `${sideDish.title}`
+                                if (sideDishesString !== '') sideDishesString += '\n';
+                                sideDishesString += `-${mensaFhScraper.parseMealStringEmoji(sideDish)}`;
+                                sideDishesString += `${sideDish.title}`;
                             }
                             await interaction.editReply({
-                                embeds: [{
-                                    title: 'Beilagen',
-                                    description: sideDishesString,
-                                    color: EmbedColors.GREEN
-                                }], ephemeral: true
-                            })
-                            break
-                        case "additives":
-                            dishData = files.readJson(`${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`, 'data', false)
+                                embeds: [
+                                    {
+                                        title: 'Beilagen',
+                                        description: sideDishesString,
+                                        color: EmbedColors.GREEN,
+                                    },
+                                ],
+                                ephemeral: true,
+                            });
+                            break;
+                        case 'additives':
+                            dishData = files.readJson(
+                                `${mensaFhScraper.getScraperEmbedPath()}/${interactionCommand[2]}.json`,
+                                'data',
+                                false,
+                            );
                             if (dishData === undefined) {
                                 await interaction.editReply({
-                                    embeds: [{
-                                        title: 'Fehler',
-                                        description: 'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
-                                        color: EmbedColors.RED
-                                    }], ephemeral: true
-                                })
-                                return
+                                    embeds: [
+                                        {
+                                            title: 'Fehler',
+                                            description:
+                                                'Ein Fehler ist aufgetreten.\nIch kann die angegebenen Daten leider nicht wiederfinden. Das tut mir leid.',
+                                            color: EmbedColors.RED,
+                                        },
+                                    ],
+                                    ephemeral: true,
+                                });
+                                return;
                             }
-                            let additivesString = ""
-                            let additives = dishData[dishData.length - 1].additives.sort()
+                            let additivesString = '';
+                            let additives = dishData[dishData.length - 1].additives.sort();
                             for (const additiveIndex in additives) {
-                                if (additivesString !== "") additivesString += "\n"
-                                additivesString += `\`${additiveIndex}\`: ` + additives[additiveIndex][0].toUpperCase() + additives[additiveIndex].substring(1)
+                                if (additivesString !== '') additivesString += '\n';
+                                additivesString +=
+                                    `\`${additiveIndex}\`: ` +
+                                    additives[additiveIndex][0].toUpperCase() +
+                                    additives[additiveIndex].substring(1);
                             }
                             await interaction.editReply({
-                                embeds: [{
-                                    title: 'Zusatzstoffe',
-                                    description: additivesString,
-                                    color: EmbedColors.GREEN
-                                }], ephemeral: true
-                            })
-                            break
+                                embeds: [
+                                    {
+                                        title: 'Zusatzstoffe',
+                                        description: additivesString,
+                                        color: EmbedColors.GREEN,
+                                    },
+                                ],
+                                ephemeral: true,
+                            });
+                            break;
                     }
-                    break
-                case "xrel":
+                    break;
+                case 'xrel':
                     switch (interactionCommand[1]) {
-                        case "subscribe":
-                            break
-                        case "unsubscribe":
-                            break
+                        case 'subscribe':
+                            break;
+                        case 'unsubscribe':
+                            break;
                         default:
                             await interaction.editReply({
-                                embeds: [{
-                                    title: 'Error while processing interaction',
-                                    description: 'Unknown interaction command parameter.',
-                                    color: EmbedColors.RED
-                                }], ephemeral: true
-                            })
+                                embeds: [
+                                    {
+                                        title: 'Error while processing interaction',
+                                        description: 'Unknown interaction command parameter.',
+                                        color: EmbedColors.RED,
+                                    },
+                                ],
+                                ephemeral: true,
+                            });
                     }
-                    break
+                    break;
                 default:
                     await interaction.editReply({
-                        embeds: [{
-                            title: 'Error while processing interaction',
-                            description: 'Unknown interaction command.',
-                            color: EmbedColors.RED
-                        }], ephemeral: true
-                    })
+                        embeds: [
+                            {
+                                title: 'Error while processing interaction',
+                                description: 'Unknown interaction command.',
+                                color: EmbedColors.RED,
+                            },
+                        ],
+                        ephemeral: true,
+                    });
             }
         }
     }
-}
+};

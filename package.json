@@ -1,33 +1,47 @@
 {
-  "name": "yadbot",
-  "type": "module",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "run-watch": "nodemon --ignore './scraperFiles/' --ignore './commandFiles/' --ignore './config.json' --ignore './notes/' index.js",
-    "dev": "npm run run-watch-server"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "0.21.2",
-    "bufferutil": "^4.0.6",
-    "diff": "^5.0.0",
-    "discord.js": "^14.11.0",
-    "edit-json-file": "^1.4.1",
-    "erlpack": "github:discord/erlpack",
-    "eslint": "^7.7.0",
-    "jsdom": "^16.4.0",
-    "luxon": "^1.28.1",
-    "retry-axios": "^2.4.0",
-    "utf-8-validate": "^5.0.9",
-    "xml2js": "0.5.0",
-    "zlib-sync": "^0.1.7"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.4"
-  }
+    "name": "yadbot",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "run-watch": "nodemon --ignore './scraperFiles/' --ignore './commandFiles/' --ignore './config.json' --ignore './notes/' index.js",
+        "dev": "npm run run-watch-server"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "0.21.2",
+        "bufferutil": "^4.0.6",
+        "diff": "^5.0.0",
+        "discord.js": "^14.11.0",
+        "edit-json-file": "^1.4.1",
+        "erlpack": "github:discord/erlpack",
+        "eslint": "^7.7.0",
+        "jsdom": "^16.4.0",
+        "luxon": "^1.28.1",
+        "prettier": "^3.1.0",
+        "retry-axios": "^2.4.0",
+        "utf-8-validate": "^5.0.9",
+        "xml2js": "0.5.0",
+        "zlib-sync": "^0.1.7"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.4"
+    },
+    "prettier": {
+        "singleQuote": true,
+        "tabWidth": 4,
+        "printWidth": 120,
+        "semi": true,
+        "arrowParens": "always",
+        "useTabs": false,
+        "trailingComma": "all",
+        "bracketSpacing": true,
+        "endOfLine": "lf",
+        "singleAttributePerLine": true,
+        "vueIndentScriptAndStyle": true
+    }
 }

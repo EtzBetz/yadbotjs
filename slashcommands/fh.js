@@ -1,6 +1,6 @@
-import Discord from "discord.js"
-import yadBot from '../classes/YadBot.js'
-import config from '../config.json' assert {type: "json"}
+import Discord from 'discord.js';
+import yadBot from '../classes/YadBot.js';
+import config from '../config.json' assert { type: 'json' };
 import EmbedColors from '../constants/EmbedColors.js';
 import files from '../classes/Files.js';
 import axios from 'axios';
@@ -14,43 +14,50 @@ export default {
             description: "Commands related to FH Münster and it's Mensa",
             options: [
                 {
-                    name: "balance",
-                    description: "Shows the current balance of the given ID or if one is stored and none is given, the given.",
+                    name: 'balance',
+                    description:
+                        'Shows the current balance of the given ID or if one is stored and none is given, the given.',
                     type: Discord.ApplicationCommandOptionType.Subcommand,
-                    options: [{
-                        name: "card-number",
-                        description: "A FH Münster Card ID.",
-                        type: Discord.ApplicationCommandOptionType.Integer,
-                        required: false
-                    }]
+                    options: [
+                        {
+                            name: 'card-number',
+                            description: 'A FH Münster Card ID.',
+                            type: Discord.ApplicationCommandOptionType.Integer,
+                            required: false,
+                        },
+                    ],
                 },
                 {
-                    name: "cardnumber",
+                    name: 'cardnumber',
                     description: "Store your mensa card ID so you don't have to re-enter it every day.",
                     type: Discord.ApplicationCommandOptionType.Subcommand,
-                    options: [{
-                        name: "card-number",
-                        description: "A FH Münster Card ID.",
-                        type: Discord.ApplicationCommandOptionType.Integer,
-                        required: true
-                    }]
-                }
-            ]
-        }
+                    options: [
+                        {
+                            name: 'card-number',
+                            description: 'A FH Münster Card ID.',
+                            type: Discord.ApplicationCommandOptionType.Integer,
+                            required: true,
+                        },
+                    ],
+                },
+            ],
+        };
     },
     async execute(interaction) {
         switch (interaction.options.getSubcommand()) {
-            case "balance":
-                await interaction.deferReply({ephemeral: true})
+            case 'balance':
+                await interaction.deferReply({ ephemeral: true });
                 await interaction.editReply({
-                    embeds: [{
-                        title: "Funktion deaktiviert",
-                        description: `Da diese Funktion von der Seite der FH aktuell deaktiviert wurde, steht sie bis auf weiteres nicht zur Verfügung. Hoffentlich bald wieder :)`,
-                        color: EmbedColors.RED
-                    }],
-                    ephemeral: true
-                })
-                return
+                    embeds: [
+                        {
+                            title: 'Funktion deaktiviert',
+                            description: `Da diese Funktion von der Seite der FH aktuell deaktiviert wurde, steht sie bis auf weiteres nicht zur Verfügung. Hoffentlich bald wieder :)`,
+                            color: EmbedColors.RED,
+                        },
+                    ],
+                    ephemeral: true,
+                });
+                return;
                 /*let enteredCardId = interaction.options.getInteger('card-number')
                 await interaction.deferReply({ephemeral: true})
                 if (enteredCardId === null) {
@@ -115,20 +122,26 @@ export default {
                     ],
                     ephemeral: true
                 })*/
-                break
-            case "cardnumber":
-                await interaction.deferReply({ephemeral: true})
-                let newKey = interaction.options.getInteger('card-number')
-                files.writeJson(yadBot.getCommandConfigPath(this.getData().name), interaction.user.id, newKey.toString())
+                break;
+            case 'cardnumber':
+                await interaction.deferReply({ ephemeral: true });
+                let newKey = interaction.options.getInteger('card-number');
+                files.writeJson(
+                    yadBot.getCommandConfigPath(this.getData().name),
+                    interaction.user.id,
+                    newKey.toString(),
+                );
                 await interaction.editReply({
-                    embeds: [{
-                        title: "Kartennummer für dich gespeichert",
-                        description: `Ich habe die Kartennummer \`${newKey}\` für dich hinterlegt. Bei mir ist sie sicher.\nDu kannst nun dein Guthaben abfragen, ohne die Kartennummer anzugeben.`,
-                        color: EmbedColors.GREEN
-                    }],
-                    ephemeral: true
-                })
-                break
+                    embeds: [
+                        {
+                            title: 'Kartennummer für dich gespeichert',
+                            description: `Ich habe die Kartennummer \`${newKey}\` für dich hinterlegt. Bei mir ist sie sicher.\nDu kannst nun dein Guthaben abfragen, ohne die Kartennummer anzugeben.`,
+                            color: EmbedColors.GREEN,
+                        },
+                    ],
+                    ephemeral: true,
+                });
+                break;
         }
-    }
-}
+    },
+};
