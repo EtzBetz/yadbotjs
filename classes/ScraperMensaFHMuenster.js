@@ -27,7 +27,11 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
 
         data?.categories.forEach(category => {
             if (category.name.toLowerCase().includes("info")) { // infos
-                menu.infos.push({'text': category.meals[0].name.trim().replace(/­/g, '')})
+                let infotext = ""
+                for (const info of category.meals) {
+                    infotext += info.name.trim().replace(/­/g, '') + '\n\n'
+                }
+                menu.infos.push({'text': infotext})
             } else {
                 for (const mealIndex in category.meals) {
                     let meal = this.parseCategory(category, scrapeInfo.response.data.filters)
@@ -58,10 +62,8 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                     ) {
                         meal.isPrimary = true
                     } else if (
-                        (
-                            category.name.toLowerCase().includes("beilage") &&
-                            !category.name.toLowerCase().includes("beilagen")
-                        ) ||
+                        category.name.toLowerCase().includes("beilagen")
+                        ||
                         category.name.toLowerCase().includes("tagesdessert") ||
                         category.name.toLowerCase().includes("dessert extra") ||
                         category.name.toLowerCase().includes("dessert") // side_dishes
@@ -192,7 +194,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
 
         let embed = new Discord.EmbedBuilder(
             {
-                "description": `${infosString}\n\n\n**Hauptgerichte**:\n${mealsString}\n\n\n**Beilagen**:\n${sideDishesString}`,
+                "description": `${infosString}\n**Hauptgerichte**:\n${mealsString}\n\n\n**Beilagen**:\n${sideDishesString}`,
                 "author": {
                     "name": `Mensaplan FH Münster (${luxon.DateTime.fromFormat(content.json.date, 'yyyy-MM-dd').toFormat('dd.MM.yy')})`,
                     "icon_url": "https://etzbetz.io/stuff/yad/images/logo_fh_muenster.jpg"
