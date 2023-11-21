@@ -126,6 +126,10 @@ class YadBot {
         //     console.log(event)
         // })
 
+        process.on('unhandledRejection', error => {
+            console.error('Unhandled promise rejection:', error);
+        });
+
         let botToken = files.readJson(this.getYadConfigPath(), 'token', true, 'ENTER BOT TOKEN HERE')
         this.bot.login(botToken).then(() => {
 

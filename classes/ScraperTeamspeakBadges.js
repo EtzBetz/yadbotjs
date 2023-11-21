@@ -55,13 +55,17 @@ class ScraperTeamspeakBadges extends WebsiteScraper {
         const titleNameResult = regexTitleAndName.exec(this.filterFakeWhitespace(sourceString))
         const codeResult = regexCode.exec(this.filterFakeWhitespace(sourceString))
         const dateResult = regexDate.exec(this.filterFakeWhitespace(sourceString))
-        // console.log(dateResult)
-        return {
+
+        const json = {
             title: titleNameResult[1]?.trim(),
             note: titleNameResult[2]?.trim(),
             unlock: codeResult[1]?.trim(),
             expiration: dateResult?.[1]?.trim()
         }
+        if (json.unlock.toLowerCase() === "one-time") json.unlock = "One-Time code"
+        if (json.unlock.toLowerCase() === "auto") json.unlock = "Auto assign"
+
+        return json
     }
 
     filterFakeWhitespace(sourceString) {

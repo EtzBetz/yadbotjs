@@ -308,7 +308,7 @@ export class WebsiteScraper {
                     }
                 }
             } catch (e) {
-                if (e.code === Discord.Constants.APIErrors.UNKNOWN_CHANNEL || e.code === Discord.Constants.APIErrors.MISSING_ACCESS) {
+                if (e.code === Discord.Constants.APIErrors.UnknownChannel || e.code === Discord.Constants.APIErrors.MissingAccess) {
                     this.toggleSubscriptionInFile(channelId, true)
                 } else {
                     yadBot.sendMessageToOwner(`Error while sending embeds in "${this.constructor.name}"!\n\`\`\`text\n${e.stack}\`\`\``)
