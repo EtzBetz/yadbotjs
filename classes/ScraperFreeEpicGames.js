@@ -32,13 +32,13 @@ class ScraperFreeEpicGames extends WebsiteScraper {
                 }
 
                 entry.title = game.title;
-                entry.imageUrl = game.keyImages?.find((image) => image.type === 'DieselStoreFrontWide')?.url;
+                entry.imageUrl = game.keyImages?.find((image) => image.type === 'OfferImageWide')?.url;
                 if (entry.imageUrl === undefined && game.keyImages?.length > 0) {
                     entry.imageUrl = game.keyImages[0].url;
                 }
                 entry.imageUrl = encodeURI(entry.imageUrl);
 
-                entry.slug = game.catalogNs.mappings.find((mapping) => {
+                entry.slug = game.catalogNs?.mappings?.find((mapping) => {
                     return mapping.pageType === 'productHome';
                 })?.pageSlug;
                 if (entry.slug === undefined) {
@@ -157,9 +157,7 @@ class ScraperFreeEpicGames extends WebsiteScraper {
         }
 
         if (content.json.imageUrl !== undefined) {
-            embed.image = {
-                url: content.json.imageUrl,
-            };
+            embed.setImage(content.json.imageUrl)
         }
 
         if (content.json.developer !== undefined) {
