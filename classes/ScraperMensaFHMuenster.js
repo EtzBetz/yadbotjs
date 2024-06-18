@@ -145,6 +145,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                                     'kaschunuss',
                                     'erdnuss',
                                     'krebstier',
+                                    'geschwaerzt',
                                 ];
                                 if (!knownAdditives.includes(filter))
                                     yadBot.sendMessageToOwner(`New filter in Mensa Scraper: ${filter}`);
