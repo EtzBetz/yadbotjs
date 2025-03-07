@@ -16,6 +16,7 @@ COPY ./package.json .
 COPY ./package-lock.json .
 RUN npm install
 RUN npx playwright install
+RUN npx playwright install-deps
 # copy all files from git root into container workdir
 # (except files and folders in .dockerignore)
 COPY . .
