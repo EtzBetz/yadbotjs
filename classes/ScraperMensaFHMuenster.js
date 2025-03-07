@@ -240,9 +240,9 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
         return [
             new Discord.ActionRowBuilder().addComponents([
                 new Discord.ButtonBuilder()
-                    .setLabel(`Guthaben abfragen`)
-                    .setCustomId(`mensafh::balance::message`)
-                    .setStyle(Discord.ButtonStyle.Primary),
+                    .setLabel(`Guthaben abfragen & aufladen`)
+                    .setURL(`https://stw-muenster.tcpos.com/`)
+                    .setStyle(Discord.ButtonStyle.Link),
                 // new Discord.ButtonBuilder({ OLD CODE!
                 //     label: `Beilagen`,
                 //     customId: `mensafh::side_dishes::${content.json.date}`,
