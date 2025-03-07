@@ -8,7 +8,7 @@
         "start": "node index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "run-watch": "nodemon --ignore './scraperFiles/' --ignore './commandFiles/' --ignore './config.json' --ignore './notes/' index.js",
-        "dev": "npm run run-watch-server"
+        "dev": "npm run run-watch"
     },
     "author": "",
     "license": "ISC",
@@ -22,6 +22,8 @@
         "eslint": "^7.7.0",
         "jsdom": "^16.4.0",
         "luxon": "^1.28.1",
+        "playwright": "^1.51.0",
+        "playwright-chromium": "^1.51.0",
         "prettier": "^3.1.0",
         "retry-axios": "^2.4.0",
         "utf-8-validate": "^5.0.9",
