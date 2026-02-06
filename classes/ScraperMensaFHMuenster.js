@@ -53,6 +53,7 @@ class ScraperMensaFHMuenster extends WebsiteScraper {
                     }
 
                     if (
+                        category.name.toLowerCase().includes('hauptkomponenten') ||
                         category.name.toLowerCase().includes('menü') ||
                         category.name.toLowerCase().includes('tagesaktion') ||
                         category.name.toLowerCase().includes('grillstation') ||

@@ -110,7 +110,8 @@ export class WebsiteScraper {
             if (yadBot.getBot().user === null) {
                 this.log('Bot is not yet online, not sending messages..');
                 // todo: the loop is never ending, fix somehow.
-                while (yadBot.getBot().user === null) {}
+                while (yadBot.getBot().user === null) {
+                }
                 this.log('Bot is now online! Sending messages..');
             }
             scrapeInfo.content = scrapeInfo.content.sort(this.getSortingFunction());
@@ -247,13 +248,20 @@ export class WebsiteScraper {
             if (entry.newData === true) newContentCount++;
         }
         if (newContentCount === 0 || !sendState || !globalSendState) return;
-        this.log(`Sending and updating ${newContentCount} embed(s)...`);
+        this.log(`Sending and updating ${newContentCount} embed(s) to ${this.getSubGuildChannelIds().length} channels...`);
 
         for (let channelId of this.getSubGuildChannelIds()) {
             try {
                 let embedTargetChannel = await yadBot.getBot().channels.fetch(channelId);
                 if (yadBot.getBot().user === null) continue;
+                // ------
+                const channelGuild = yadBot.getBot().guilds.cache.find(guild =>
+                    guild.channels.cache.has(channelId),
+                );
+                this.log(channelGuild.members.me?.permissionsIn(channelId).toArray());
+                // ------
                 this.log(
+                    // 1026077731349348382
                     `Sending and updating embed(s) in Guild "${embedTargetChannel.guild.name}", Channel "${embedTargetChannel.name}"`,
                 );
                 for (let contentEntry of scrapeInfo.content) {
@@ -310,6 +318,7 @@ export class WebsiteScraper {
             }
         }
 
+        this.log(`Sending and updating ${newContentCount} embed(s) to ${this.getSubUserIds().length} users...`);
         for (let userId of this.getSubUserIds()) {
             try {
                 let embedTargetUser = await yadBot.getBot().users.fetch(userId);
@@ -390,7 +399,7 @@ export class WebsiteScraper {
     }
 
     getSortingFunction() {
-        return function (jsonA, jsonB) {
+        return function(jsonA, jsonB) {
             return 0;
         };
     }
@@ -438,7 +447,7 @@ export class WebsiteScraper {
                 guild.owner?.send({ embeds: [noticeEmbed] });
             })
             .catch((e) => {
-                this.errorLog("Could not message the guild's scraper channel and not the owner of that guild!");
+                this.errorLog('Could not message the guild\'s scraper channel and not the owner of that guild!');
                 yadBot.sendMessageToOwner(
                     `Could not message the guild's scraper channel and not the owner of that guild!`,
                 );
@@ -600,7 +609,7 @@ export class WebsiteScraper {
                     while (
                         this.getTotalCharactersLengthFromEmbed(embed) > TOTAL_CHARACTERS_LIMIT ||
                         embed.data.fields.length === 1
-                    ) {
+                        ) {
                         this.log(`Cutting last field!`);
                         embed.data.fields.pop();
                     }
